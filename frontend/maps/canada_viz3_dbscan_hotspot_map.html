@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_5f08b3724f7f19b63104a0d90ab30ed7 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdn.jsdelivr.net/gh/python-visualization/folium@main/folium/templates/leaflet_heat.min.js"></script>
+</head>
+<body>
+    
+    
+<div style="position:fixed;bottom:30px;left:30px;z-index:9999;
+     background:white;padding:12px 16px;border-radius:8px;
+     border:1px solid #ccc;font-size:13px;font-family:Arial;line-height:1.8">
+  <b>DBSCAN Hotspot Priority</b><br>
+  <span style="color:#d73027;font-size:18px">●</span>
+  <b>CRITICAL</b> — Immediate action<br>
+  <span style="color:#fc8d59;font-size:18px">●</span>
+  <b>ACTIVE</b> — Increased monitoring<br>
+  <hr style="margin:6px 0;border-color:#eee">
+  <span style="font-size:11px;color:#666">
+    Circle size =incident count.<br>
+    Click any circle for details.
+  </span>
+</div>
+    
+<div style="position:fixed;top:10px;left:50%;transform:translateX(-50%);
+     z-index:9999;background:white;padding:8px 18px;border-radius:8px;
+     border:1px solid #ccc;font-size:15px;font-weight:bold;font-family:Arial">
+  DBSCAN Wildlife Conflict Hotspots — Parks Canada
+</div>
+    
+            <div class="folium-map" id="map_5f08b3724f7f19b63104a0d90ab30ed7" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_5f08b3724f7f19b63104a0d90ab30ed7 = L.map(
+                "map_5f08b3724f7f19b63104a0d90ab30ed7",
+                {
+                    center: [56.0, -96.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 4,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_451e1a5b654b13519092f6f6c82fb23a = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_451e1a5b654b13519092f6f6c82fb23a.addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+            var heat_map_98b0784dec3d5b6893d341c050db5c94 = L.heatLayer(
+                [[52.859, -118.013, 1.0], [51.219, -115.739, 0.7085878402977226], [49.064, -113.927, 0.08478621414991303], [49.034, -125.689, 0.0353950082925448], [48.698, -124.942, 0.02799239512964686], [51.293, -117.52, 0.02188422798430484], [53.931, -106.092, 0.016180575219449052], [53.636, -112.85, 0.011285951215565714], [51.027, -118.171, 0.009951053759961167], [44.875, -79.854, 0.00987015088386392], [50.662, -99.956, 0.007685773229238299], [48.803, -64.224, 0.005905909955098904], [46.709, -60.905, 0.0048137211277860924], [45.233, -81.564, 0.004530561061445735], [51.088, -117.918, 0.002750697787306339], [46.726, -60.363, 0.002629343473160471], [46.717, -73.035, 0.0023461834068201123], [48.559, -53.982, 0.0022652805307228673], [46.75, -72.808, 0.001982120464382509], [54.071, -106.449, 0.0019416690263338863], [49.179, -107.541, 0.001739411836090773], [48.349, -86.171, 0.001618057521944905], [43.826, -64.842, 0.001294446017555924], [44.404, -65.226, 0.0011730917034100561], [60.989, -138.593, 0.0009708345131669431], [50.885, -100.048, 0.0009303830751183204], [59.774, -135.079, 0.0008899316370696978], [49.609, -57.925, 0.0007685773229238299], [60.574, -137.222, 0.0006876744468265847], [53.634, -106.063, 0.000647223008777962], [46.816, -60.683, 0.0006067715707293394], [50.754, -100.236, 0.0005663201326807168], [59.81, -111.985, 0.0005258686946320942], [48.916, -125.307, 0.0005258686946320942], [48.597, -86.288, 0.00048541725658347157], [46.807, -64.983, 0.00048541725658347157], [59.547, -112.248, 0.00048541725658347157], [60.026, -112.942, 0.00048541725658347157], [50.782, -100.002, 0.0004449658185348489], [52.395, -117.009, 0.00040451438048622626]],
+                {
+  "minOpacity": 0.2,
+  "maxZoom": 18,
+  "radius": 30,
+  "blur": 25,
+  "gradient": {
+  0.2: "#fee8d0",
+  0.5: "#fc8d59",
+  0.8: "#d73027",
+  1.0: "#7f0000",
+},
+}
+            );
+        
+    
+            heat_map_98b0784dec3d5b6893d341c050db5c94.addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+            var circle_marker_aa3707f6113854e1389ea3756dfbc8b2 = L.circleMarker(
+                [52.859, -118.013],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 20, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_5e7a9e3aa72f2c1e9280741cb3e949b1 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_c9d429f42dfccf64db6562a2f6f1457a = $(`<div id="html_c9d429f42dfccf64db6562a2f6f1457a" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 4</b><br><b>Park:</b> Jasper<br><b>Primary Species:</b> Elk<br><b>Incident Count:</b> 24,721<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_5e7a9e3aa72f2c1e9280741cb3e949b1.setContent(html_c9d429f42dfccf64db6562a2f6f1457a);
+            
+        
+
+        circle_marker_aa3707f6113854e1389ea3756dfbc8b2.bindPopup(popup_5e7a9e3aa72f2c1e9280741cb3e949b1)
+        ;
+
+        
+    
+    
+            circle_marker_aa3707f6113854e1389ea3756dfbc8b2.bindTooltip(
+                `<div>
+                     Jasper — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bcec29caf5547f86b13be28e08a52ef7 = L.circleMarker(
+                [49.064, -113.927],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_8a9e7ca8b077db3f442b2620aa3a19a7 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ea271e9421541d980d046cd4014501c8 = $(`<div id="html_ea271e9421541d980d046cd4014501c8" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 6</b><br><b>Park:</b> Waterton Lakes<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 2,096<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_8a9e7ca8b077db3f442b2620aa3a19a7.setContent(html_ea271e9421541d980d046cd4014501c8);
+            
+        
+
+        circle_marker_bcec29caf5547f86b13be28e08a52ef7.bindPopup(popup_8a9e7ca8b077db3f442b2620aa3a19a7)
+        ;
+
+        
+    
+    
+            circle_marker_bcec29caf5547f86b13be28e08a52ef7.bindTooltip(
+                `<div>
+                     Waterton Lakes — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e7eb1f25bf0dd825ed190e4fc9a199bf = L.circleMarker(
+                [49.034, -125.689],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_728cd5ffa0b5951195e9d553fc7b1c52 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_bffbbb8fb6fe9e8e2bb8a7ac0f39efb1 = $(`<div id="html_bffbbb8fb6fe9e8e2bb8a7ac0f39efb1" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 1</b><br><b>Park:</b> Coastal British Columbia<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 875<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_728cd5ffa0b5951195e9d553fc7b1c52.setContent(html_bffbbb8fb6fe9e8e2bb8a7ac0f39efb1);
+            
+        
+
+        circle_marker_e7eb1f25bf0dd825ed190e4fc9a199bf.bindPopup(popup_728cd5ffa0b5951195e9d553fc7b1c52)
+        ;
+
+        
+    
+    
+            circle_marker_e7eb1f25bf0dd825ed190e4fc9a199bf.bindTooltip(
+                `<div>
+                     Coastal British Columbia — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_48109f3243f4d28572bcf8fe30772c2d = L.circleMarker(
+                [48.698, -124.942],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_e0317679ab9ce6c03c5955a2946a5e71 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_e5b92b2702f66b94e27852795c8e6aa4 = $(`<div id="html_e5b92b2702f66b94e27852795c8e6aa4" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 9</b><br><b>Park:</b> Coastal British Columbia<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 692<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_e0317679ab9ce6c03c5955a2946a5e71.setContent(html_e5b92b2702f66b94e27852795c8e6aa4);
+            
+        
+
+        circle_marker_48109f3243f4d28572bcf8fe30772c2d.bindPopup(popup_e0317679ab9ce6c03c5955a2946a5e71)
+        ;
+
+        
+    
+    
+            circle_marker_48109f3243f4d28572bcf8fe30772c2d.bindTooltip(
+                `<div>
+                     Coastal British Columbia — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1af7ea351659b01dd8327bd4e576b49f = L.circleMarker(
+                [51.293, -117.52],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_ff2573be820fa0034f5b7d4b7d6ae628 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_8c62a08d23487689aa2f9979e043327e = $(`<div id="html_8c62a08d23487689aa2f9979e043327e" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 18</b><br><b>Park:</b> Mount Revelstoke And Glacier<br><b>Primary Species:</b> Grizzly Bear<br><b>Incident Count:</b> 541<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_ff2573be820fa0034f5b7d4b7d6ae628.setContent(html_8c62a08d23487689aa2f9979e043327e);
+            
+        
+
+        circle_marker_1af7ea351659b01dd8327bd4e576b49f.bindPopup(popup_ff2573be820fa0034f5b7d4b7d6ae628)
+        ;
+
+        
+    
+    
+            circle_marker_1af7ea351659b01dd8327bd4e576b49f.bindTooltip(
+                `<div>
+                     Mount Revelstoke And Glacier — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_56547896f042566b25754214c14e9686 = L.circleMarker(
+                [53.931, -106.092],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_f20bce27183c0db9f48cc6353e7ce6d9 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_436a9ef2605cf2bdf3175947010c62cf = $(`<div id="html_436a9ef2605cf2bdf3175947010c62cf" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 8</b><br><b>Park:</b> Northern Prairies<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 400<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_f20bce27183c0db9f48cc6353e7ce6d9.setContent(html_436a9ef2605cf2bdf3175947010c62cf);
+            
+        
+
+        circle_marker_56547896f042566b25754214c14e9686.bindPopup(popup_f20bce27183c0db9f48cc6353e7ce6d9)
+        ;
+
+        
+    
+    
+            circle_marker_56547896f042566b25754214c14e9686.bindTooltip(
+                `<div>
+                     Northern Prairies — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7a56d39bf039deab21cdea70a6f9c335 = L.circleMarker(
+                [53.636, -112.85],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_37a90c71b53ae49525977c0e1f56f6e1 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d41284287799644218992df3b91aab3f = $(`<div id="html_d41284287799644218992df3b91aab3f" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 17</b><br><b>Park:</b> Northern Prairies<br><b>Primary Species:</b> Plains Bison<br><b>Incident Count:</b> 279<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_37a90c71b53ae49525977c0e1f56f6e1.setContent(html_d41284287799644218992df3b91aab3f);
+            
+        
+
+        circle_marker_7a56d39bf039deab21cdea70a6f9c335.bindPopup(popup_37a90c71b53ae49525977c0e1f56f6e1)
+        ;
+
+        
+    
+    
+            circle_marker_7a56d39bf039deab21cdea70a6f9c335.bindTooltip(
+                `<div>
+                     Northern Prairies — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_599ab61289841aaeeb6725555ea97747 = L.circleMarker(
+                [51.027, -118.171],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_cb023f325fbb335e5593b3970f819df3 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_854976f9d93e03263eb4c76be987baaa = $(`<div id="html_854976f9d93e03263eb4c76be987baaa" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 25</b><br><b>Park:</b> Mount Revelstoke And Glacier<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 246<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_cb023f325fbb335e5593b3970f819df3.setContent(html_854976f9d93e03263eb4c76be987baaa);
+            
+        
+
+        circle_marker_599ab61289841aaeeb6725555ea97747.bindPopup(popup_cb023f325fbb335e5593b3970f819df3)
+        ;
+
+        
+    
+    
+            circle_marker_599ab61289841aaeeb6725555ea97747.bindTooltip(
+                `<div>
+                     Mount Revelstoke And Glacier — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6aed6af5d692b6894ef72c45588698a6 = L.circleMarker(
+                [44.875, -79.854],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_a19155f9ea7a8aef66be9fda988e5804 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_fd9bf04a815b61bb5d444940a65e8ec0 = $(`<div id="html_fd9bf04a815b61bb5d444940a65e8ec0" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 20</b><br><b>Park:</b> Eastern And Central Ontario<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 244<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_a19155f9ea7a8aef66be9fda988e5804.setContent(html_fd9bf04a815b61bb5d444940a65e8ec0);
+            
+        
+
+        circle_marker_6aed6af5d692b6894ef72c45588698a6.bindPopup(popup_a19155f9ea7a8aef66be9fda988e5804)
+        ;
+
+        
+    
+    
+            circle_marker_6aed6af5d692b6894ef72c45588698a6.bindTooltip(
+                `<div>
+                     Eastern And Central Ontario — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_246d4169e2d46ef01a6cdb398a2315c8 = L.circleMarker(
+                [51.219, -115.739],
+                {"bubblingMouseEvents": true, "color": "#d73027", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#d73027", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 14, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_46ec30ef37f1c3407d102ad7f59a5dad = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_1743210ea47d03ea70612dea9a7389a3 = $(`<div id="html_1743210ea47d03ea70612dea9a7389a3" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 0</b><br><b>Park:</b> Banff<br><b>Primary Species:</b> Elk<br><b>Incident Count:</b> 17,517<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#d73027;font-weight:bold'>CRITICAL</span></div></div>`)[0];
+                popup_46ec30ef37f1c3407d102ad7f59a5dad.setContent(html_1743210ea47d03ea70612dea9a7389a3);
+            
+        
+
+        circle_marker_246d4169e2d46ef01a6cdb398a2315c8.bindPopup(popup_46ec30ef37f1c3407d102ad7f59a5dad)
+        ;
+
+        
+    
+    
+            circle_marker_246d4169e2d46ef01a6cdb398a2315c8.bindTooltip(
+                `<div>
+                     Banff — CRITICAL
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c0c080b55e08ccaad61daa0200069028 = L.circleMarker(
+                [59.81, -111.985],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_cefa449405683e1a1209c4ee8824b0a2 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ae9632aa741d2e1037b8b3ff73df1f45 = $(`<div id="html_ae9632aa741d2e1037b8b3ff73df1f45" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 38</b><br><b>Park:</b> Southwest Northwest Territories<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 13<br><b>Peak Month:</b> May<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_cefa449405683e1a1209c4ee8824b0a2.setContent(html_ae9632aa741d2e1037b8b3ff73df1f45);
+            
+        
+
+        circle_marker_c0c080b55e08ccaad61daa0200069028.bindPopup(popup_cefa449405683e1a1209c4ee8824b0a2)
+        ;
+
+        
+    
+    
+            circle_marker_c0c080b55e08ccaad61daa0200069028.bindTooltip(
+                `<div>
+                     Southwest Northwest Territories — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2dfecb418ce36dd435c7579475074f59 = L.circleMarker(
+                [49.609, -57.925],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_6a8dcab1939a7193671543327512fd34 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_493df528dc37d2cb55c2064128f1f563 = $(`<div id="html_493df528dc37d2cb55c2064128f1f563" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 30</b><br><b>Park:</b> Western Newfoundland And Labrador<br><b>Primary Species:</b> Coyote<br><b>Incident Count:</b> 19<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_6a8dcab1939a7193671543327512fd34.setContent(html_493df528dc37d2cb55c2064128f1f563);
+            
+        
+
+        circle_marker_2dfecb418ce36dd435c7579475074f59.bindPopup(popup_6a8dcab1939a7193671543327512fd34)
+        ;
+
+        
+    
+    
+            circle_marker_2dfecb418ce36dd435c7579475074f59.bindTooltip(
+                `<div>
+                     Western Newfoundland And Labrador — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a3eb0e10f7d57c3f2e0589a40e8d7d64 = L.circleMarker(
+                [60.574, -137.222],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_a0f6f19e7c5dc84543812f8f0938d5c0 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ecefe3e4986eb21ba8fd3c3641b67bf5 = $(`<div id="html_ecefe3e4986eb21ba8fd3c3641b67bf5" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 36</b><br><b>Park:</b> Yukon<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 17<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_a0f6f19e7c5dc84543812f8f0938d5c0.setContent(html_ecefe3e4986eb21ba8fd3c3641b67bf5);
+            
+        
+
+        circle_marker_a3eb0e10f7d57c3f2e0589a40e8d7d64.bindPopup(popup_a0f6f19e7c5dc84543812f8f0938d5c0)
+        ;
+
+        
+    
+    
+            circle_marker_a3eb0e10f7d57c3f2e0589a40e8d7d64.bindTooltip(
+                `<div>
+                     Yukon — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_45af00bf18046dbc4b464d2836ec038e = L.circleMarker(
+                [53.634, -106.063],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_9eeac5d9be44746fd31650be1b182852 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7be81980c6d24b3e72d0950d36bc005e = $(`<div id="html_7be81980c6d24b3e72d0950d36bc005e" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 13</b><br><b>Park:</b> Northern Prairies<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 16<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_9eeac5d9be44746fd31650be1b182852.setContent(html_7be81980c6d24b3e72d0950d36bc005e);
+            
+        
+
+        circle_marker_45af00bf18046dbc4b464d2836ec038e.bindPopup(popup_9eeac5d9be44746fd31650be1b182852)
+        ;
+
+        
+    
+    
+            circle_marker_45af00bf18046dbc4b464d2836ec038e.bindTooltip(
+                `<div>
+                     Northern Prairies — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_92258d877010c68c41f9e20a6bcbc9eb = L.circleMarker(
+                [46.816, -60.683],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_8494da78f8bea3b9b4b96061d57b70ec = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_00525d677f231d3f3098af87775f4ee2 = $(`<div id="html_00525d677f231d3f3098af87775f4ee2" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 31</b><br><b>Park:</b> Cape Breton<br><b>Primary Species:</b> Coyote<br><b>Incident Count:</b> 15<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_8494da78f8bea3b9b4b96061d57b70ec.setContent(html_00525d677f231d3f3098af87775f4ee2);
+            
+        
+
+        circle_marker_92258d877010c68c41f9e20a6bcbc9eb.bindPopup(popup_8494da78f8bea3b9b4b96061d57b70ec)
+        ;
+
+        
+    
+    
+            circle_marker_92258d877010c68c41f9e20a6bcbc9eb.bindTooltip(
+                `<div>
+                     Cape Breton — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_87f9bcab6fd70cdf5b9b3278598653e6 = L.circleMarker(
+                [50.754, -100.236],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_82871ab370e8833c641cbd4efa09cda4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_b7255de9eac924d44125dfaebdf4e85d = $(`<div id="html_b7255de9eac924d44125dfaebdf4e85d" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 24</b><br><b>Park:</b> Riding Mountain<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 14<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_82871ab370e8833c641cbd4efa09cda4.setContent(html_b7255de9eac924d44125dfaebdf4e85d);
+            
+        
+
+        circle_marker_87f9bcab6fd70cdf5b9b3278598653e6.bindPopup(popup_82871ab370e8833c641cbd4efa09cda4)
+        ;
+
+        
+    
+    
+            circle_marker_87f9bcab6fd70cdf5b9b3278598653e6.bindTooltip(
+                `<div>
+                     Riding Mountain — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_076306668278211407144dd17ce51d2b = L.circleMarker(
+                [59.547, -112.248],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_0869ae4c4ab39c9f7a5369fa6ddba3af = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_67a5e0b7d9c5ec9fdeaccf54191200d2 = $(`<div id="html_67a5e0b7d9c5ec9fdeaccf54191200d2" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 39</b><br><b>Park:</b> Southwest Northwest Territories<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 12<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_0869ae4c4ab39c9f7a5369fa6ddba3af.setContent(html_67a5e0b7d9c5ec9fdeaccf54191200d2);
+            
+        
+
+        circle_marker_076306668278211407144dd17ce51d2b.bindPopup(popup_0869ae4c4ab39c9f7a5369fa6ddba3af)
+        ;
+
+        
+    
+    
+            circle_marker_076306668278211407144dd17ce51d2b.bindTooltip(
+                `<div>
+                     Southwest Northwest Territories — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fe4c2bcb4cc5d6a38ba79851a4b91ed3 = L.circleMarker(
+                [48.916, -125.307],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_60c6619fe17dd50b8db524af0bc08e5f = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_f18a61b43e01a6151078e1470f7d1755 = $(`<div id="html_f18a61b43e01a6151078e1470f7d1755" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 32</b><br><b>Park:</b> Coastal British Columbia<br><b>Primary Species:</b> Wolf<br><b>Incident Count:</b> 13<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_60c6619fe17dd50b8db524af0bc08e5f.setContent(html_f18a61b43e01a6151078e1470f7d1755);
+            
+        
+
+        circle_marker_fe4c2bcb4cc5d6a38ba79851a4b91ed3.bindPopup(popup_60c6619fe17dd50b8db524af0bc08e5f)
+        ;
+
+        
+    
+    
+            circle_marker_fe4c2bcb4cc5d6a38ba79851a4b91ed3.bindTooltip(
+                `<div>
+                     Coastal British Columbia — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_98060d42c697c8ffd5e55a9410afb220 = L.circleMarker(
+                [48.597, -86.288],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_95a154a4f03fa295fd99bb9408b0bb2c = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_e43df12638de1032f3f5ee2215e9dff6 = $(`<div id="html_e43df12638de1032f3f5ee2215e9dff6" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 37</b><br><b>Park:</b> Northern Ontario<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 12<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_95a154a4f03fa295fd99bb9408b0bb2c.setContent(html_e43df12638de1032f3f5ee2215e9dff6);
+            
+        
+
+        circle_marker_98060d42c697c8ffd5e55a9410afb220.bindPopup(popup_95a154a4f03fa295fd99bb9408b0bb2c)
+        ;
+
+        
+    
+    
+            circle_marker_98060d42c697c8ffd5e55a9410afb220.bindTooltip(
+                `<div>
+                     Northern Ontario — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_44eac93d4f1f2511cffe7e1d3b3e62a4 = L.circleMarker(
+                [46.807, -64.983],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_4567dad19c29bb161d186b95669d10a9 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_2f72076dddb69ff7114e8258c37de226 = $(`<div id="html_2f72076dddb69ff7114e8258c37de226" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 33</b><br><b>Park:</b> Northern New Brunswick<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 12<br><b>Peak Month:</b> May<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_4567dad19c29bb161d186b95669d10a9.setContent(html_2f72076dddb69ff7114e8258c37de226);
+            
+        
+
+        circle_marker_44eac93d4f1f2511cffe7e1d3b3e62a4.bindPopup(popup_4567dad19c29bb161d186b95669d10a9)
+        ;
+
+        
+    
+    
+            circle_marker_44eac93d4f1f2511cffe7e1d3b3e62a4.bindTooltip(
+                `<div>
+                     Northern New Brunswick — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_04fb103505f2aaf2e42e3d797f7e3196 = L.circleMarker(
+                [50.885, -100.048],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_98da9277ab8797db4d9cee21dc76ad3d = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4abb32894d4f02f5726d216b594585a5 = $(`<div id="html_4abb32894d4f02f5726d216b594585a5" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 23</b><br><b>Park:</b> Riding Mountain<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 23<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_98da9277ab8797db4d9cee21dc76ad3d.setContent(html_4abb32894d4f02f5726d216b594585a5);
+            
+        
+
+        circle_marker_04fb103505f2aaf2e42e3d797f7e3196.bindPopup(popup_98da9277ab8797db4d9cee21dc76ad3d)
+        ;
+
+        
+    
+    
+            circle_marker_04fb103505f2aaf2e42e3d797f7e3196.bindTooltip(
+                `<div>
+                     Riding Mountain — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fe69be786a8c0a4aafde01c9192e2d1d = L.circleMarker(
+                [60.026, -112.942],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_f40ef11890cba022205b8c1fb3e13a14 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_fbef914a65b5dc8aace6a7cf7e7ca0c2 = $(`<div id="html_fbef914a65b5dc8aace6a7cf7e7ca0c2" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 35</b><br><b>Park:</b> Southwest Northwest Territories<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 12<br><b>Peak Month:</b> May<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_f40ef11890cba022205b8c1fb3e13a14.setContent(html_fbef914a65b5dc8aace6a7cf7e7ca0c2);
+            
+        
+
+        circle_marker_fe69be786a8c0a4aafde01c9192e2d1d.bindPopup(popup_f40ef11890cba022205b8c1fb3e13a14)
+        ;
+
+        
+    
+    
+            circle_marker_fe69be786a8c0a4aafde01c9192e2d1d.bindTooltip(
+                `<div>
+                     Southwest Northwest Territories — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_697ab52e049e60722a72e9fde4a46f35 = L.circleMarker(
+                [50.782, -100.002],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_c8580eb605650c66fc39375875edc77a = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_e086fb0679ee94bdab21e4d0ec26a848 = $(`<div id="html_e086fb0679ee94bdab21e4d0ec26a848" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 10</b><br><b>Park:</b> Riding Mountain<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 11<br><b>Peak Month:</b> May<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_c8580eb605650c66fc39375875edc77a.setContent(html_e086fb0679ee94bdab21e4d0ec26a848);
+            
+        
+
+        circle_marker_697ab52e049e60722a72e9fde4a46f35.bindPopup(popup_c8580eb605650c66fc39375875edc77a)
+        ;
+
+        
+    
+    
+            circle_marker_697ab52e049e60722a72e9fde4a46f35.bindTooltip(
+                `<div>
+                     Riding Mountain — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1ef0f72e5fcaa428b5386d21ae4f58b6 = L.circleMarker(
+                [59.774, -135.079],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_52fcfb25799e3e657494f2f9eda868e5 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_7cb1f6d9dd786b4698e3992b37c9972c = $(`<div id="html_7cb1f6d9dd786b4698e3992b37c9972c" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 29</b><br><b>Park:</b> Yukon<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 22<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_52fcfb25799e3e657494f2f9eda868e5.setContent(html_7cb1f6d9dd786b4698e3992b37c9972c);
+            
+        
+
+        circle_marker_1ef0f72e5fcaa428b5386d21ae4f58b6.bindPopup(popup_52fcfb25799e3e657494f2f9eda868e5)
+        ;
+
+        
+    
+    
+            circle_marker_1ef0f72e5fcaa428b5386d21ae4f58b6.bindTooltip(
+                `<div>
+                     Yukon — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7c2de3613da583adfdd8c89a606c50f0 = L.circleMarker(
+                [49.179, -107.541],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_bb0e575835a28c6d728fd7aadf1f1703 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_efff96a38cf4baa45bd57869da25e932 = $(`<div id="html_efff96a38cf4baa45bd57869da25e932" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 5</b><br><b>Park:</b> Saskatchewan South<br><b>Primary Species:</b> Plains Bison<br><b>Incident Count:</b> 43<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_bb0e575835a28c6d728fd7aadf1f1703.setContent(html_efff96a38cf4baa45bd57869da25e932);
+            
+        
+
+        circle_marker_7c2de3613da583adfdd8c89a606c50f0.bindPopup(popup_bb0e575835a28c6d728fd7aadf1f1703)
+        ;
+
+        
+    
+    
+            circle_marker_7c2de3613da583adfdd8c89a606c50f0.bindTooltip(
+                `<div>
+                     Saskatchewan South — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c61b7959f56be69acff620794123d079 = L.circleMarker(
+                [60.989, -138.593],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_07b81fc3979bb94f7d75b14d44c2bcf0 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_d7adf5474568725ab6d06c7923707bcf = $(`<div id="html_d7adf5474568725ab6d06c7923707bcf" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 21</b><br><b>Park:</b> Yukon<br><b>Primary Species:</b> Grizzly Bear<br><b>Incident Count:</b> 24<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_07b81fc3979bb94f7d75b14d44c2bcf0.setContent(html_d7adf5474568725ab6d06c7923707bcf);
+            
+        
+
+        circle_marker_c61b7959f56be69acff620794123d079.bindPopup(popup_07b81fc3979bb94f7d75b14d44c2bcf0)
+        ;
+
+        
+    
+    
+            circle_marker_c61b7959f56be69acff620794123d079.bindTooltip(
+                `<div>
+                     Yukon — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_fd491fb5273243b70819951f7594b6d2 = L.circleMarker(
+                [44.404, -65.226],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_38da251ca9f84f4da55af8d6c1481860 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_4aa72470d1831f2bc512eb81ea570d6e = $(`<div id="html_4aa72470d1831f2bc512eb81ea570d6e" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 28</b><br><b>Park:</b> Mainland Nova Scotia<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 29<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_38da251ca9f84f4da55af8d6c1481860.setContent(html_4aa72470d1831f2bc512eb81ea570d6e);
+            
+        
+
+        circle_marker_fd491fb5273243b70819951f7594b6d2.bindPopup(popup_38da251ca9f84f4da55af8d6c1481860)
+        ;
+
+        
+    
+    
+            circle_marker_fd491fb5273243b70819951f7594b6d2.bindTooltip(
+                `<div>
+                     Mainland Nova Scotia — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5b04f4c09bb166399a9c7147026dfe87 = L.circleMarker(
+                [43.826, -64.842],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_ceae6442bbfd3594b2d7afdada540470 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_83c3f218dc32801b704a74f8843b9fb4 = $(`<div id="html_83c3f218dc32801b704a74f8843b9fb4" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 22</b><br><b>Park:</b> Mainland Nova Scotia<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 32<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_ceae6442bbfd3594b2d7afdada540470.setContent(html_83c3f218dc32801b704a74f8843b9fb4);
+            
+        
+
+        circle_marker_5b04f4c09bb166399a9c7147026dfe87.bindPopup(popup_ceae6442bbfd3594b2d7afdada540470)
+        ;
+
+        
+    
+    
+            circle_marker_5b04f4c09bb166399a9c7147026dfe87.bindTooltip(
+                `<div>
+                     Mainland Nova Scotia — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_69ce225fde4689f2afece6c8b99078dd = L.circleMarker(
+                [48.349, -86.171],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_d250c422c2d1b13fa9fcabde67feda3b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_5408d607b1a306b77df917ea89460e19 = $(`<div id="html_5408d607b1a306b77df917ea89460e19" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 19</b><br><b>Park:</b> Northern Ontario<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 40<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_d250c422c2d1b13fa9fcabde67feda3b.setContent(html_5408d607b1a306b77df917ea89460e19);
+            
+        
+
+        circle_marker_69ce225fde4689f2afece6c8b99078dd.bindPopup(popup_d250c422c2d1b13fa9fcabde67feda3b)
+        ;
+
+        
+    
+    
+            circle_marker_69ce225fde4689f2afece6c8b99078dd.bindTooltip(
+                `<div>
+                     Northern Ontario — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b0a0894945cd90a0b2b7216785b8f9e0 = L.circleMarker(
+                [54.071, -106.449],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_748b51ca9c1eb72731fd8d0c9695c8b4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_ffd7cf49fe1f12c29a75ac73c4ea5352 = $(`<div id="html_ffd7cf49fe1f12c29a75ac73c4ea5352" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 26</b><br><b>Park:</b> Northern Prairies<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 48<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_748b51ca9c1eb72731fd8d0c9695c8b4.setContent(html_ffd7cf49fe1f12c29a75ac73c4ea5352);
+            
+        
+
+        circle_marker_b0a0894945cd90a0b2b7216785b8f9e0.bindPopup(popup_748b51ca9c1eb72731fd8d0c9695c8b4)
+        ;
+
+        
+    
+    
+            circle_marker_b0a0894945cd90a0b2b7216785b8f9e0.bindTooltip(
+                `<div>
+                     Northern Prairies — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1bd648397daf90be341466f4358a0d40 = L.circleMarker(
+                [46.75, -72.808],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_b50810af61d9931ec3ca3cef993b70bd = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_92383d9e29154f44f774a9d79a758ac6 = $(`<div id="html_92383d9e29154f44f774a9d79a758ac6" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 27</b><br><b>Park:</b> La Mauricie And Western Quebec<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 49<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_b50810af61d9931ec3ca3cef993b70bd.setContent(html_92383d9e29154f44f774a9d79a758ac6);
+            
+        
+
+        circle_marker_1bd648397daf90be341466f4358a0d40.bindPopup(popup_b50810af61d9931ec3ca3cef993b70bd)
+        ;
+
+        
+    
+    
+            circle_marker_1bd648397daf90be341466f4358a0d40.bindTooltip(
+                `<div>
+                     La Mauricie And Western Quebec — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_05c0b33d45acccb70034218296c015ee = L.circleMarker(
+                [48.559, -53.982],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_552c48b7282d0a0328608b511fb587bc = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_2574e36cf45d7a46bea9076aa8aeb47f = $(`<div id="html_2574e36cf45d7a46bea9076aa8aeb47f" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 14</b><br><b>Park:</b> Newfoundland East<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 56<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_552c48b7282d0a0328608b511fb587bc.setContent(html_2574e36cf45d7a46bea9076aa8aeb47f);
+            
+        
+
+        circle_marker_05c0b33d45acccb70034218296c015ee.bindPopup(popup_552c48b7282d0a0328608b511fb587bc)
+        ;
+
+        
+    
+    
+            circle_marker_05c0b33d45acccb70034218296c015ee.bindTooltip(
+                `<div>
+                     Newfoundland East — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a99a4bf383c6276f24b9e4f10dee2362 = L.circleMarker(
+                [46.717, -73.035],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_47df605961645509ec624a1e0e82654b = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_a1dcf3b44bcad3d42adf3e0108e5e5c5 = $(`<div id="html_a1dcf3b44bcad3d42adf3e0108e5e5c5" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 7</b><br><b>Park:</b> La Mauricie And Western Quebec<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 58<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_47df605961645509ec624a1e0e82654b.setContent(html_a1dcf3b44bcad3d42adf3e0108e5e5c5);
+            
+        
+
+        circle_marker_a99a4bf383c6276f24b9e4f10dee2362.bindPopup(popup_47df605961645509ec624a1e0e82654b)
+        ;
+
+        
+    
+    
+            circle_marker_a99a4bf383c6276f24b9e4f10dee2362.bindTooltip(
+                `<div>
+                     La Mauricie And Western Quebec — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_41f8b34a61e4eda433ed153e8db21f5d = L.circleMarker(
+                [46.726, -60.363],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_ae5209263c41b050fc29b6e09f2404b4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_8b439e853995dcc92d2b313e3d7d219b = $(`<div id="html_8b439e853995dcc92d2b313e3d7d219b" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 3</b><br><b>Park:</b> Cape Breton<br><b>Primary Species:</b> Coyote<br><b>Incident Count:</b> 65<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_ae5209263c41b050fc29b6e09f2404b4.setContent(html_8b439e853995dcc92d2b313e3d7d219b);
+            
+        
+
+        circle_marker_41f8b34a61e4eda433ed153e8db21f5d.bindPopup(popup_ae5209263c41b050fc29b6e09f2404b4)
+        ;
+
+        
+    
+    
+            circle_marker_41f8b34a61e4eda433ed153e8db21f5d.bindTooltip(
+                `<div>
+                     Cape Breton — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_67925f8659763d0a559c6a2bf6bc33c1 = L.circleMarker(
+                [51.088, -117.918],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_1eefd45630a538586ce68c76b91229c4 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_8233debf6921416283c7c5870ecd61d0 = $(`<div id="html_8233debf6921416283c7c5870ecd61d0" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 16</b><br><b>Park:</b> Mount Revelstoke And Glacier<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 68<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_1eefd45630a538586ce68c76b91229c4.setContent(html_8233debf6921416283c7c5870ecd61d0);
+            
+        
+
+        circle_marker_67925f8659763d0a559c6a2bf6bc33c1.bindPopup(popup_1eefd45630a538586ce68c76b91229c4)
+        ;
+
+        
+    
+    
+            circle_marker_67925f8659763d0a559c6a2bf6bc33c1.bindTooltip(
+                `<div>
+                     Mount Revelstoke And Glacier — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c93e419b9d85ecb0313dcfe4c1097acb = L.circleMarker(
+                [45.233, -81.564],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_955bda17160411b9f82358ed759dd044 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_1aa8c93fae607cb14874edd4d9ac7362 = $(`<div id="html_1aa8c93fae607cb14874edd4d9ac7362" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 12</b><br><b>Park:</b> Eastern And Central Ontario<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 112<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_955bda17160411b9f82358ed759dd044.setContent(html_1aa8c93fae607cb14874edd4d9ac7362);
+            
+        
+
+        circle_marker_c93e419b9d85ecb0313dcfe4c1097acb.bindPopup(popup_955bda17160411b9f82358ed759dd044)
+        ;
+
+        
+    
+    
+            circle_marker_c93e419b9d85ecb0313dcfe4c1097acb.bindTooltip(
+                `<div>
+                     Eastern And Central Ontario — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_07d990cefb7d234d591ee008efe3bf50 = L.circleMarker(
+                [46.709, -60.905],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_af81d6901ffea6a1e5c8a750f15bb1db = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_c95ffd6420728f71a5faf91383d26ee5 = $(`<div id="html_c95ffd6420728f71a5faf91383d26ee5" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 2</b><br><b>Park:</b> Cape Breton<br><b>Primary Species:</b> Coyote<br><b>Incident Count:</b> 119<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_af81d6901ffea6a1e5c8a750f15bb1db.setContent(html_c95ffd6420728f71a5faf91383d26ee5);
+            
+        
+
+        circle_marker_07d990cefb7d234d591ee008efe3bf50.bindPopup(popup_af81d6901ffea6a1e5c8a750f15bb1db)
+        ;
+
+        
+    
+    
+            circle_marker_07d990cefb7d234d591ee008efe3bf50.bindTooltip(
+                `<div>
+                     Cape Breton — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b221817953dec161cd9edad41263b4b9 = L.circleMarker(
+                [48.803, -64.224],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_0eae4f5d6cfeaafa586d86c883e9cf80 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_09e9bcc76c701fcbbe87eb81dea1cc25 = $(`<div id="html_09e9bcc76c701fcbbe87eb81dea1cc25" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 15</b><br><b>Park:</b> Gaspesie<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 146<br><b>Peak Month:</b> Jun<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_0eae4f5d6cfeaafa586d86c883e9cf80.setContent(html_09e9bcc76c701fcbbe87eb81dea1cc25);
+            
+        
+
+        circle_marker_b221817953dec161cd9edad41263b4b9.bindPopup(popup_0eae4f5d6cfeaafa586d86c883e9cf80)
+        ;
+
+        
+    
+    
+            circle_marker_b221817953dec161cd9edad41263b4b9.bindTooltip(
+                `<div>
+                     Gaspesie — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_919b05cb654c4fa458cdcba90b72b2d1 = L.circleMarker(
+                [50.662, -99.956],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_5cb13b2bab191cf7517d773b736a1b38 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_b15157eecd8c056b0bae232befb57365 = $(`<div id="html_b15157eecd8c056b0bae232befb57365" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 11</b><br><b>Park:</b> Riding Mountain<br><b>Primary Species:</b> Black Bear<br><b>Incident Count:</b> 190<br><b>Peak Month:</b> Jul<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_5cb13b2bab191cf7517d773b736a1b38.setContent(html_b15157eecd8c056b0bae232befb57365);
+            
+        
+
+        circle_marker_919b05cb654c4fa458cdcba90b72b2d1.bindPopup(popup_5cb13b2bab191cf7517d773b736a1b38)
+        ;
+
+        
+    
+    
+            circle_marker_919b05cb654c4fa458cdcba90b72b2d1.bindTooltip(
+                `<div>
+                     Riding Mountain — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5c0d2ed4182111fcda899fe2d5aebe0e = L.circleMarker(
+                [52.395, -117.009],
+                {"bubblingMouseEvents": true, "color": "#fc8d59", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#fc8d59", "fillOpacity": 0.75, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 1.5}
+            ).addTo(map_5f08b3724f7f19b63104a0d90ab30ed7);
+        
+    
+        var popup_7419151e71f83ba8a09ac6916e7650a2 = L.popup({
+  "maxWidth": 250,
+});
+
+        
+            
+                var html_c469f514997c45685c15e31e248b546a = $(`<div id="html_c469f514997c45685c15e31e248b546a" style="width: 100.0%; height: 100.0%;"><div style='font-family:Arial;font-size:13px'><b>Hotspot ID: 34</b><br><b>Park:</b> Jasper<br><b>Primary Species:</b> Grizzly Bear<br><b>Incident Count:</b> 10<br><b>Peak Month:</b> Aug<br><b>Priority:</b> <span style='color:#fc8d59;font-weight:bold'>ACTIVE</span></div></div>`)[0];
+                popup_7419151e71f83ba8a09ac6916e7650a2.setContent(html_c469f514997c45685c15e31e248b546a);
+            
+        
+
+        circle_marker_5c0d2ed4182111fcda899fe2d5aebe0e.bindPopup(popup_7419151e71f83ba8a09ac6916e7650a2)
+        ;
+
+        
+    
+    
+            circle_marker_5c0d2ed4182111fcda899fe2d5aebe0e.bindTooltip(
+                `<div>
+                     Jasper — ACTIVE
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>

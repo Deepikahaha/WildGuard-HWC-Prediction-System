@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WildGuard – Risk Assessment</title>
+<style>
+  /* ── TOKENS ─────────────────────────────────────────── */
+  :root {
+    --forest:      #2D4A2D;
+    --forest-dark: #1E3320;
+    --forest-mid:  #3B5E3B;
+    --sage:        #8FAF8F;
+    --sage-light:  #C8DCC8;
+    --sage-pale:   #EEF5EE;
+    --cream:       #FAFAF8;
+    --white:       #FFFFFF;
+    --red-high:    #B91C1C;
+    --red-ring:    #DC2626;
+    --amber:       #D97706;
+    --amber-bg:    #FFFBEB;
+    --green-bar:   #86EFAC;
+    --text-primary: #1A2B1A;
+    --text-muted:   #5A7A5A;
+    --border:       #D8E8D8;
+    --radius:       8px;
+    --shadow:       0 1px 4px rgba(0,0,0,.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAV ─────────────────────────────────────────────── */
+  nav {
+    background: var(--forest);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+  .nav-brand {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--white);
+    letter-spacing: .5px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,.72);
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 6px 12px;
+    border-radius: 5px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover  { background: rgba(255,255,255,.12); color: #fff; }
+  .nav-links a.active { background: rgba(255,255,255,.18); color: #fff; font-weight: 600; border-bottom: 2px solid var(--sage-light); border-radius: 5px 5px 0 0; }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+  .nav-bell {
+    color: rgba(255,255,255,.75);
+    font-size: 18px;
+    cursor: pointer;
+    position: relative;
+    transition: color .15s;
+  }
+  .nav-bell:hover { color: #fff; }
+  .nav-bell .badge {
+    position: absolute;
+    top: -2px; right: -3px;
+    background: var(--red-ring);
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--forest);
+  }
+  .nav-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--sage);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--forest-dark);
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .nav-avatar:hover { opacity: .85; }
+
+  /* ── LAYOUT ───────────────────────────────────────────── */
+  main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ── SIDEBAR ─────────────────────────────────────────── */
+  .sidebar {
+    width: 248px;
+    min-width: 248px;
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 20px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+  }
+  .sidebar-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; }
+  .sidebar-sub   { font-size: 12px; color: var(--text-muted); margin-top: -10px; }
+
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label  { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; }
+
+  select, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--white);
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: border-color .15s;
+    cursor: pointer;
+  }
+  select:focus, input:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(45,74,45,.12); }
+
+  .coords-row { display: flex; gap: 8px; }
+  .coords-row .field-group { flex: 1; }
+
+  .month-season-row { display: flex; gap: 8px; }
+  .month-season-row .field-group { flex: 1; }
+
+  .btn-location {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--sage-pale);
+    border: 1px solid var(--sage);
+    color: var(--forest);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+    width: 100%;
+  }
+  .btn-location:hover { background: var(--sage-light); }
+  .btn-location svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 2px 0; }
+
+  .btn-check {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--forest);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius);
+    padding: 10px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .btn-check:hover  { background: var(--forest-mid); }
+  .btn-check:active { transform: scale(.98); }
+  .btn-check svg { width: 15px; height: 15px; }
+
+  /* ── CONTENT ─────────────────────────────────────────── */
+  .content {
+    flex: 1;
+    padding: 22px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    min-width: 0;
+  }
+
+  /* ── TOP ROW ─────────────────────────────────────────── */
+  .top-row {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+  }
+
+  /* Risk gauge card */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+
+  .gauge-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 24px 20px;
+  }
+
+  .gauge-ring {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    border: 9px solid var(--red-ring);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 0 0 2px rgba(220,38,38,.2);
+    animation: pulse-ring 2.4s ease-in-out infinite;
+    position: relative;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { box-shadow: 0 0 0 2px rgba(220,38,38,.2); }
+    50%       { box-shadow: 0 0 0 8px rgba(220,38,38,.08); }
+  }
+  .gauge-level {
+    font-size: 15px; font-weight: 800;
+    color: var(--red-ring);
+    letter-spacing: 1px;
+  }
+  .gauge-confidence {
+    font-size: 10px; font-weight: 600;
+    color: var(--red-ring);
+    opacity: .8;
+  }
+  .gauge-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 200px;
+    line-height: 1.55;
+  }
+
+  /* Conflict params card */
+  .params-card { padding: 16px 18px; }
+  .params-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .params-header svg { color: var(--forest); }
+
+  .params-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .param-cell {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .param-cell:nth-child(odd)  { padding-right: 24px; border-right: 1px solid var(--border); }
+  .param-cell:nth-child(even) { padding-left: 24px; }
+  .param-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+  .param-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: var(--text-muted); margin-bottom: 3px; }
+  .param-value { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .param-value.critical { color: var(--red-ring); }
+  .param-value.active   { color: #16A34A; }
+
+  /* ── CHART CARD ──────────────────────────────────────── */
+  .chart-card { padding: 18px 20px 14px; }
+  .chart-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .chart-title { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+  .chart-sub   { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+  .chart-toggle {
+    display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; height: 28px;
+  }
+  .chart-toggle button {
+    padding: 0 12px;
+    font-size: 12px; font-weight: 500;
+    border: none; cursor: pointer; background: var(--white); color: var(--text-muted);
+    transition: background .15s, color .15s;
+  }
+  .chart-toggle button.active { background: var(--forest); color: var(--white); font-weight: 600; }
+
+  .chart-area { position: relative; height: 180px; }
+  canvas#incidentChart { width: 100% !important; }
+
+  .chart-legend {
+    display: flex; gap: 18px; margin-top: 8px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--text-muted); }
+  .legend-dot  { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ── ACTIONS CARD ────────────────────────────────────── */
+  .actions-card { background: var(--amber-bg); border: 1px solid #FDE68A; border-radius: var(--radius); padding: 16px 18px; }
+  .actions-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 700; color: var(--amber);
+    margin-bottom: 12px;
+  }
+  .actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+  }
+  .action-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12.5px; color: var(--text-primary); line-height: 1.45;
+  }
+  .action-icon {
+    flex-shrink: 0; margin-top: 1px;
+    width: 16px; height: 16px; color: var(--amber);
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────── */
+  footer {
+    background: var(--forest-dark);
+    color: rgba(255,255,255,.55);
+    font-size: 11.5px;
+    padding: 10px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  footer span strong { color: rgba(255,255,255,.85); }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a { color: rgba(255,255,255,.55); text-decoration: none; transition: color .15s; }
+  .footer-links a:hover { color: rgba(255,255,255,.9); }
+
+  /* ── TOAST ───────────────────────────────────────────── */
+  #toast {
+    position: fixed; bottom: 28px; right: 28px;
+    background: var(--forest);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .25s, transform .25s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── LOADING OVERLAY ─────────────────────────────────── */
+  #loadingOverlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(45,74,45,.35);
+    backdrop-filter: blur(2px);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #loadingOverlay.active { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid rgba(255,255,255,.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner-label { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .3px; }
+
+/* ── WILDGUARD NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html" class="wg-active" class="wg-active">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+  </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="wg-nav-badge">3</span>
+    </button>
+    <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
+  </div>
+</nav>
+
+<main>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-title">Risk Assessment Tool</div>
+      <div class="sidebar-sub">Input parameters for predictive conflict analysis.</div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Region</label>
+      <select id="regionSelect" onchange="onRegionChange(this.value)">
+        <option value="Canada">Canada</option>
+        <option value="Nepal">Nepal</option>
+        <option value="India">India</option>
+        <option value="Kenya">Kenya</option>
+        <option value="Botswana">Botswana</option>
+      </select>
+    </div>
+
+    <div class="coords-row">
+      <div class="field-group">
+        <label class="field-label">Latitude</label>
+        <input id="latInput" type="number" value="51.1784" step="0.0001" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Longitude</label>
+        <input id="lngInput" type="number" value="-115.5708" step="0.0001" />
+      </div>
+    </div>
+
+    <button class="btn-location" onclick="useCurrentLocation()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>
+      </svg>
+      Use my current location
+    </button>
+
+    <hr class="divider" />
+
+    <div class="field-group">
+      <label class="field-label">Field Unit / Park</label>
+      <select id="parkSelect">
+        <option>Banff National Park</option>
+        <option>Jasper National Park</option>
+        <option>Chitwan National Park</option>
+        <option>Kaziranga National Park</option>
+        <option>Masai Mara Reserve</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Species</label>
+      <select id="speciesSelect" onchange="onSpeciesChange(this.value)">
+        <option>Grizzly Bear</option>
+        <option>Snow Leopard</option>
+        <option>Bengal Tiger</option>
+        <option>African Elephant</option>
+        <option>One-Horned Rhino</option>
+      </select>
+    </div>
+
+    <div class="month-season-row">
+      <div class="field-group">
+        <label class="field-label">Month</label>
+        <select id="monthSelect" onchange="updateSeason(this.value)">
+          <option>January</option><option>February</option><option>March</option>
+          <option>April</option><option>May</option><option>June</option>
+          <option>July</option><option selected>August</option><option>September</option>
+          <option>October</option><option>November</option><option>December</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Season</label>
+        <select id="seasonSelect">
+          <option>Spring</option><option selected>Summer</option><option>Fall</option><option>Winter</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Incident Location</label>
+      <select id="locationSelect">
+        <option>Outside park buffer</option>
+        <option>Inside park boundary</option>
+        <option>Buffer zone</option>
+        <option>Residential adjacency</option>
+        <option>Backcountry corridor</option>
+      </select>
+    </div>
+
+    <button class="btn-check" onclick="runRiskCheck()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>
+      Check risk level
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="content">
+    <!-- Top Row: Gauge + Params -->
+    <div class="top-row">
+
+      <!-- Gauge -->
+      <div class="card gauge-card">
+        <div class="gauge-ring" id="gaugeRing">
+          <span class="gauge-level" id="gaugeLevel">HIGH</span>
+          <span class="gauge-confidence" id="gaugeConfidence">87% CONFIDENCE</span>
+        </div>
+        <p class="gauge-desc" id="gaugeDesc">
+          High probability of conflict in Northern Buffer Zone within the next 48 hours.
+        </p>
+      </div>
+
+      <!-- Params -->
+      <div class="card params-card">
+        <div class="params-header">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Conflict Parameters Analysis
+        </div>
+        <div class="params-grid">
+          <div class="param-cell">
+            <div class="param-label">Species Risk Rate</div>
+            <div class="param-value" id="speciesRisk">0.89</div>
+          </div>
+          <div class="param-cell">
+            <div class="param-label">Park High-Risk Rate</div>
+            <div class="param-value" id="parkRisk">0.72</div>
+          </div>
+          <div class="param-cell">
+            <div class="param-label">Peak Season Status</div>
+            <div class="param-value active" id="peakStatus">Active</div>
+          </div>
+          <div class="param-cell">
+            <div class="param-label">Nearest Hotspot</div>
+            <div class="param-value" id="nearestHotspot">Banff North</div>
+          </div>
+          <div class="param-cell">
+            <div class="param-label">Hotspot Priority</div>
+            <div class="param-value critical" id="hotspotPriority">Critical</div>
+          </div>
+          <div class="param-cell">
+            <div class="param-label">Historical Incidents</div>
+            <div class="param-value" id="historicalIncidents">12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Card — REAL SARIMAX VIZ by Prasamsha KC -->
+    <div class="card chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Monthly incident forecast — next 12 months</div>
+          <div class="chart-sub">SARIMAX model trained on 13 years of Parks Canada data with seasonal exogenous variables (Temp/Snow). Switch to Chitwan for lunar-phase model.</div>
+        </div>
+        <div class="chart-toggle">
+          <button class="active" id="btnCanada" onclick="switchForecast('canada')">Canada</button>
+          <button id="btnChitwan" onclick="switchForecast('chitwan')">Chitwan</button>
+        </div>
+      </div>
+      <!-- YOUR REAL PLOTLY SARIMAX FORECAST EMBEDDED HERE -->
+      <div id="forecastWrap" style="width:100%;height:380px;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-top:8px;">
+        <iframe id="forecastFrame" src="viz4_sarimax_forecast.html"
+          style="width:100%;height:100%;border:none;"
+          title="SARIMAX Conflict Forecast — Parks Canada">
+        </iframe>
+      </div>
+      <div class="chart-legend" style="margin-top:10px">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#2166ac"></div>Historical (2022–2023)
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#d62728"></div>2024 Forecast
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:rgba(214,63,63,0.2);border:1px solid #d62728;border-radius:2px;"></div>95% Confidence Interval
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Card -->
+    <div class="actions-card">
+      <div class="actions-header">
+        <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        Recommended actions
+      </div>
+      <div class="actions-grid" id="actionsGrid">
+        <!-- populated by JS -->
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<div class="wg-footer">
+  <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div class="wg-footer-links">
+    <a href="wildguard_privacy_policy.html">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html">Terms of Service</a>
+    <a href="wildguard_field_protocol.html">Field Protocol</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- LOADING -->
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="spinner-label">Running predictive analysis…</div>
+</div>
+
+<!-- Chart.js via CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+/* ── DATA ───────────────────────────────────────────── */
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const DATASETS = {
+  Canada: {
+    values: [18,15,22,34,52,61,78,85,72,42,24,16],
+    peaks:  [false,false,false,false,false,true,true,true,true,false,false,false],
+    shoulders:[false,false,false,true,true,false,false,false,false,true,true,false],
+  },
+  Chitwan: {
+    values: [24,28,42,55,68,72,80,76,64,48,36,26],
+    peaks:  [false,false,false,false,true,true,true,true,false,false,false,false],
+    shoulders:[false,false,true,true,false,false,false,false,true,true,false,false],
+  },
+};
+
+const SPECIES_DATA = {
+  'Grizzly Bear':       { risk: '0.89', parkRisk: '0.72', hotspot: 'Banff North',      priority: 'Critical', incidents: 12, actions: ['Deploy field units to North Banff buffer zones','Monitor Grizzly movement via satellite telemetry','Increase community awareness patrols in residential sectors','Restrict back-country access in high-density corridors'] },
+  'Snow Leopard':       { risk: '0.63', parkRisk: '0.55', hotspot: 'High Alpine Zone', priority: 'High',     incidents: 7,  actions: ['Strengthen livestock enclosures in high-altitude villages','Deploy camera traps along known corridors','Coordinate with herder communities on seasonal movement','Issue seasonal advisories for alpine trekking routes'] },
+  'Bengal Tiger':       { risk: '0.91', parkRisk: '0.81', hotspot: 'Kaziranga East',   priority: 'Critical', incidents: 18, actions: ['Activate rapid response teams near forest fringes','Alert residents of tiger corridor corridors','Enhance fence integrity at forest–village boundary','Temporarily suspend night travel permits in buffer zones'] },
+  'African Elephant':   { risk: '0.78', parkRisk: '0.65', hotspot: 'Mara North',       priority: 'High',     incidents: 9,  actions: ['Issue crop-raiding alerts to farming communities','Coordinate elephant tracking with aerial unit','Inspect and reinforce electric fence perimeter','Limit vehicle access on seasonal migration routes'] },
+  'One-Horned Rhino':   { risk: '0.74', parkRisk: '0.68', hotspot: 'Chitwan South',    priority: 'Elevated', incidents: 5,  actions: ['Increase ranger patrols at forest boundary','Monitor waterhole camera feeds during dawn/dusk','Coordinate with local communities on livestock management','Suspend grassland burning activity near buffer zones'] },
+};
+
+const REGION_COORDS = {
+  Canada:  { lat: '51.1784', lng: '-115.5708' },
+  Nepal:   { lat: '27.5243', lng:  '84.3567' },
+  India:   { lat: '26.6080', lng:  '93.1715' },
+  Kenya:   { lat: '-1.5044', lng:  '35.1448' },
+  Botswana:{ lat: '-22.3285', lng: '24.6849' },
+};
+
+/* ── CHART ──────────────────────────────────────────── */
+let currentDataset = 'Canada';
+let chart;
+
+function buildChartData(key) {
+  const d = DATASETS[key];
+  const colors = d.values.map((v, i) =>
+    d.peaks[i] ? '#B91C1C' : d.shoulders[i] ? '#A3C4A3' : '#C8DCC8'
+  );
+  return { labels: MONTHS, colors, values: d.values };
+}
+
+function renderChart(key) {
+  const { labels, colors, values } = buildChartData(key);
+  if (chart) chart.destroy();
+  const ctx = document.getElementById('incidentChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#1E3320',
+        titleColor: '#C8DCC8',
+        bodyColor: '#fff',
+        padding: 10,
+        callbacks: {
+          label: ctx => ` ${ctx.raw} incidents`
+        }
+      }},
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#5A7A5A', font: { size: 11 } } },
+        y: { grid: { color: '#EEF5EE' }, ticks: { color: '#5A7A5A', font: { size: 11 } }, beginAtZero: true },
+      }
+    }
+  });
+}
+
+function switchDataset(key) {
+  currentDataset = key;
+  document.getElementById('btnCanada').classList.toggle('active', key === 'Canada');
+  document.getElementById('btnChitwan').classList.toggle('active', key === 'Chitwan');
+  renderChart(key);
+}
+
+/* ── ACTIONS ────────────────────────────────────────── */
+function renderActions(actions) {
+  const grid = document.getElementById('actionsGrid');
+  grid.innerHTML = actions.map(a => `
+    <div class="action-item">
+      <svg class="action-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      ${a}
+    </div>`).join('');
+}
+
+/* ── RISK CHECK ─────────────────────────────────────── */
+function runRiskCheck() {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('active');
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    const species = document.getElementById('speciesSelect').value;
+    const data = SPECIES_DATA[species];
+    // Update gauge
+    const isHigh = parseFloat(data.risk) > 0.8;
+    const level = isHigh ? 'HIGH' : parseFloat(data.risk) > 0.65 ? 'ELEVATED' : 'MODERATE';
+    const conf  = Math.round(75 + parseFloat(data.risk) * 15);
+    document.getElementById('gaugeLevel').textContent = level;
+    document.getElementById('gaugeConfidence').textContent = `${conf}% CONFIDENCE`;
+    document.getElementById('gaugeDesc').textContent = `${level === 'HIGH' ? 'High' : 'Elevated'} probability of conflict near ${data.hotspot} within the next 48 hours.`;
+    const ring = document.getElementById('gaugeRing');
+    ring.style.borderColor = level === 'HIGH' ? '#DC2626' : level === 'ELEVATED' ? '#D97706' : '#16A34A';
+    document.getElementById('gaugeLevel').style.color = ring.style.borderColor;
+    document.getElementById('gaugeConfidence').style.color = ring.style.borderColor;
+    // Update params
+    document.getElementById('speciesRisk').textContent = data.risk;
+    document.getElementById('parkRisk').textContent = data.parkRisk;
+    document.getElementById('nearestHotspot').textContent = data.hotspot;
+    document.getElementById('hotspotPriority').textContent = data.priority;
+    document.getElementById('historicalIncidents').textContent = data.incidents;
+    const priorityEl = document.getElementById('hotspotPriority');
+    priorityEl.className = 'param-value ' + (data.priority === 'Critical' ? 'critical' : 'active');
+    renderActions(data.actions);
+    showToast(`Risk analysis complete — ${level} risk detected`);
+  }, 1400);
+}
+
+/* ── HELPERS ────────────────────────────────────────── */
+function onRegionChange(region) {
+  const c = REGION_COORDS[region];
+  if (c) {
+    document.getElementById('latInput').value = c.lat;
+    document.getElementById('lngInput').value = c.lng;
+  }
+}
+
+function onSpeciesChange() { /* Ready for run */ }
+
+function updateSeason(month) {
+  const idx = MONTHS.indexOf(month.slice(0,3));
+  const seasons = ['Winter','Winter','Spring','Spring','Spring','Summer','Summer','Summer','Fall','Fall','Fall','Winter'];
+  const sel = document.getElementById('seasonSelect');
+  const target = seasons[idx === -1 ? 7 : idx];
+  for (let o of sel.options) if (o.value === target) { o.selected = true; break; }
+}
+
+function useCurrentLocation() {
+  if (!navigator.geolocation) { showToast('Geolocation not supported in this browser'); return; }
+  showToast('Acquiring location…');
+  navigator.geolocation.getCurrentPosition(pos => {
+    document.getElementById('latInput').value  = pos.coords.latitude.toFixed(4);
+    document.getElementById('lngInput').value  = pos.coords.longitude.toFixed(4);
+    showToast('Location updated ✓');
+  }, () => showToast('Location access denied — using last known coordinates'));
+}
+
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ── INIT ───────────────────────────────────────────── */
+// Chart.js canvas removed — replaced with real Plotly iframe
+// renderChart and switchDataset kept for reference only
+renderActions(SPECIES_DATA['Grizzly Bear'].actions);
+
+/* ── SWITCH REAL SARIMAX FORECAST IFRAME ── */
+function switchForecast(region) {
+  const frame = document.getElementById('forecastFrame');
+  const btnC  = document.getElementById('btnCanada');
+  const btnCh = document.getElementById('btnChitwan');
+  if (region === 'canada') {
+    frame.src = 'viz4_sarimax_forecast.html';
+    btnC.classList.add('active');
+    btnCh.classList.remove('active');
+    showToast('Showing Canada SARIMAX forecast (2024)');
+  } else {
+    frame.src = 'chitwan_viz4_sarima_forecast.html';
+    btnC.classList.remove('active');
+    btnCh.classList.add('active');
+    showToast('Showing Chitwan SARIMA forecast (lunar phase model)');
+  }
+}
+
+</script>
+<script>
+// WildGuard: update avatar from localStorage session
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.style.fontSize = '12px';
+      av.style.fontWeight = '700';
+      av.title = user.name || '';
+    } else {
+      // Not logged in: show grey person silhouette
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
+</script>
+</body>
+</html>

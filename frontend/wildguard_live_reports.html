@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WildGuard — Live Reports Feed</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest: #2D4A2D;
+  --forest-dark: #1E331E;
+  --forest-light: #3A5C3A;
+  --sage: #6B8F6B;
+  --sage-light: #A8C5A0;
+  --sage-pale: #EBF2E8;
+  --sage-mid: #D4E8CE;
+  --cream: #F7FAF5;
+  --white: #FFFFFF;
+  --text-primary: #1A2E1A;
+  --text-secondary: #4A6548;
+  --text-muted: #7A9478;
+  --border: #D0E4CB;
+  --border-light: #E8F2E5;
+  --high: #C0392B;
+  --high-bg: #FDEDEC;
+  --medium: #D68910;
+  --medium-bg: #FEF9E7;
+  --low: #1E8449;
+  --low-bg: #EAFAF1;
+  --shadow: 0 1px 3px rgba(45,74,45,0.08), 0 1px 2px rgba(45,74,45,0.04);
+  --shadow-md: 0 4px 12px rgba(45,74,45,0.10);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* NAV */
+nav {
+  background: var(--forest);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.nav-brand {
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin-right: 32px;
+  white-space: nowrap;
+}
+
+.nav-brand span {
+  color: var(--sage-light);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  list-style: none;
+}
+
+.nav-links a {
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.nav-links a.active { background: rgba(255,255,255,0.16); color: #fff; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.nav-btn {
+  background: rgba(255,255,255,0.12);
+  border: none;
+  color: rgba(255,255,255,0.85);
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+  transition: background 0.15s;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.20); }
+
+.nav-notif {
+  position: relative;
+}
+.notif-dot {
+  position: absolute;
+  top: 5px; right: 8px;
+  width: 7px; height: 7px;
+  background: #E74C3C;
+  border-radius: 50%;
+  border: 1.5px solid var(--forest);
+}
+
+.avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--sage-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: var(--forest);
+}
+
+/* LAYOUT */
+.page {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+  padding: 20px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* MAIN PANEL */
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* CARD BASE */
+.card {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* LIVE FEED HEADER */
+.feed-header {
+  padding: 16px 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.feed-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px;
+  margin-right: 4px;
+}
+
+.live-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #FDEDEC;
+  color: #C0392B;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: #E74C3C;
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* FILTER TABS */
+.filter-bar {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.filter-tabs {
+  display: flex;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.filter-tab {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px 13px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+
+.filter-tab:hover { color: var(--text-secondary); background: var(--sage-pale); }
+
+.filter-tab.active {
+  background: var(--forest);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(45,74,45,0.25);
+}
+
+.filter-chip {
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 5px 13px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.filter-chip:hover { border-color: var(--sage); background: var(--sage-pale); }
+.filter-chip.active { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
+
+.filter-chip svg { width: 13px; height: 13px; }
+
+.search-wrap {
+  display: flex; align-items: center;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 5px 10px;
+  gap: 7px;
+  flex: 1;
+  min-width: 160px;
+  max-width: 260px;
+}
+
+.search-wrap svg { width: 14px; height: 14px; color: var(--text-muted); flex-shrink: 0; }
+
+.search-wrap input {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+}
+
+.search-wrap input::placeholder { color: var(--text-muted); }
+
+.icon-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  padding: 6px 9px;
+  color: var(--text-secondary);
+  display: flex; align-items: center;
+  transition: all 0.15s;
+}
+.icon-btn:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
+
+/* TABLE */
+.feed-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.feed-table thead th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  background: var(--cream);
+  border-bottom: 1px solid var(--border-light);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.feed-table thead th:hover { color: var(--forest); }
+
+.feed-table tbody tr {
+  border-bottom: 1px solid var(--border-light);
+  transition: background 0.12s;
+  cursor: pointer;
+}
+
+.feed-table tbody tr:last-child { border-bottom: none; }
+.feed-table tbody tr:hover { background: var(--sage-pale); }
+.feed-table tbody tr.high-row { border-left: 3px solid #E74C3C; }
+.feed-table tbody tr.selected { background: #F0F7ED; }
+
+.feed-table td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.time-cell {
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.region-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.region-dot { width: 7px; height: 7px; border-radius: 50%; }
+.region-dot.canada { background: #2874A6; }
+.region-dot.chitwan { background: #1E8449; }
+
+.species-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--sage-pale);
+  border: 1px solid var(--sage-mid);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--forest);
+  white-space: nowrap;
+}
+
+.species-icon { font-size: 13px; }
+
+.location-cell {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.risk-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.risk-pill.high { background: var(--high-bg); color: var(--high); border: 1px solid #F1948A; }
+.risk-pill.medium { background: var(--medium-bg); color: var(--medium); border: 1px solid #F0B27A; }
+.risk-pill.low { background: var(--low-bg); color: var(--low); border: 1px solid #82E0AA; }
+
+.hotspot-cell {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.reporter-cell {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.view-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--forest);
+  cursor: pointer;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.view-btn:hover {
+  background: var(--forest);
+  color: #fff;
+  border-color: var(--forest);
+}
+
+/* FEED FOOTER */
+.feed-footer {
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-light);
+  background: var(--cream);
+  border-radius: 0 0 10px 10px;
+}
+
+.feed-footer span {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.refresh-btn {
+  display: flex; align-items: center; gap: 7px;
+  background: none;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--forest);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+
+.refresh-btn:hover { background: var(--sage-pale); border-color: var(--sage); }
+.refresh-btn svg { width: 14px; height: 14px; }
+.refresh-btn.spinning svg { animation: spin 0.7s linear; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* SIDEBAR */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* MAP CARD */
+.map-card {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.map-visual {
+  background: #1A2E2A;
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  background-image:
+    linear-gradient(rgba(168,197,160,0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168,197,160,0.5) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.map-terrain {
+  position: absolute;
+  inset: 0;
+}
+
+.map-pin {
+  position: absolute;
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.map-pin:hover { transform: scale(1.2); z-index: 10; }
+
+.map-pin-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+}
+
+.map-pin-dot.high { background: #E74C3C; box-shadow: 0 0 8px rgba(231,76,60,0.6); }
+.map-pin-dot.medium { background: #F39C12; }
+.map-pin-dot.low { background: #27AE60; }
+
+.map-pin-tail {
+  width: 2px; height: 7px;
+  background: rgba(255,255,255,0.5);
+}
+
+.map-label {
+  position: absolute;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.map-expand {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 5px;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  padding: 4px 6px;
+  display: flex; align-items: center;
+  font-size: 12px;
+  transition: background 0.15s;
+}
+.map-expand:hover { background: rgba(255,255,255,0.22); }
+.map-expand svg { width: 12px; height: 12px; }
+
+.map-footer {
+  background: var(--white);
+  padding: 8px 14px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* STAT CARDS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.stat-label svg { width: 15px; height: 15px; }
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-value.high { color: var(--high); }
+.stat-value.canada { color: #2874A6; }
+.stat-value.chitwan { color: #1E8449; }
+
+.stat-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* LATEST SUBMISSION */
+.submission-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.submission-header {
+  padding: 12px 14px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.submission-header-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.submission-time {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+}
+
+.submission-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+  background: linear-gradient(135deg, #2D5A3D 0%, #4A7C59 40%, #6B8F6B 100%);
+  position: relative;
+}
+
+.submission-img-placeholder {
+  width: 100%;
+  height: 130px;
+  background: linear-gradient(135deg, #1A3D2B 0%, #2D5A3D 50%, #4A7C59 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  position: relative;
+}
+
+.submission-img-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.5));
+}
+
+.submission-body {
+  padding: 12px 14px;
+}
+
+.submission-species {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px;
+}
+
+.submission-location {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.submission-location svg { width: 13px; height: 13px; }
+
+.analyze-btn {
+  width: 100%;
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+
+.analyze-btn:hover { background: var(--forest-light); }
+.analyze-btn svg { width: 15px; height: 15px; }
+
+/* MODAL */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--white);
+  border-radius: 12px;
+  width: 560px;
+  max-width: 95vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  padding: 18px 22px 14px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.modal-subtitle {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: 5px;
+  display: flex; align-items: center;
+  transition: all 0.15s;
+}
+.modal-close:hover { background: var(--sage-pale); color: var(--text-primary); }
+.modal-close svg { width: 18px; height: 18px; }
+
+.modal-body {
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.modal-field p {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.modal-actions {
+  padding: 14px 22px 18px;
+  display: flex; gap: 10px;
+  border-top: 1px solid var(--border-light);
+}
+
+.btn-primary {
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  flex: 1;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: var(--forest-light); }
+
+.btn-secondary {
+  background: none;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-secondary:hover { background: var(--sage-pale); border-color: var(--sage); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--forest);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 2000;
+  animation: slideUp 0.25s ease;
+}
+.toast.show { display: flex; }
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.toast svg { width: 16px; height: 16px; }
+
+/* SORT INDICATOR */
+.sort-icon { opacity: 0.4; font-size: 10px; margin-left: 3px; }
+.sort-icon.active { opacity: 1; color: var(--forest); }
+
+/* EMPTY STATE */
+.empty-state {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+.empty-state p { font-size: 14px; margin-top: 8px; }
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .page { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* SCROLL ANIMATION */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.feed-table tbody tr { animation: fadeIn 0.2s ease forwards; }
+
+
+/* ── WILDGUARD NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html" class="wg-active">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+  </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="wg-nav-badge">3</span>
+    </button>
+    <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- MAIN -->
+  <div class="main-panel">
+    <div class="card">
+      <!-- FEED HEADER -->
+      <div class="feed-header">
+        <span class="feed-title">Live reports feed</span>
+        <span class="live-badge"><span class="live-dot"></span>Live</span>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <div class="filter-tabs" role="group" aria-label="Filter by scope">
+          <button class="filter-tab active" onclick="setFilter('all', this)">All</button>
+          <button class="filter-tab" onclick="setFilter('high', this)">HIGH only</button>
+          <button class="filter-tab" onclick="setFilter('canada', this)">Canada</button>
+          <button class="filter-tab" onclick="setFilter('chitwan', this)">Chitwan</button>
+        </div>
+
+        <div class="search-wrap">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M14 14l3 3"/></svg>
+          <input type="text" id="searchInput" placeholder="Search reports..." oninput="renderTable()" aria-label="Search reports">
+        </div>
+
+        <button class="icon-btn" title="Filter options" onclick="showToast('Advanced filters')" aria-label="Advanced filters">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" aria-hidden="true"><path d="M3 5h14M6 10h8M9 15h2"/></svg>
+        </button>
+      </div>
+
+      <!-- TABLE -->
+      <div style="overflow-x:auto;">
+        <table class="feed-table" id="reportTable" aria-label="Wildlife conflict reports">
+          <thead>
+            <tr>
+              <th onclick="sortTable('time')" aria-sort="none">Time <span class="sort-icon active" id="sort-time">↓</span></th>
+              <th onclick="sortTable('region')">Region <span class="sort-icon" id="sort-region">↕</span></th>
+              <th onclick="sortTable('species')">Species <span class="sort-icon" id="sort-species">↕</span></th>
+              <th onclick="sortTable('location')">Location <span class="sort-icon" id="sort-location">↕</span></th>
+              <th onclick="sortTable('risk')">Risk Level <span class="sort-icon" id="sort-risk">↕</span></th>
+              <th onclick="sortTable('hotspot')">Hotspot <span class="sort-icon" id="sort-hotspot">↕</span></th>
+              <th onclick="sortTable('reporter')">Reporter <span class="sort-icon" id="sort-reporter">↕</span></th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="feed-footer">
+        <span id="footerLabel">Showing 7 of 142 reports</span>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshFeed()" aria-label="Refresh feed">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" id="refreshIcon"><path d="M4 10a6 6 0 111 3.5M4 14V10h4"/></svg>
+          Refresh now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- MAP -->
+    <div class="map-card">
+      <div class="map-visual" role="img" aria-label="Live regional map showing wildlife conflict locations">
+        <div class="map-grid"></div>
+        <svg class="map-terrain" viewBox="0 0 320 180" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+          <path d="M0 120 Q40 90 80 110 Q120 130 160 100 Q200 70 240 95 Q280 115 320 90 L320 180 L0 180Z" fill="rgba(107,143,107,0.15)"/>
+          <path d="M0 140 Q60 120 120 135 Q180 148 240 130 Q280 120 320 125 L320 180 L0 180Z" fill="rgba(107,143,107,0.1)"/>
+          <text x="30" y="75" fill="rgba(168,197,160,0.5)" font-size="9" font-family="Inter">CANADA</text>
+          <text x="200" y="55" fill="rgba(168,197,160,0.5)" font-size="9" font-family="Inter">CHITWAN</text>
+          <line x1="160" y1="0" x2="160" y2="180" stroke="rgba(168,197,160,0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+        </svg>
+
+        <!-- PINS -->
+        <div class="map-pin" style="left:18%;top:28%" title="Banff Corridor — Cougar HIGH" onclick="showToast('Banff Corridor: Cougar (HIGH)')">
+          <div class="map-pin-dot high"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+        <div class="map-pin" style="left:11%;top:52%" title="Whistler North — Black Bear LOW" onclick="showToast('Whistler North: Black Bear (LOW)')">
+          <div class="map-pin-dot low"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+        <div class="map-pin" style="left:22%;top:43%" title="Jasper Perimeter — Wolf MEDIUM" onclick="showToast('Jasper Perimeter: Wolf (MEDIUM)')">
+          <div class="map-pin-dot medium"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+        <div class="map-pin" style="left:14%;top:62%" title="Townsite West — Elk LOW" onclick="showToast('Townsite West: Elk (LOW)')">
+          <div class="map-pin-dot low"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+        <div class="map-pin" style="left:68%;top:24%" title="Rapti River Bank — Tiger MEDIUM" onclick="showToast('Rapti River Bank: Tiger (MEDIUM)')">
+          <div class="map-pin-dot medium"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+        <div class="map-pin" style="left:71%;top:33%" title="Buffer Zone C — Leopard HIGH" onclick="showToast('Buffer Zone C: Leopard (HIGH)')">
+          <div class="map-pin-dot high"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+        <div class="map-pin" style="left:65%;top:42%" title="Jungle Trail 4 — Tiger MEDIUM" onclick="showToast('Jungle Trail 4: Tiger (MEDIUM)')">
+          <div class="map-pin-dot medium"></div>
+          <div class="map-pin-tail"></div>
+        </div>
+
+        <button class="map-expand" onclick="showToast('Full map view')" aria-label="Expand map">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4"/></svg>
+        </button>
+      </div>
+      <div class="map-footer">
+        <span>Live Regional Map</span>
+        <span style="font-size:10px;display:flex;align-items:center;gap:8px">
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;background:#E74C3C;border-radius:50%;display:inline-block"></span>High</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;background:#F39C12;border-radius:50%;display:inline-block"></span>Med</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:7px;height:7px;background:#27AE60;border-radius:50%;display:inline-block"></span>Low</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">
+          Reports Today
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 8h14M8 3v5"/></svg>
+        </div>
+        <div class="stat-value">142</div>
+        <div class="stat-sub">+18 from yesterday</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          HIGH Risk Today
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3L18 17H2L10 3z"/><path d="M10 9v4M10 15h.01"/></svg>
+        </div>
+        <div class="stat-value high">12</div>
+        <div class="stat-sub">3 new in last hour</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Canada Reports
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h10a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M9 9l2 2 2-2"/></svg>
+        </div>
+        <div class="stat-value canada">86</div>
+        <div class="stat-sub">4 regions active</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Chitwan Reports
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M10 7v3l2 2"/></svg>
+        </div>
+        <div class="stat-value chitwan">56</div>
+        <div class="stat-sub">2 zones monitored</div>
+      </div>
+    </div>
+
+    <!-- LATEST SUBMISSION -->
+    <div class="submission-card">
+      <div class="submission-header">
+        <span class="submission-header-title">Latest Submission</span>
+        <span class="submission-time">8m ago</span>
+      </div>
+      <div class="submission-img-placeholder">
+        🐯
+        <div class="submission-img-overlay"></div>
+      </div>
+      <div class="submission-body">
+        <div class="submission-species">
+          Bengal Tiger
+          <span class="risk-pill high">HIGH</span>
+        </div>
+        <div class="submission-location">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 1.5A4.5 4.5 0 018 10.5C5.24 10.5 2 7.5 2 5a6 6 0 0112 0c0 2.5-3.24 5.5-6 5.5z"/><circle cx="8" cy="5" r="1.5"/></svg>
+          Chitwan National Park, Zone B
+        </div>
+        <button class="analyze-btn" onclick="showToast('Opening analysis for Bengal Tiger submission…')">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" aria-hidden="true"><path d="M10 3v14M3 10h14"/><circle cx="10" cy="10" r="7"/></svg>
+          Analyze Submission
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modalTitle">Report Detail</div>
+        <div class="modal-subtitle" id="modalSubtitle"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="showToast('Escalation sent');closeModal()">Escalate Alert</button>
+      <button class="btn-secondary" onclick="showToast('Report exported');closeModal()">Export PDF</button>
+      <button class="btn-secondary" onclick="closeModal()">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 2a8 8 0 110 16A8 8 0 0110 2zm-1 5v4l3 2"/></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+const ALL_REPORTS = [
+  { id: 'WG-1201', time: '2m ago', rawTime: 2, region: 'Canada', species: 'Cougar', icon: '🐆', lat: '51.044', lng: '-114.072', risk: 'high', hotspot: 'Banff Corridor', reporter: 'Agent Sarah J.', notes: 'Adult male cougar observed near trail junction. Livestock fence breach detected 400m east.' },
+  { id: 'WG-1200', time: '14m ago', rawTime: 14, region: 'Chitwan', species: 'Tiger', icon: '🐯', lat: '27.533', lng: '84.449', risk: 'medium', hotspot: 'Rapti River Bank', reporter: 'User_8829', notes: 'Tiger pawprints and territorial markings. No direct sighting. Buffer zone patrol alerted.' },
+  { id: 'WG-1199', time: '28m ago', rawTime: 28, region: 'Canada', species: 'Black Bear', icon: '🐻', lat: '49.282', lng: '-123.120', risk: 'low', hotspot: 'Whistler North', reporter: 'Agent Mark R.', notes: 'Sub-adult black bear foraging near resort perimeter. No signs of aggression.' },
+  { id: 'WG-1198', time: '41m ago', rawTime: 41, region: 'Canada', species: 'Wolf', icon: '🐺', lat: '53.546', lng: '-113.493', risk: 'medium', hotspot: 'Jasper Perimeter', reporter: 'Agent Lisa V.', notes: 'Pack of 4 wolves spotted crossing highway corridor. Rancher property 2km south flagged.' },
+  { id: 'WG-1197', time: '1h ago', rawTime: 60, region: 'Chitwan', species: 'Leopard', icon: '🐆', lat: '27.530', lng: '84.451', risk: 'high', hotspot: 'Buffer Zone C', reporter: 'Local Scout A.', notes: 'Leopard attempted to breach buffer zone fence. Camera trap imagery captured. Immediate review needed.' },
+  { id: 'WG-1196', time: '1h 12m ago', rawTime: 72, region: 'Canada', species: 'Elk', icon: '🦌', lat: '51.178', lng: '-115.570', risk: 'low', hotspot: 'Townsite West', reporter: 'User_1241', notes: 'Small elk herd grazing in townsite. Non-aggressive. Road crossing risk moderate.' },
+  { id: 'WG-1195', time: '2h ago', rawTime: 120, region: 'Chitwan', species: 'Tiger', icon: '🐯', lat: '27.525', lng: '84.442', risk: 'medium', hotspot: 'Jungle Trail 4', reporter: 'Field Agent D.', notes: 'Bengal tiger tracks along hiking trail. Trail temporarily closed. Monitoring in progress.' },
+  { id: 'WG-1194', time: '2h 30m ago', rawTime: 150, region: 'Canada', species: 'Grizzly Bear', icon: '🐻', lat: '52.110', lng: '-117.340', risk: 'high', hotspot: 'Icefields Approach', reporter: 'Agent Mark R.', notes: 'Grizzly with cubs near campsite. Site evacuated. Wildlife team dispatched.' },
+  { id: 'WG-1193', time: '3h ago', rawTime: 180, region: 'Chitwan', species: 'Rhino', icon: '🦏', lat: '27.520', lng: '84.456', risk: 'medium', hotspot: 'Grassland Trail 2', reporter: 'Field Agent D.', notes: 'One-horned rhino near grassland boundary. Monitoring remotely. Agricultural land adjacent.' },
+  { id: 'WG-1192', time: '3h 45m ago', rawTime: 225, region: 'Canada', species: 'Cougar', icon: '🐆', lat: '50.667', lng: '-115.320', risk: 'high', hotspot: 'Lake Louise West', reporter: 'Agent Sarah J.', notes: 'Cougar stalking behavior observed near school trail. Area cordoned. Patrol active.' },
+  { id: 'WG-1191', time: '4h ago', rawTime: 240, region: 'Chitwan', species: 'Elephant', icon: '🐘', lat: '27.512', lng: '84.440', risk: 'high', hotspot: 'North Corridor Entry', reporter: 'Local Scout A.', notes: 'Elephant herd of 6 approached village boundary. Crop damage reported. Conflict imminent.' },
+  { id: 'WG-1190', time: '5h ago', rawTime: 300, region: 'Canada', species: 'Wolf', icon: '🐺', lat: '54.221', lng: '-110.875', risk: 'low', hotspot: 'Cold Lake South', reporter: 'User_3341', notes: 'Single wolf observed at distance from highway. No livestock in area. Filed for tracking.' },
+];
+
+let currentFilter = 'all';
+let sortKey = 'time';
+let sortDir = 1;
+
+function getFilteredReports() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  return ALL_REPORTS.filter(r => {
+    if (currentFilter === 'high' && r.risk !== 'high') return false;
+    if (currentFilter === 'canada' && r.region !== 'Canada') return false;
+    if (currentFilter === 'chitwan' && r.region !== 'Chitwan') return false;
+    if (q && !( r.species.toLowerCase().includes(q) ||
+                r.region.toLowerCase().includes(q) ||
+                r.hotspot.toLowerCase().includes(q) ||
+                r.reporter.toLowerCase().includes(q) ||
+                r.id.toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+
+function riskOrder(r) { return { high: 0, medium: 1, low: 2 }[r]; }
+
+function renderTable() {
+  const rows = getFilteredReports();
+  rows.sort((a, b) => {
+    let va, vb;
+    if (sortKey === 'time') { va = a.rawTime; vb = b.rawTime; }
+    else if (sortKey === 'risk') { va = riskOrder(a.risk); vb = riskOrder(b.risk); }
+    else { va = (a[sortKey]||'').toLowerCase(); vb = (b[sortKey]||'').toLowerCase(); }
+    return (va < vb ? -1 : va > vb ? 1 : 0) * sortDir;
+  });
+
+  const tbody = document.getElementById('tableBody');
+  if (rows.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><strong>No reports match</strong><p>Try adjusting your filters or search query.</p></div></td></tr>';
+  } else {
+    tbody.innerHTML = rows.map((r, i) => `
+      <tr class="${r.risk === 'high' ? 'high-row' : ''}" onclick="openModal('${r.id}')" style="animation-delay:${i * 0.03}s">
+        <td class="time-cell">${r.time}</td>
+        <td><span class="region-badge"><span class="region-dot ${r.region.toLowerCase()}"></span>${r.region}</span></td>
+        <td><span class="species-pill"><span class="species-icon">${r.icon}</span>${r.species}</span></td>
+        <td class="location-cell">${r.lat},<br>${r.lng}</td>
+        <td><span class="risk-pill ${r.risk}">${r.risk.toUpperCase()}</span></td>
+        <td class="hotspot-cell">${r.hotspot}</td>
+        <td class="reporter-cell">${r.reporter}</td>
+        <td><button class="view-btn" onclick="event.stopPropagation();openModal('${r.id}')">View</button></td>
+      </tr>
+    `).join('');
+  }
+  document.getElementById('footerLabel').textContent = `Showing ${rows.length} of ${ALL_REPORTS.length} reports`;
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function sortTable(key) {
+  if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+  document.querySelectorAll('.sort-icon').forEach(el => {
+    el.classList.remove('active');
+    el.textContent = '↕';
+  });
+  const el = document.getElementById(`sort-${key}`);
+  if (el) { el.classList.add('active'); el.textContent = sortDir === 1 ? '↓' : '↑'; }
+  renderTable();
+}
+
+function openModal(id) {
+  const r = ALL_REPORTS.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('modalTitle').textContent = `${r.species} — ${r.hotspot}`;
+  document.getElementById('modalSubtitle').textContent = `Report ${r.id} · ${r.region} · ${r.time}`;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-row">
+      <div class="modal-field"><label>Species</label><p>${r.icon} ${r.species}</p></div>
+      <div class="modal-field"><label>Risk Level</label><p><span class="risk-pill ${r.risk}">${r.risk.toUpperCase()}</span></p></div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field"><label>Region</label><p>${r.region}</p></div>
+      <div class="modal-field"><label>Hotspot</label><p>${r.hotspot}</p></div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field"><label>Coordinates</label><p style="font-family:'DM Mono',monospace;font-size:13px">${r.lat}, ${r.lng}</p></div>
+      <div class="modal-field"><label>Reporter</label><p>${r.reporter}</p></div>
+    </div>
+    <div class="modal-field">
+      <label>Field Notes</label>
+      <p style="font-size:13.5px;color:#4A6548;line-height:1.6;background:#EBF2E8;padding:10px 12px;border-radius:6px;border-left:3px solid #6B8F6B">${r.notes}</p>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  return false;
+}
+
+function refreshFeed() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  btn.disabled = true;
+  showToast('Fetching latest reports…');
+  setTimeout(() => {
+    btn.classList.remove('spinning');
+    btn.disabled = false;
+    showToast('Feed updated — 142 reports loaded');
+    renderTable();
+  }, 900);
+}
+
+renderTable();
+</script>
+<div class="wg-footer">
+  <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div class="wg-footer-links">
+    <a href="wildguard_privacy_policy.html">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html">Terms of Service</a>
+    <a href="wildguard_field_protocol.html">Field Protocol</a>
+  </div>
+</div>
+<script>
+// WildGuard: update avatar from localStorage session
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.style.fontSize = '12px';
+      av.style.fontWeight = '700';
+      av.title = user.name || '';
+    } else {
+      // Not logged in: show grey person silhouette
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
+</script>
+</body>
+</html>

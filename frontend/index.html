@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WildGuard — Dashboard</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --forest-dark: #1a2e1a;
+    --forest-nav:  #2D4A2D;
+    --forest-mid:  #3a5c38;
+    --sage:        #7aad70;
+    --sage-light:  #a8c9a0;
+    --sage-pale:   #e8f0e4;
+    --cream:       #f5f5f0;
+    --white:       #ffffff;
+    --gray-100:    #f7f7f5;
+    --gray-200:    #eeede8;
+    --gray-400:    #9ca3af;
+    --gray-600:    #6b7280;
+    --gray-800:    #1f2937;
+    --critical:    #ef4444;
+    --elevated:    #f59e0b;
+    --nominal:     #6b7280;
+    --alert-red-bg:#fee2e2;
+    --alert-red-bd:#fca5a5;
+    --alert-amber-bg:#fef3c7;
+    --alert-amber-bd:#fcd34d;
+    --alert-green-bg:#dcfce7;
+    --alert-green-bd:#86efac;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-card: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--cream);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--forest-nav);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    height: 56px;
+    gap: 32px;
+  }
+  .nav-brand {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--white);
+    letter-spacing: .4px;
+    flex-shrink: 0;
+  }
+  .nav-links {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,.72);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 450;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    transition: background .15s, color .15s;
+  }
+  .nav-links a:hover { background: rgba(255,255,255,.1); color: #fff; }
+  .nav-links a.active {
+    color: #fff;
+    border-bottom: 2px solid var(--sage);
+    border-radius: 0;
+    padding-bottom: 4px;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .nav-bell {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255,255,255,.8);
+    font-size: 18px;
+    padding: 4px;
+    position: relative;
+  }
+  .nav-bell .badge {
+    position: absolute;
+    top: 2px; right: 2px;
+    width: 8px; height: 8px;
+    background: var(--critical);
+    border-radius: 50%;
+    border: 1.5px solid var(--forest-nav);
+  }
+  .nav-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--forest-mid);
+    border: 2px solid var(--sage);
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sage-light);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    background: linear-gradient(160deg, #1a2e1a 0%, #2d4a2d 50%, #1e361e 100%);
+    overflow: hidden;
+    padding: 56px 60px 52px;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .hero-trees {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(to right,
+        transparent 0px, transparent 30px,
+        rgba(255,255,255,.012) 30px, rgba(255,255,255,.012) 34px
+      );
+    pointer-events: none;
+  }
+  .hero-glow {
+    position: absolute;
+    top: -80px; right: 160px;
+    width: 420px; height: 420px;
+    background: radial-gradient(circle, rgba(122,173,112,.14) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1.22;
+    color: #fff;
+    max-width: 560px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .hero p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,.62);
+    max-width: 460px;
+    line-height: 1.65;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .hero-btns {
+    display: flex;
+    gap: 12px;
+    position: relative;
+  }
+  .btn-hero-solid {
+    background: rgba(255,255,255,.18);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,.35);
+    padding: 10px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: background .18s, border-color .18s;
+    letter-spacing: .2px;
+  }
+  .btn-hero-solid:hover { background: rgba(255,255,255,.28); border-color: rgba(255,255,255,.55); }
+  .btn-hero-outline {
+    background: transparent;
+    color: rgba(255,255,255,.85);
+    border: 1.5px solid rgba(255,255,255,.35);
+    padding: 10px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background .18s;
+  }
+  .btn-hero-outline:hover { background: rgba(255,255,255,.09); }
+
+  /* ── STAT CARDS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .stat-card {
+    padding: 22px 28px;
+    border-right: 1px solid var(--gray-200);
+    position: relative;
+  }
+  .stat-card:last-child { border-right: none; }
+  .stat-label {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .8px;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gray-800);
+    letter-spacing: -.5px;
+    line-height: 1;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main-content {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 24px;
+    padding: 28px 32px;
+    max-width: 1300px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* ── MAP CARD ── */
+  .map-card {
+    background: var(--forest-dark);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    height: 400px;
+    box-shadow: var(--shadow-card);
+  }
+  .map-legend {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: rgba(10,20,10,.82);
+    border: 1px solid rgba(122,173,112,.3);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+    min-width: 160px;
+  }
+  .map-legend h4 {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--sage-light);
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background .14s;
+    font-size: 12.5px;
+    color: rgba(255,255,255,.78);
+  }
+  .legend-item:hover { background: rgba(255,255,255,.07); }
+  .legend-item.active { background: rgba(122,173,112,.18); color: #fff; }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .legend-dot.rf { background: var(--sage); }
+  .legend-dot.dbscan { background: #60a5fa; }
+  .legend-dot.kmeans { background: #c084fc; }
+  .legend-dot.live { background: #fb923c; }
+
+  /* Risk Index */
+  .risk-index-box {
+    position: absolute;
+    bottom: 16px; right: 16px;
+    background: rgba(10,20,10,.85);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .risk-index-box h5 {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 8px;
+  }
+  .risk-index-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255,255,255,.75);
+    margin-bottom: 5px;
+  }
+  .risk-dot {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+  }
+  .risk-dot.critical { background: var(--critical); box-shadow: 0 0 6px rgba(239,68,68,.6); }
+  .risk-dot.elevated { background: var(--elevated); }
+  .risk-dot.nominal  { background: var(--gray-400); }
+
+  /* SVG Canada Map */
+  .map-svg-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map-svg-wrap svg { width: 100%; height: 100%; }
+
+  /* Pin pulses */
+  .map-pin {
+    cursor: pointer;
+  }
+  .pulse-ring {
+    animation: pulse 2s ease-out infinite;
+    transform-origin: center;
+  }
+  @keyframes pulse {
+    0%   { r: 0;  opacity: .7; }
+    100% { r: 20px; opacity: 0; }
+  }
+  .map-tooltip {
+    position: absolute;
+    background: rgba(10,20,10,.92);
+    border: 1px solid rgba(122,173,112,.35);
+    color: #fff;
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 20;
+    display: none;
+  }
+
+  /* ── RIGHT COLUMN ── */
+  .right-col { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Alerts panel */
+  .panel {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .panel-title {
+    font-size: 13.5px;
+    font-weight: 650;
+    color: var(--gray-800);
+  }
+  .refresh-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    font-size: 16px;
+    padding: 3px;
+    border-radius: 4px;
+    transition: color .15s, transform .3s;
+  }
+  .refresh-btn:hover { color: var(--forest-nav); }
+  .refresh-btn.spinning { animation: spin .6s linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    margin: 8px 12px;
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .alert-item:hover { filter: brightness(.96); }
+  .alert-item.critical { background: var(--alert-red-bg); border: 1px solid var(--alert-red-bd); }
+  .alert-item.elevated { background: var(--alert-amber-bg); border: 1px solid var(--alert-amber-bd); }
+  .alert-item.nominal  { background: var(--alert-green-bg); border: 1px solid var(--alert-green-bd); }
+  .alert-icon {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .alert-item.critical .alert-icon { background: var(--critical); color: #fff; }
+  .alert-item.elevated .alert-icon { background: var(--elevated); color: #fff; }
+  .alert-item.nominal  .alert-icon { background: #22c55e;          color: #fff; }
+  .alert-body { flex: 1; }
+  .alert-title {
+    font-size: 12.5px;
+    font-weight: 650;
+    color: var(--gray-800);
+    margin-bottom: 2px;
+  }
+  .alert-item.critical .alert-title { color: #b91c1c; }
+  .alert-item.elevated .alert-title { color: #92400e; }
+  .alert-item.nominal  .alert-title { color: #166534; }
+  .alert-meta { font-size: 11px; color: var(--gray-600); }
+
+  /* Quick action grid */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .quick-btn {
+    background: var(--white);
+    border: none;
+    cursor: pointer;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s;
+  }
+  .quick-btn:hover { background: var(--gray-100); }
+  .quick-btn:first-child { border-radius: var(--radius-lg) 0 0 0; }
+  .quick-btn:nth-child(2) { border-radius: 0 var(--radius-lg) 0 0; }
+  .quick-btn:nth-child(3) { border-radius: 0 0 0 var(--radius-lg); }
+  .quick-btn:last-child { border-radius: 0 0 var(--radius-lg) 0; }
+  .quick-icon {
+    font-size: 22px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--sage-pale);
+    border-radius: var(--radius-sm);
+  }
+  .quick-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--forest-nav);
+    color: rgba(255,255,255,.5);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 40px;
+    margin-top: 20px;
+  }
+  footer a {
+    color: rgba(255,255,255,.55);
+    text-decoration: none;
+    transition: color .14s;
+  }
+  footer a:hover { color: var(--sage-light); }
+  .footer-links { display: flex; gap: 24px; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    transform: translateY(12px);
+    transition: transform .2s;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .modal-sub {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 18px;
+  }
+  .modal-field {
+    margin-bottom: 14px;
+  }
+  .modal-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 5px;
+  }
+  .modal-field input, .modal-field select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .14s;
+  }
+  .modal-field input:focus, .modal-field select:focus { border-color: var(--sage); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .btn-cancel {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .btn-submit {
+    background: var(--forest-nav);
+    border: none;
+    color: #fff;
+    padding: 9px 18px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-submit:hover { background: var(--forest-mid); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--forest-nav);
+    color: #fff;
+    font-size: 13px;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 6px 24px rgba(0,0,0,.25);
+    z-index: 300;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform .3s, opacity .3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sage); }
+
+/* ── WILDGUARD NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+.btn-hero-region{background:transparent;color:rgba(255,255,255,.85);border:1.5px solid rgba(255,255,255,.4);padding:10px 22px;border-radius:6px;font-size:13.5px;font-weight:500;cursor:pointer;transition:all .18s}
+.btn-hero-region:hover{background:rgba(255,255,255,.12);color:#fff}
+.btn-hero-region.selected{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.7);color:#fff;font-weight:600}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="index.html" class="wg-active">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+  </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="wg-nav-badge">3</span>
+    </button>
+    <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-trees"></div>
+  <div class="hero-glow"></div>
+  <h1>Protecting wildlife and people through intelligent conflict prediction</h1>
+  <p>Leveraging machine learning, satellite telemetry, and real-time field reports to mitigate human–wildlife interaction in critical conservation zones.</p>
+  <div class="hero-btns">
+    <button class="btn-hero-region selected" id="btnCanada" onclick="exploreRegion('Canada')">Explore Canada</button>
+    <button class="btn-hero-region" id="btnChitwan" onclick="exploreRegion('Chitwan')">Explore Chitwan</button>
+  </div>
+</section>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Total Incidents Analysed</div>
+    <div class="stat-value" id="statIncidents">87,244</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Active Conflict Hotspots</div>
+    <div class="stat-value" id="statHotspots">34</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">RF Model Accuracy</div>
+    <div class="stat-value" id="statAccuracy">88%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">SARIMAX RMSE Imp.</div>
+    <div class="stat-value" id="statRmse">54%</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-content">
+
+  <!-- MAP -->
+  <div class="map-card" id="mapCard">
+    <div class="map-legend">
+      <h4>RF Risk Zones</h4>
+      <div class="legend-item active" onclick="toggleLayer(this,'rf')" data-layer="rf">
+        <span class="legend-dot rf"></span> RF Risk Zones
+      </div>
+      <div class="legend-item" onclick="toggleLayer(this,'dbscan')" data-layer="dbscan">
+        <span class="legend-dot dbscan"></span> DBSCAN Hotspots
+      </div>
+      <div class="legend-item" onclick="toggleLayer(this,'kmeans')" data-layer="kmeans">
+        <span class="legend-dot kmeans"></span> KMeans Zones
+      </div>
+      <div class="legend-item" onclick="toggleLayer(this,'live')" data-layer="live">
+        <span class="legend-dot live"></span> Live Reports
+      </div>
+    </div>
+
+    <!-- Canada SVG Map -->
+    <div class="map-svg-wrap">
+      <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" id="mapSvg">
+        <defs>
+          <radialGradient id="gBg" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stop-color="#2a422a"/>
+            <stop offset="100%" stop-color="#1a2e1a"/>
+          </radialGradient>
+        </defs>
+        <rect width="800" height="500" fill="url(#gBg)"/>
+
+        <!-- Simplified Canada outline -->
+        <path id="canadaPath"
+          d="M80,180 L100,160 L120,150 L155,145 L170,130 L195,120 L225,115 L255,110 L290,108
+             L330,105 L370,100 L400,98  L440,96  L480,95  L520,96  L560,98  L600,102
+             L635,108 L660,115 L680,125 L700,140 L715,160 L720,185 L718,210 L712,235
+             L700,258 L685,275 L670,290 L660,310 L650,335 L640,358 L630,375 L618,388
+             L600,398 L578,403 L555,405 L530,403 L510,398 L490,390 L470,382 L450,378
+             L430,380 L415,385 L400,390 L385,395 L368,398 L350,398 L332,395 L318,388
+             L305,378 L295,366 L285,352 L275,338 L265,325 L252,315 L238,308 L222,305
+             L208,308 L196,316 L185,328 L174,340 L162,350 L148,355 L132,352 L118,342
+             L105,328 L94,312 L86,295 L80,278 L76,260 L74,240 L76,218 Z"
+          fill="#3a5c38" fill-opacity=".55" stroke="#7aad70" stroke-width="1.2" stroke-opacity=".4"
+        />
+
+        <!-- Interior terrain lines -->
+        <path d="M200,200 Q310,185 420,195 Q530,205 640,190" fill="none" stroke="#7aad70" stroke-width=".5" stroke-opacity=".2"/>
+        <path d="M180,240 Q300,228 420,235 Q540,242 660,230" fill="none" stroke="#7aad70" stroke-width=".5" stroke-opacity=".2"/>
+        <path d="M160,275 Q290,265 420,270 Q550,275 670,265" fill="none" stroke="#7aad70" stroke-width=".5" stroke-opacity=".15"/>
+
+        <!-- Great Lakes simplified -->
+        <ellipse cx="540" cy="295" rx="22" ry="12" fill="#1e3a5f" fill-opacity=".6" stroke="#60a5fa" stroke-width=".8" stroke-opacity=".35"/>
+        <ellipse cx="580" cy="310" rx="14" ry="9" fill="#1e3a5f" fill-opacity=".6" stroke="#60a5fa" stroke-width=".8" stroke-opacity=".35"/>
+
+        <!-- CRITICAL pin — Banff NP area (~265, 255) -->
+        <g class="map-pin" onclick="pinClick('Grizzly Bear – Banff NP','Critical proximity detected','critical')" transform="translate(265,255)">
+          <circle class="pulse-ring" cx="0" cy="0" r="10" fill="none" stroke="#ef4444" stroke-width="2"/>
+          <circle cx="0" cy="0" r="7" fill="#ef4444"/>
+          <text x="0" y="4" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">!</text>
+        </g>
+
+        <!-- ELEVATED pin — Jasper (~245,235) -->
+        <g class="map-pin" onclick="pinClick('Grey Wolf Pack – Jasper','Routine sighting update','nominal')" transform="translate(245,235)">
+          <circle cx="0" cy="0" r="5.5" fill="#6b7280"/>
+          <circle cx="0" cy="0" r="3" fill="#9ca3af"/>
+        </g>
+
+        <!-- ELEVATED pin — Chitwan area  (~520,370) — symbolic -->
+        <g class="map-pin" onclick="pinClick('Elephant Herd – Chitwan','Moving toward Buffer Zone','elevated')" transform="translate(515,340)">
+          <circle class="pulse-ring" cx="0" cy="0" r="8" fill="none" stroke="#f59e0b" stroke-width="1.5" style="animation-delay:.8s"/>
+          <circle cx="0" cy="0" r="6" fill="#f59e0b"/>
+        </g>
+
+        <!-- KMeans zone overlay (toggled) -->
+        <g id="layer-kmeans" style="display:none">
+          <circle cx="300" cy="270" r="35" fill="#c084fc" fill-opacity=".12" stroke="#c084fc" stroke-width="1" stroke-dasharray="4 3"/>
+          <circle cx="450" cy="240" r="28" fill="#c084fc" fill-opacity=".1" stroke="#c084fc" stroke-width="1" stroke-dasharray="4 3"/>
+        </g>
+
+        <!-- DBSCAN hotspots (toggled) -->
+        <g id="layer-dbscan" style="display:none">
+          <rect x="240" y="240" width="50" height="30" rx="4" fill="#60a5fa" fill-opacity=".15" stroke="#60a5fa" stroke-width=".8"/>
+          <rect x="500" y="325" width="40" height="25" rx="4" fill="#60a5fa" fill-opacity=".15" stroke="#60a5fa" stroke-width=".8"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Risk Index -->
+    <div class="risk-index-box">
+      <h5>Risk Index</h5>
+      <div class="risk-index-item"><span class="risk-dot critical"></span> Critical</div>
+      <div class="risk-index-item"><span class="risk-dot elevated"></span> Elevated</div>
+      <div class="risk-index-item"><span class="risk-dot nominal"></span> Nominal</div>
+    </div>
+
+    <div class="map-tooltip" id="mapTooltip"></div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- Recent Alerts -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Recent Alerts</span>
+        <button class="refresh-btn" id="refreshBtn" onclick="refreshAlerts()" title="Refresh alerts">↻</button>
+      </div>
+
+      <div id="alertsList">
+        <div class="alert-item critical" onclick="openAlertDetail(0)">
+          <div class="alert-icon">⚠</div>
+          <div class="alert-body">
+            <div class="alert-title">Grizzly Bear — Banff NP</div>
+            <div class="alert-meta">10m ago · Critical proximity detected</div>
+          </div>
+        </div>
+        <div class="alert-item elevated" onclick="openAlertDetail(1)">
+          <div class="alert-icon">!</div>
+          <div class="alert-body">
+            <div class="alert-title">Elephant Herd — Chitwan</div>
+            <div class="alert-meta">45m ago · Moving toward Buffer Zone</div>
+          </div>
+        </div>
+        <div class="alert-item nominal" onclick="openAlertDetail(2)">
+          <div class="alert-icon">✓</div>
+          <div class="alert-body">
+            <div class="alert-title">Grey Wolf Pack — Jasper</div>
+            <div class="alert-meta">2h ago · Routine sighting update</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-grid">
+      <button class="quick-btn" onclick="showToast('Opening Risk Map…')">
+        <span class="quick-icon">🗺</span>
+        <span class="quick-label">Risk Map</span>
+      </button>
+      <button class="quick-btn" onclick="document.getElementById('detectModal').classList.add('open')">
+        <span class="quick-icon">🐾</span>
+        <span class="quick-label">Report Animal</span>
+      </button>
+      <button class="quick-btn" onclick="showToast('Loading Forecast…')">
+        <span class="quick-icon">📈</span>
+        <span class="quick-label">Forecast</span>
+      </button>
+      <button class="quick-btn" onclick="location.href='wildguard_live_reports.html'">
+        <span class="quick-icon">📡</span>
+        <span class="quick-label">Live Reports</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="wg-footer">
+  <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div class="wg-footer-links">
+    <a href="wildguard_privacy_policy.html">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html">Terms of Service</a>
+    <a href="wildguard_field_protocol.html">Field Protocol</a>
+  </div>
+</div>
+
+<!-- ── MODALS ── -->
+
+<!-- Login Modal -->
+<div class="modal-overlay" id="loginModal" onclick="closeModalOnOverlay(event,'loginModal')">
+  <div class="modal">
+    <div class="modal-title">Sign in to WildGuard</div>
+    <div class="modal-sub">Access live telemetry and field reports</div>
+    <div class="modal-field"><label>Email</label><input type="email" placeholder="ranger@wildguard.org"></div>
+    <div class="modal-field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('loginModal')">Cancel</button>
+      <button class="btn-submit" onclick="fakeLogin()">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Detail Modal -->
+<div class="modal-overlay" id="alertModal" onclick="closeModalOnOverlay(event,'alertModal')">
+  <div class="modal">
+    <div class="modal-title">🔔 Alert Centre</div>
+    <div class="modal-sub">3 active alerts across monitored zones</div>
+    <div style="font-size:13px;color:#6b7280;line-height:1.7">
+      <b style="color:#b91c1c">🔴 Critical</b> — Grizzly Bear 7KM-04 within 200m of Trail 9 boundary, Banff NP. Last updated 10 min ago.<br><br>
+      <b style="color:#92400e">🟡 Elevated</b> — Elephant herd (est. 12 individuals) crossing buffer zone perimeter, Chitwan. 45 min ago.<br><br>
+      <b style="color:#166534">🟢 Nominal</b> — Grey Wolf Pack J3 routine patrol logged, Jasper. 2 h ago.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('alertModal')">Dismiss</button>
+      <button class="btn-submit" onclick="closeModal('alertModal');showToast('Dispatching field team…')">Dispatch Team</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detect Animal Modal -->
+<div class="modal-overlay" id="detectModal" onclick="closeModalOnOverlay(event,'detectModal')">
+  <div class="modal">
+    <div class="modal-title">🐾 Log Animal Detection</div>
+    <div class="modal-sub">Submit a new field observation to the system</div>
+    <div class="modal-field">
+      <label>Species</label>
+      <select>
+        <option>Grizzly Bear</option>
+        <option>Grey Wolf</option>
+        <option>Cougar</option>
+        <option>Black Bear</option>
+        <option>Asian Elephant</option>
+        <option>Snow Leopard</option>
+      </select>
+    </div>
+    <div class="modal-field"><label>Location (GPS or description)</label><input type="text" placeholder="e.g. Banff NP, Trail 9, N51.496°"></div>
+    <div class="modal-field"><label>Risk Level</label>
+      <select>
+        <option>Critical</option>
+        <option>Elevated</option>
+        <option selected>Nominal</option>
+      </select>
+    </div>
+    <div class="modal-field"><label>Notes</label><input type="text" placeholder="Optional observation details"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('detectModal')">Cancel</button>
+      <button class="btn-submit" onclick="submitDetection()">Submit Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-dot"></span>
+  <span id="toastMsg">Done</span>
+</div>
+
+<script>
+// ── Modal helpers ──────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function closeModalOnOverlay(e, id) {
+  if (e.target === document.getElementById(id)) closeModal(id);
+}
+
+// ── Toast ──────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── Nav active link ────────────────────────────────
+// nav links navigate normally
+
+// ── Region explore ─────────────────────────────────
+function exploreRegion(region) {
+  showToast('Loading ' + region + ' zone data…');
+  document.getElementById('btnCanada').classList.toggle('selected', region === 'Canada');
+  document.getElementById('btnChitwan').classList.toggle('selected', region === 'Chitwan');
+  const svg = document.getElementById('mapSvg');
+  if (svg) { svg.style.filter = 'brightness(1.2)'; setTimeout(() => svg.style.filter = '', 600); }
+}
+
+// ── Map layer toggle ───────────────────────────────
+function toggleLayer(el, layerId) {
+  el.classList.toggle('active');
+  const layerEl = document.getElementById('layer-' + layerId);
+  if (layerEl) {
+    layerEl.style.display = layerEl.style.display === 'none' ? '' : 'none';
+  }
+  // rf/live layers are the pins themselves (always shown for demo)
+}
+
+// ── Pin click ──────────────────────────────────────
+function pinClick(name, detail, severity) {
+  const titles = {critical:'🔴 Critical Alert', elevated:'🟡 Elevated Alert', nominal:'🟢 Nominal'};
+  showToast(`${titles[severity]}: ${name}`);
+}
+
+// ── Refresh alerts ─────────────────────────────────
+const alertData = [
+  { level:'critical', icon:'⚠', title:'Grizzly Bear — Banff NP',  meta:'Just now · Critical proximity detected' },
+  { level:'elevated', icon:'!', title:'Elephant Herd — Chitwan',   meta:'1m ago · Moving toward Buffer Zone' },
+  { level:'nominal',  icon:'✓', title:'Grey Wolf Pack — Jasper',   meta:'2h ago · Routine sighting update' },
+  { level:'elevated', icon:'!', title:'Snow Leopard — Manali',     meta:'32m ago · Entering monitored corridor' },
+  { level:'nominal',  icon:'✓', title:'Black Bear — Kootenay NP',  meta:'4h ago · Passive monitoring active' },
+];
+let alertCursor = 0;
+
+function refreshAlerts() {
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('spinning');
+  setTimeout(() => {
+    btn.classList.remove('spinning');
+    alertCursor = (alertCursor + 1) % 3;
+    const pool = alertData.slice(alertCursor, alertCursor + 3);
+    const list = document.getElementById('alertsList');
+    list.innerHTML = pool.map((a,i) => `
+      <div class="alert-item ${a.level}" onclick="openAlertDetail(${i})">
+        <div class="alert-icon">${a.icon}</div>
+        <div class="alert-body">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-meta">${a.meta}</div>
+        </div>
+      </div>
+    `).join('');
+    showToast('Alerts refreshed');
+  }, 550);
+}
+
+function openAlertDetail(idx) {
+  openModal('alertModal');
+}
+
+// ── Login ──────────────────────────────────────────
+function fakeLogin() {
+  closeModal('loginModal');
+  showToast('Signed in successfully — welcome back');
+}
+
+// ── Submit detection ───────────────────────────────
+function submitDetection() {
+  closeModal('detectModal');
+  const hotspots = document.getElementById('statHotspots');
+  const current = parseInt(hotspots.textContent);
+  hotspots.textContent = current + 1;
+  showToast('Detection report submitted successfully');
+}
+
+// ── Animate stats on load ──────────────────────────
+function animateCount(el, target, suffix, duration) {
+  const start = 0;
+  const step = target / (duration / 16);
+  let current = 0;
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = (suffix === '%')
+      ? Math.round(current) + '%'
+      : Math.round(current).toLocaleString();
+    if (current >= target) clearInterval(timer);
+  }, 16);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    animateCount(document.getElementById('statIncidents'), 87244, '', 1400);
+    animateCount(document.getElementById('statHotspots'), 34, '', 800);
+    animateCount(document.getElementById('statAccuracy'), 88, '%', 1000);
+    animateCount(document.getElementById('statRmse'), 54, '%', 900);
+  }, 300);
+});
+</script>
+<script>
+// WildGuard: update avatar from localStorage session
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.style.fontSize = '12px';
+      av.style.fontWeight = '700';
+      av.title = user.name || '';
+    } else {
+      // Not logged in: show grey person silhouette
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
+</script>
+</body>
+</html>

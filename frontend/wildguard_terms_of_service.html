@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service | WildGuard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#151d1a",
+                        "on-secondary-fixed": "#002113",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#f3f2ff",
+                        "surface-container-highest": "#dee1f8",
+                        "primary-container": "#1b4332",
+                        "primary-fixed-dim": "#a5d0b9",
+                        "surface-dim": "#d6d9ef",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#9fa9a3",
+                        "secondary-container": "#b0f1cc",
+                        "tertiary-container": "#353e3a",
+                        "secondary": "#2b694d",
+                        "tertiary-fixed": "#dbe5df",
+                        "outline-variant": "#c1c8c2",
+                        "on-surface": "#171b2b",
+                        "on-primary-fixed": "#002114",
+                        "on-background": "#171b2b",
+                        "tertiary-fixed-dim": "#bfc9c3",
+                        "secondary-fixed-dim": "#94d4b1",
+                        "outline": "#717973",
+                        "tertiary": "#1f2825",
+                        "surface-tint": "#3f6653",
+                        "surface-container": "#ebedff",
+                        "surface": "#faf8ff",
+                        "secondary-fixed": "#b0f1cc",
+                        "on-surface-variant": "#414844",
+                        "on-primary-fixed-variant": "#274e3d",
+                        "on-secondary-container": "#327053",
+                        "on-error": "#ffffff",
+                        "background": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "inverse-surface": "#2c3041",
+                        "inverse-primary": "#a5d0b9",
+                        "primary-fixed": "#c1ecd4",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#86af99",
+                        "inverse-on-surface": "#eff0ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e4e7fe",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#0c5136",
+                        "primary": "#012d1d",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#3f4945",
+                        "surface-variant": "#dee1f8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "sm": "12px",
+                        "lg": "48px",
+                        "xl": "80px",
+                        "split-ratio": "1:1",
+                        "base": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "button": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Manrope"],
+                        "body-lg": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: 'Inter', sans-serif; }
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; background: #f4f6f4; }
+#wg-layout { display: flex; flex: 1; min-height: 0; }
+#wg-sidebar {
+  width: 256px;
+  min-width: 256px;
+  flex-shrink: 0;
+  background: #fff;
+  border-right: 1px solid #dde8dd;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+}
+#wg-sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #444;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  border-left: 3px solid transparent;
+  margin-bottom: 2px;
+  transition: background .15s;
+}
+#wg-sidebar a:hover { background: #f0f7f0; color: #2D4A2D; }
+#wg-main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px 50vh 40px;
+  background: #f0f4f0;
+}
+footer { flex-shrink: 0; }
+</style>
+</head>
+<body>
+<nav style="background:#2D4A2D;padding:0 28px;display:flex;align-items:center;gap:28px;height:52px;position:sticky;top:0;z-index:9999;box-shadow:0 2px 8px rgba(0,0,0,.28);font-family:'Inter',sans-serif;flex-shrink:0;box-sizing:border-box;">
+  <a href="index.html" style="font-weight:700;font-size:17px;color:#fff;text-decoration:none;white-space:nowrap;">WildGuard</a>
+  <ul style="display:flex;gap:2px;flex:1;list-style:none;margin:0;padding:0;align-items:center;">
+    <li><a href="index.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html" style="color:rgba(255,255,255,.7);text-decoration:none;font-size:13.5px;font-weight:500;padding:6px 11px;border-radius:5px;white-space:nowrap;" onmouseover="this.style.background='rgba(255,255,255,.12)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='rgba(255,255,255,.7)'">Login / Register</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:14px;margin-left:auto;flex-shrink:0;">
+    <button onclick="location.href='wildguard_notifications.html'" style="position:relative;color:rgba(255,255,255,.8);cursor:pointer;background:none;border:none;padding:4px;display:flex;align-items:center;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.8)'">
+      <svg width="19" height="19" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span style="position:absolute;top:0;right:0;background:#EF4444;color:#fff;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;border:1.5px solid #2D4A2D;">3</span>
+    </button>
+    <div id="wg-avatar" onclick="location.href='wildguard_profile_html_.html'" style="width:32px;height:32px;border-radius:50%;background:#8FAF8F;border:2px solid #1a2e1a;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#1a2e1a;">SJ</div>
+  </div>
+</nav>
+<div id="wg-layout">
+  <div id="wg-sidebar">
+<div class="px-md mb-lg">
+<span class="material-symbols-outlined text-secondary mb-2" style="font-size: 32px;">videocam</span>
+<h2 class="font-headline-sm text-headline-sm text-primary font-bold">Terms of Service</h2>
+<p class="text-on-surface-variant text-xs opacity-60">Last updated: Oct 2024</p>
+</div>
+<div class="flex-1 space-y-1">
+<p class="px-md text-[10px] uppercase tracking-widest text-outline font-bold mb-2">Table of Contents</p>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 transition-all duration-200" href="#acceptance">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">check_circle</span>
+<span class="font-label-md text-label-md">Acceptance of Terms</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#usage">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">settings_remote</span>
+<span class="font-label-md text-label-md">Use of the System</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#responsibilities">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">account_balance_wallet</span>
+<span class="font-label-md text-label-md">User Responsibilities</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#property">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">copyright</span>
+<span class="font-label-md text-label-md">Intellectual Property</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#disclaimers">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">report_problem</span>
+<span class="font-label-md text-label-md">Disclaimers</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#liability">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">gavel</span>
+<span class="font-label-md text-label-md">Limitation of Liability</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#changes">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">update</span>
+<span class="font-label-md text-label-md">Changes to Terms</span>
+</a>
+<a class="nav-link group flex items-center gap-3 py-2 text-on-surface-variant pl-3 hover:bg-surface-container-highest transition-colors" href="#contact">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" style="font-size: 20px;">mail</span>
+<span class="font-label-md text-label-md">Contact</span>
+</a>
+</div>
+</div>
+  <div id="wg-main">
+<div class="max-w-5xl mx-auto space-y-md">
+<!-- Hero Banner -->
+<section class="bg-[#3C4D3C] rounded-xl p-lg text-white shadow-lg relative overflow-hidden">
+<div class="relative z-10 space-y-md">
+<h1 class="font-headline-lg text-headline-lg max-w-2xl leading-tight">Clear terms. Honest system. Built for conservation.</h1>
+<p class="text-secondary-fixed-dim font-body-lg max-w-xl">WildGuard provides ethical AI monitoring for wildlife protection. By accessing our platform, you join a global community of stewards committed to ecosystem security.</p>
+<div class="flex flex-wrap gap-sm">
+<span class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/40 border border-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">science</span> Open for research
+                            </span>
+<span class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/40 border border-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">block</span> No commercial misuse
+                            </span>
+<span class="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/40 border border-white/20 backdrop-blur-sm text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">nature</span> Conservation first
+                            </span>
+</div>
+</div>
+<div class="absolute right-0 top-0 h-full w-1/3 opacity-20 hidden md:block">
+<span class="material-symbols-outlined text-[200px] absolute -right-10 -top-10">forest</span>
+</div>
+</section>
+<!-- 1. Acceptance of Terms -->
+<section class="bg-white rounded-xl shadow-sm border-t-4 border-secondary overflow-hidden p-md lg:p-lg space-y-md" id="acceptance">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">check_circle</span>
+<h2 class="font-headline-md text-headline-md">1. Acceptance of Terms</h2>
+</div>
+<div class="space-y-4 text-on-surface-variant font-body-md leading-relaxed">
+<p>Welcome to WildGuard. These Terms of Service ("Terms") govern your access to and use of our website, applications, and predictive wildlife monitoring systems. By registering an account or accessing the system, you acknowledge that you have read, understood, and agreed to be bound by these legal provisions.</p>
+<div class="bg-secondary-container/30 border border-secondary/20 p-md rounded-lg flex items-start gap-md">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="font-bold text-primary">By using WildGuard you agree to these terms, which constitute a legally binding agreement between you and the WildGuard Stewardship Committee.</p>
+</div>
+</div>
+</section>
+<!-- 2. Use of the System -->
+<section class="bg-white rounded-xl shadow-sm border-t-4 border-secondary overflow-hidden p-md lg:p-lg space-y-md" id="usage">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">settings_remote</span>
+<h2 class="font-headline-md text-headline-md">2. Use of the System</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-md">
+<!-- Allowed -->
+<div class="space-y-4">
+<h3 class="font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">thumb_up</span> Allowed Uses
+                            </h3>
+<div class="grid gap-2">
+<div class="bg-secondary-container/10 border border-secondary/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check</span>
+<span class="text-sm">Wildlife conservation research</span>
+</div>
+<div class="bg-secondary-container/10 border border-secondary/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check</span>
+<span class="text-sm">Human-wildlife conflict reporting</span>
+</div>
+<div class="bg-secondary-container/10 border border-secondary/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check</span>
+<span class="text-sm">Educational and nonprofit initiatives</span>
+</div>
+<div class="bg-secondary-container/10 border border-secondary/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check</span>
+<span class="text-sm">Strategic conservation planning</span>
+</div>
+</div>
+</div>
+<!-- Prohibited -->
+<div class="space-y-4">
+<h3 class="font-bold text-error flex items-center gap-2">
+<span class="material-symbols-outlined">block</span> Prohibited Uses
+                            </h3>
+<div class="grid gap-2">
+<div class="bg-error-container/30 border border-error/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="text-sm">Commercial resale of prediction data</span>
+</div>
+<div class="bg-error-container/30 border border-error/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="text-sm">Filing false or misleading reports</span>
+</div>
+<div class="bg-error-container/30 border border-error/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="text-sm">Automated data scraping or harvesting</span>
+</div>
+<div class="bg-error-container/30 border border-error/10 p-3 rounded flex items-center gap-3">
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">close</span>
+<span class="text-sm">Unauthorized system access (hacking)</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. User Responsibilities -->
+<section class="space-y-md" id="responsibilities">
+<div class="flex items-center gap-2 text-primary px-sm">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<h2 class="font-headline-md text-headline-md">3. User Responsibilities</h2>
+</div>
+<div class="grid gap-sm">
+<div class="bg-white p-md rounded-xl shadow-sm flex items-center gap-md border-l-4 border-secondary group hover:shadow-md transition-shadow">
+<span class="w-10 h-10 flex items-center justify-center bg-primary text-white font-bold rounded-full text-lg">1</span>
+<div>
+<h4 class="font-bold text-primary">Account Security</h4>
+<p class="text-sm text-on-surface-variant">You are responsible for maintaining the confidentiality of your credentials and all activities under your account.</p>
+</div>
+</div>
+<div class="bg-white p-md rounded-xl shadow-sm flex items-center gap-md border-l-4 border-secondary group hover:shadow-md transition-shadow">
+<span class="w-10 h-10 flex items-center justify-center bg-primary text-white font-bold rounded-full text-lg">2</span>
+<div>
+<h4 class="font-bold text-primary">Ethical Reporting</h4>
+<p class="text-sm text-on-surface-variant">All wildlife sightings and data uploads must be accurate to the best of your knowledge and gathered ethically.</p>
+</div>
+</div>
+<div class="bg-white p-md rounded-xl shadow-sm flex items-center gap-md border-l-4 border-secondary group hover:shadow-md transition-shadow">
+<span class="w-10 h-10 flex items-center justify-center bg-primary text-white font-bold rounded-full text-lg">3</span>
+<div>
+<h4 class="font-bold text-primary">No Harassment</h4>
+<p class="text-sm text-on-surface-variant">Users must not use the platform to harass, stalk, or endanger wildlife or other system users.</p>
+</div>
+</div>
+<div class="bg-white p-md rounded-xl shadow-sm flex items-center gap-md border-l-4 border-secondary group hover:shadow-md transition-shadow">
+<span class="w-10 h-10 flex items-center justify-center bg-primary text-white font-bold rounded-full text-lg">4</span>
+<div>
+<h4 class="font-bold text-primary">Compliance</h4>
+<p class="text-sm text-on-surface-variant">Usage must comply with all local, regional, and international environmental and wildlife protection laws.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Intellectual Property -->
+<section class="bg-white rounded-xl shadow-sm border-t-4 border-secondary overflow-hidden p-md lg:p-lg space-y-md" id="property">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">copyright</span>
+<h2 class="font-headline-md text-headline-md">4. Intellectual Property</h2>
+</div>
+<div class="grid md:grid-cols-2 gap-lg pt-4">
+<div class="flex flex-col items-center text-center p-md bg-surface border border-outline-variant/30 rounded-xl">
+<span class="material-symbols-outlined text-primary text-[48px] mb-2">dashboard_customize</span>
+<h4 class="font-bold text-primary mb-2">WildGuard Assets</h4>
+<p class="text-xs text-on-surface-variant">Algorithms, prediction models, UI designs, and brand identity are the exclusive property of WildGuard.</p>
+</div>
+<div class="flex flex-col items-center text-center p-md bg-surface border border-outline-variant/30 rounded-xl">
+<span class="material-symbols-outlined text-secondary text-[48px] mb-2">person_pin</span>
+<h4 class="font-bold text-primary mb-2">User Data</h4>
+<p class="text-xs text-on-surface-variant">You retain ownership of specific photographic and location data uploaded, granting WildGuard a license for research use.</p>
+</div>
+</div>
+</section>
+<!-- 5. Disclaimers -->
+<section class="bg-[#fff9e6] rounded-xl shadow-sm border-t-4 border-amber-500 overflow-hidden p-md lg:p-lg space-y-md" id="disclaimers">
+<div class="flex items-center gap-2 text-amber-900">
+<span class="material-symbols-outlined">report_problem</span>
+<h2 class="font-headline-md text-headline-md">5. Disclaimers</h2>
+</div>
+<div class="text-amber-900 font-medium leading-relaxed italic border-l-2 border-amber-500 pl-4">
+                        "WildGuard is a predictive tool based on environmental variables and historical data. It is not a substitute for real-time field observations or professional wildlife management decisions. We do not guarantee the 100% accuracy of animal migration or presence predictions."
+                    </div>
+</section>
+<!-- 6. Limitation of Liability -->
+<section class="bg-white rounded-xl shadow-sm border-t-4 border-secondary overflow-hidden p-md lg:p-lg space-y-md" id="liability">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">gavel</span>
+<h2 class="font-headline-md text-headline-md">6. Limitation of Liability</h2>
+</div>
+<p class="text-on-surface-variant text-sm leading-relaxed">To the maximum extent permitted by applicable law, WildGuard and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from (a) your access to or use of or inability to access or use the services; (b) any conduct or content of any third party on the services; or (c) unauthorized access, use, or alteration of your transmissions or content.</p>
+</section>
+<!-- 7. Changes to Terms -->
+<section class="bg-white rounded-xl shadow-sm border-t-4 border-secondary overflow-hidden p-md lg:p-lg space-y-md" id="changes">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">update</span>
+<h2 class="font-headline-md text-headline-md">7. Changes to Terms</h2>
+</div>
+<p class="text-on-surface-variant">We reserve the right to modify these Terms at any time. When we do, we will update the "Last Updated" date at the top of this page. Significant changes will be communicated via the Dashboard notification system or email. Continued use of WildGuard after such changes constitutes acceptance of the new Terms.</p>
+</section>
+<!-- 8. Contact -->
+<section class="bg-secondary-container/20 rounded-xl shadow-sm border border-secondary/20 p-md lg:p-lg flex flex-col md:flex-row justify-between items-center gap-lg" id="contact">
+<div class="space-y-sm">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">mail</span>
+<h2 class="font-headline-md text-headline-md">8. Contact Us</h2>
+</div>
+<p class="text-on-surface-variant">Questions regarding our stewardship policies?</p>
+<div class="flex flex-col gap-1">
+<a class="font-bold text-secondary flex items-center gap-2" href="mailto:admin@wildguard.org">
+<span class="material-symbols-outlined text-[18px]">alternate_email</span> legal@wildguard.org
+                            </a>
+<p class="flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-[18px]">location_on</span> Kathmandu, Bagmati, Nepal
+                            </p>
+</div>
+</div>
+<button class="bg-transparent border-2 border-secondary text-secondary hover:bg-secondary hover:text-white px-xl py-3 rounded-full font-button transition-all duration-300 flex items-center gap-2">
+                        Send us a message <span class="material-symbols-outlined">send</span>
+</button>
+</section>
+</div>
+<!-- Footer -->
+
+</div>
+</div>
+<footer style="background:#fff;border-top:1px solid #D0DDD0;color:#6B7B6B;font-size:12px;font-family:'Inter',sans-serif;padding:11px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+  <span><strong style="color:#1A2B1A;">WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div style="display:flex;gap:16px;">
+    <a href="wildguard_privacy_policy.html" style="color:#6B7B6B;text-decoration:none;" onmouseover="this.style.color='#2D4A2D'" onmouseout="this.style.color='#6B7B6B'">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html" style="color:#6B7B6B;text-decoration:none;" onmouseover="this.style.color='#2D4A2D'" onmouseout="this.style.color='#6B7B6B'">Terms of Service</a>
+    <a href="wildguard_field_protocol.html" style="color:#6B7B6B;text-decoration:none;" onmouseover="this.style.color='#2D4A2D'" onmouseout="this.style.color='#6B7B6B'">Field Protocol</a>
+  </div>
+</footer>
+<script>
+
+
+(function() {
+  var mainEl = document.getElementById('wg-main');
+  var sidebar = document.getElementById('wg-sidebar');
+  if (!mainEl || !sidebar) return;
+  var links = Array.from(sidebar.querySelectorAll('a[href^="#"]'));
+  if (!links.length) return;
+
+  function setActive(link) {
+    links.forEach(function(l) {
+      l.style.background = '';
+      l.style.color = '';
+      l.style.fontWeight = '';
+      l.style.borderLeft = '';
+    });
+    link.style.background = '#e8f4ee';
+    link.style.color = '#2D4A2D';
+    link.style.fontWeight = '700';
+    link.style.borderLeft = '3px solid #2D4A2D';
+  }
+
+  links.forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var id = this.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (target) {
+        e.preventDefault();
+        mainEl.scrollTo({top: target.offsetTop - 24, behavior: 'smooth'});
+      }
+      setActive(this);
+    });
+  });
+
+  mainEl.addEventListener('scroll', function() {
+    var scrollTop = mainEl.scrollTop + 120;
+    var active = links[0];
+    links.forEach(function(link) {
+      var id = link.getAttribute('href').slice(1);
+      var sec = document.getElementById(id);
+      if (sec && sec.offsetTop <= scrollTop) active = link;
+    });
+    setActive(active);
+  });
+
+  // Activate on first scroll or stay neutral until user interacts
+})();
+
+</script>
+<script>
+</script>
+<script>
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"], #wg-avatar');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.title = user.name || '';
+    } else {
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
+</script>
+</body>
+</html>

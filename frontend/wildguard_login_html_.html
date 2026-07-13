@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WildGuard – Login</title>
+<style>
+  :root {
+    --forest:       #2D4A2D;
+    --forest-dark:  #1E3320;
+    --forest-mid:   #3B5E3B;
+    --forest-deep:  #162616;
+    --sage:         #8FAF8F;
+    --sage-light:   #C8DCC8;
+    --sage-pale:    #EEF5EE;
+    --white:        #FFFFFF;
+    --red:          #DC2626;
+    --text-primary: #1A2B1A;
+    --text-muted:   #6B7B6B;
+    --border:       #D8E8D8;
+    --radius:       10px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--text-primary);
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAV ─────────────────────────────────────────── */
+  nav {
+    background: var(--forest);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.28);
+    flex-shrink: 0;
+  }
+  .nav-brand {
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--white);
+    letter-spacing: .4px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 6px 11px;
+    border-radius: 5px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover  { background: rgba(255,255,255,.12); color: #fff; }
+  .nav-links a.active {
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid var(--sage-light);
+    border-radius: 5px 5px 0 0;
+    padding-bottom: 4px;
+  }
+
+  /* ── SPLIT LAYOUT ────────────────────────────────── */
+  .page-body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 55% 45%;
+    min-height: 0;
+  }
+
+  /* ── LEFT PANEL ──────────────────────────────────── */
+  .left-panel {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 52px - 44px);
+  }
+
+  /* Forest photo via SVG gradient + CSS overlay (no external img dependency) */
+  .forest-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(160deg, rgba(22,38,22,.72) 0%, rgba(30,51,30,.55) 40%, rgba(14,26,14,.80) 100%),
+      /* Rendered SVG tree scene */
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='820'%3E%3Crect width='760' height='820' fill='%23243d24'/%3E%3C!-- sky glow --%3E%3Cellipse cx='380' cy='0' rx='380' ry='180' fill='%23344f34' opacity='.6'/%3E%3C!-- distant trees --%3E%3Crect x='0' y='300' width='760' height='520' fill='%231a2e1a'/%3E%3C!-- tree trunks back row --%3E%3Crect x='60' y='180' width='18' height='640' fill='%23162616' rx='4'/%3E%3Crect x='130' y='140' width='22' height='680' fill='%231a2e1a' rx='4'/%3E%3Crect x='210' y='100' width='26' height='720' fill='%23162616' rx='5'/%3E%3Crect x='295' y='60' width='30' height='760' fill='%231a2e1a' rx='5'/%3E%3Crect x='390' y='80' width='28' height='740' fill='%23162616' rx='5'/%3E%3Crect x='475' y='110' width='24' height='710' fill='%231a2e1a' rx='4'/%3E%3Crect x='555' y='150' width='20' height='670' fill='%23162616' rx='4'/%3E%3Crect x='625' y='180' width='18' height='640' fill='%231a2e1a' rx='4'/%3E%3Crect x='690' y='200' width='16' height='620' fill='%23162616' rx='3'/%3E%3C!-- canopy shapes --%3E%3Cellipse cx='69' cy='180' rx='55' ry='130' fill='%23223322' opacity='.9'/%3E%3Cellipse cx='141' cy='140' rx='65' ry='150' fill='%231e2e1e' opacity='.95'/%3E%3Cellipse cx='223' cy='100' rx='75' ry='170' fill='%23223322' opacity='.9'/%3E%3Cellipse cx='310' cy='60' rx='82' ry='190' fill='%231e2e1e' opacity='.95'/%3E%3Cellipse cx='404' cy='80' rx='78' ry='180' fill='%23223322' opacity='.9'/%3E%3Cellipse cx='487' cy='110' rx='70' ry='165' fill='%231e2e1e' opacity='.95'/%3E%3Cellipse cx='565' cy='150' rx='62' ry='148' fill='%23223322' opacity='.9'/%3E%3Cellipse cx='634' cy='180' rx='55' ry='135' fill='%231e2e1e' opacity='.95'/%3E%3Cellipse cx='698' cy='200' rx='48' ry='120' fill='%23223322' opacity='.9'/%3E%3C!-- floor mist --%3E%3Cellipse cx='380' cy='820' rx='500' ry='120' fill='%232d4a2d' opacity='.5'/%3E%3C!-- light rays --%3E%3Crect x='290' y='0' width='8' height='820' fill='rgba(200,220,200,0.03)' transform='rotate(-4 290 0)'/%3E%3Crect x='370' y='0' width='5' height='820' fill='rgba(200,220,200,0.025)' transform='rotate(2 370 0)'/%3E%3Crect x='430' y='0' width='6' height='820' fill='rgba(200,220,200,0.02)' transform='rotate(-2 430 0)'/%3E%3C/svg%3E");
+    background-size: cover;
+    background-position: center top;
+  }
+
+  .left-content {
+    position: relative;
+    z-index: 2;
+    padding: 64px 52px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: calc(100vh - 52px - 44px);
+  }
+
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-icon {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,.12);
+    border: 1.5px solid rgba(255,255,255,.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .brand-icon svg { color: rgba(255,255,255,.9); }
+  .brand-name {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -.3px;
+  }
+
+  .hero-copy {
+    margin-top: auto;
+    padding-bottom: 36px;
+  }
+  .hero-headline {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.2;
+    letter-spacing: -.5px;
+    max-width: 380px;
+    text-shadow: 0 2px 12px rgba(0,0,0,.35);
+    margin-bottom: 28px;
+  }
+
+  .feature-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.22);
+    color: rgba(255,255,255,.9);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+    cursor: default;
+    transition: background .2s;
+  }
+  .pill:hover { background: rgba(255,255,255,.18); }
+  .pill svg   { width: 13px; height: 13px; opacity: .85; flex-shrink: 0; }
+
+  /* ── RIGHT PANEL ─────────────────────────────────── */
+  .right-panel {
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 52px;
+  }
+
+  .form-card {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .form-logo {
+    width: 50px; height: 50px;
+    background: var(--forest);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px;
+  }
+  .form-logo svg { color: var(--white); }
+
+  .form-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -.4px;
+    margin-bottom: 5px;
+  }
+  .form-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+  }
+
+  /* Tab: Sign in / Register */
+  .form-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 24px;
+    gap: 0;
+  }
+  .tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 9px 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color .15s, border-color .15s;
+  }
+  .tab-btn.active { color: var(--forest); border-bottom-color: var(--forest); }
+
+  /* Fields */
+  .field { margin-bottom: 16px; }
+  .field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .field-label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+  .forgot-link {
+    font-size: 12.5px;
+    color: var(--forest-mid);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color .15s;
+  }
+  .forgot-link:hover { color: var(--forest); text-decoration: underline; }
+
+  .input-wrap { position: relative; }
+  .input-wrap input {
+    width: 100%;
+    padding: 10px 38px 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--text-primary);
+    background: var(--white);
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .input-wrap input::placeholder { color: #A8BCA8; }
+  .input-wrap input:focus {
+    border-color: var(--forest);
+    box-shadow: 0 0 0 3px rgba(45,74,45,.12);
+  }
+  .input-wrap input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,.1); }
+
+  .toggle-pw {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); padding: 2px; line-height: 0;
+    transition: color .15s;
+  }
+  .toggle-pw:hover { color: var(--forest); }
+
+  .error-msg {
+    font-size: 11.5px;
+    color: var(--red);
+    margin-top: 5px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  /* Register extra fields */
+  .register-fields { display: none; }
+  .register-fields.show { display: block; }
+  .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Role select */
+  .role-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: var(--text-primary);
+    background: var(--white);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .role-select:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(45,74,45,.12); }
+
+  /* Remember me */
+  .remember-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 20px;
+  }
+  .remember-row input[type="checkbox"] {
+    width: 15px; height: 15px;
+    accent-color: var(--forest);
+    cursor: pointer;
+  }
+  .remember-row label { font-size: 12.5px; color: var(--text-muted); cursor: pointer; }
+
+  /* Primary button */
+  .btn-primary {
+    width: 100%;
+    background: var(--forest);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    letter-spacing: .2px;
+  }
+  .btn-primary:hover  { background: var(--forest-mid); }
+  .btn-primary:active { transform: scale(.99); }
+  .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+
+  /* Divider */
+  .or-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 18px 0;
+    font-size: 12px; color: var(--text-muted);
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* Institution button */
+  .btn-institution {
+    width: 100%;
+    background: var(--white);
+    color: var(--text-primary);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .15s, border-color .15s;
+  }
+  .btn-institution:hover { background: var(--sage-pale); border-color: var(--sage); }
+  .btn-institution svg { color: var(--forest); }
+
+  /* Footer text */
+  .form-footer-text {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 20px;
+  }
+  .form-footer-text a {
+    color: var(--forest);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .form-footer-text a:hover { text-decoration: underline; }
+
+  /* Success state */
+  .success-panel {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+  }
+  .success-panel.show { display: flex; }
+  .success-circle {
+    width: 64px; height: 64px;
+    background: var(--sage-pale);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .success-circle svg { color: var(--forest); }
+  .success-title { font-size: 20px; font-weight: 800; color: var(--text-primary); }
+  .success-sub   { font-size: 13px; color: var(--text-muted); max-width: 260px; }
+  .btn-goto {
+    background: var(--forest); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 11px 28px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: background .2s;
+    margin-top: 6px;
+  }
+  .btn-goto:hover { background: var(--forest-mid); }
+
+  /* ── FOOTER ──────────────────────────────────────── */
+  footer {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 11px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  footer span strong { color: var(--text-primary); }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a { color: var(--text-muted); text-decoration: none; transition: color .15s; }
+  .footer-links a:hover { color: var(--forest); }
+
+  /* ── TOAST ───────────────────────────────────────── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--forest-dark);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,.22);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .22s, transform .22s;
+    pointer-events: none; z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── MODAL (Forgot password) ─────────────────────── */
+  .modal-backdrop {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(14,26,14,.55);
+    backdrop-filter: blur(3px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.show { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 28px 30px;
+    width: 340px;
+    box-shadow: 0 16px 48px rgba(0,0,0,.22);
+    animation: pop .2s ease;
+  }
+  @keyframes pop { from { transform: scale(.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+  .modal-sub   { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+  .modal input {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 13.5px;
+    outline: none; margin-bottom: 14px;
+    transition: border-color .15s;
+  }
+  .modal input:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(45,74,45,.12); }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns button {
+    flex: 1; padding: 9px; border-radius: 8px;
+    font-size: 13.5px; font-weight: 600; cursor: pointer; border: none;
+    transition: background .15s;
+  }
+  .btn-cancel { background: var(--sage-pale); color: var(--forest); }
+  .btn-cancel:hover { background: var(--sage-light); }
+  .btn-send   { background: var(--forest); color: #fff; }
+  .btn-send:hover { background: var(--forest-mid); }
+
+/* ── WILDGUARD NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html" class="wg-active">Login / Register</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE BODY -->
+<div class="page-body">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="forest-bg"></div>
+    <div class="left-content">
+      <div class="brand-lockup">
+        <div class="brand-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <span class="brand-name">WildGuard</span>
+      </div>
+
+      <div class="hero-copy">
+        <h1 class="hero-headline">Join the network protecting wildlife and communities</h1>
+        <div class="feature-pills">
+          <div class="pill">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            Submit field sightings
+          </div>
+          <div class="pill">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+            Access conflict risk maps
+          </div>
+          <div class="pill">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            Track regional forecasts
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="form-card">
+
+      <!-- Logo mark -->
+      <div class="form-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+
+      <div class="form-title" id="formTitle">Welcome back</div>
+      <div class="form-sub" id="formSub">Sign in to access the dashboard</div>
+
+      <!-- Tabs -->
+      <div class="form-tabs">
+        <button class="tab-btn active" id="tabSignIn" onclick="switchTab('signin')">Sign in</button>
+        <button class="tab-btn"        id="tabRegister" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <!-- ── FORM ── -->
+      <div id="authForm">
+
+        <!-- Register: name row -->
+        <div class="register-fields" id="registerFields">
+          <div class="name-row">
+            <div class="field">
+              <div class="field-label" style="margin-bottom:6px">First name</div>
+              <div class="input-wrap"><input type="text" id="firstName" placeholder="Alex" /></div>
+            </div>
+            <div class="field">
+              <div class="field-label" style="margin-bottom:6px">Last name</div>
+              <div class="input-wrap"><input type="text" id="lastName" placeholder="Ranger" /></div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label" style="margin-bottom:6px">Role</div>
+            <select class="role-select" id="roleSelect">
+              <option value="">Select your role…</option>
+              <option>Field Ranger</option>
+              <option>Conservation Officer</option>
+              <option>Research Scientist</option>
+              <option>Park Manager</option>
+              <option>Community Liaison</option>
+              <option>Government Authority</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-label" style="margin-bottom:6px">Organization</div>
+            <div class="input-wrap"><input type="text" id="orgInput" placeholder="National Park Service" /></div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <div class="field-label">Email Address</div>
+          <div style="margin-top:6px" class="input-wrap">
+            <input type="email" id="emailInput" placeholder="ranger@wildguard.org" />
+            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#A8BCA8">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+          </div>
+          <div class="error-msg" id="emailError">Please enter a valid email address.</div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <div class="field-row">
+            <div class="field-label">Password</div>
+            <a href="#" class="forgot-link" id="forgotLink" onclick="openForgot(event)">Forgot password?</a>
+          </div>
+          <div class="input-wrap">
+            <input type="password" id="passwordInput" placeholder="••••••••" />
+            <button type="button" class="toggle-pw" id="togglePw" onclick="togglePassword()" title="Show/hide password">
+              <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="error-msg" id="passwordError">Password must be at least 6 characters.</div>
+        </div>
+
+        <!-- Register: confirm password -->
+        <div class="register-fields" id="confirmField">
+          <div class="field">
+            <div class="field-label" style="margin-bottom:6px">Confirm password</div>
+            <div class="input-wrap">
+              <input type="password" id="confirmInput" placeholder="••••••••" />
+            </div>
+            <div class="error-msg" id="confirmError">Passwords do not match.</div>
+          </div>
+        </div>
+
+        <!-- Remember me (sign-in only) -->
+        <div class="remember-row" id="rememberRow">
+          <input type="checkbox" id="rememberMe" />
+          <label for="rememberMe">Keep me signed in</label>
+        </div>
+
+        <button class="btn-primary" id="submitBtn" onclick="handleSubmit()">Sign in</button>
+      </div>
+
+      <!-- SUCCESS STATE -->
+      <div class="success-panel" id="successPanel">
+        <div class="success-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="success-title" id="successTitle">Signed in!</div>
+        <div class="success-sub" id="successSub">Redirecting you to the dashboard…</div>
+        <button class="btn-goto" onclick="location.href='index.html'">Go to dashboard →</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="wg-footer">
+  <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div class="wg-footer-links">
+    <a href="wildguard_privacy_policy.html">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html">Terms of Service</a>
+    <a href="wildguard_field_protocol.html">Field Protocol</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-backdrop" id="forgotModal">
+  <div class="modal">
+    <div class="modal-title">Reset your password</div>
+    <div class="modal-sub">Enter your email and we'll send you a reset link.</div>
+    <input type="email" id="resetEmail" placeholder="ranger@wildguard.org" />
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeForgot()">Cancel</button>
+      <button class="btn-send"   onclick="sendReset()">Send link</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── STATE ─────────────────────────────────────────── */
+let currentTab = 'signin';
+
+/* ── TAB SWITCH ────────────────────────────────────── */
+function switchTab(tab) {
+  currentTab = tab;
+  const isRegister = tab === 'register';
+
+  document.getElementById('tabSignIn').classList.toggle('active', !isRegister);
+  document.getElementById('tabRegister').classList.toggle('active', isRegister);
+
+  document.querySelectorAll('.register-fields').forEach(el => el.classList.toggle('show', isRegister));
+  document.getElementById('rememberRow').style.display = isRegister ? 'none' : 'flex';
+  document.getElementById('forgotLink').style.display  = isRegister ? 'none' : '';
+  document.getElementById('submitBtn').textContent = isRegister ? 'Create account' : 'Sign in';
+
+  document.getElementById('formTitle').textContent = isRegister ? 'Create your account' : 'Welcome back';
+  document.getElementById('formSub').textContent   = isRegister ? 'Join the WildGuard network' : 'Sign in to access the dashboard';
+
+  document.getElementById('footerText').innerHTML = isRegister
+    ? 'Already have an account? <a onclick="switchTab(\'signin\')">Sign in</a>'
+    : 'Don\'t have an account? <a onclick="switchTab(\'register\')">Register here</a>';
+
+  clearErrors();
+}
+
+/* ── VALIDATION ────────────────────────────────────── */
+function clearErrors() {
+  document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+  document.querySelectorAll('input').forEach(i => i.classList.remove('error'));
+}
+
+function validateEmail(val) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+}
+
+/* ── SUBMIT ────────────────────────────────────────── */
+function handleSubmit() {
+  clearErrors();
+  const email    = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+  let valid = true;
+
+  if (!validateEmail(email)) {
+    document.getElementById('emailInput').classList.add('error');
+    document.getElementById('emailError').classList.add('show');
+    valid = false;
+  }
+  if (password.length < 6) {
+    document.getElementById('passwordInput').classList.add('error');
+    document.getElementById('passwordError').classList.add('show');
+    valid = false;
+  }
+  if (currentTab === 'register') {
+    const confirm = document.getElementById('confirmInput').value;
+    if (confirm !== password) {
+      document.getElementById('confirmInput').classList.add('error');
+      document.getElementById('confirmError').classList.add('show');
+      valid = false;
+    }
+  }
+  if (!valid) return;
+
+  // Simulate loading
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = currentTab === 'register' ? 'Creating account…' : 'Signing in…';
+
+  setTimeout(() => {
+    // Save user session to localStorage
+    const emailVal = document.getElementById('emailInput').value.trim();
+    if (currentTab === 'register') {
+      const nameVal = document.getElementById('nameInput') ? document.getElementById('nameInput').value.trim() : '';
+      const parts = nameVal.split(' ').filter(Boolean);
+      const initials = parts.length >= 2
+        ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+        : (parts[0] ? parts[0].slice(0,2).toUpperCase() : '?');
+      localStorage.setItem('wg_user', JSON.stringify({ name: nameVal, email: emailVal, initials: initials, loggedIn: true }));
+    } else {
+      // Sign in: try to restore saved user or use email initials
+      const saved = JSON.parse(localStorage.getItem('wg_user') || '{}');
+      if (!saved.initials) {
+        const emailInitial = emailVal[0] ? emailVal[0].toUpperCase() : '?';
+        localStorage.setItem('wg_user', JSON.stringify({ name: emailVal, email: emailVal, initials: emailInitial, loggedIn: true }));
+      } else {
+        saved.loggedIn = true;
+        localStorage.setItem('wg_user', JSON.stringify(saved));
+      }
+    }
+
+    document.getElementById('authForm').style.display = 'none';
+    const sp = document.getElementById('successPanel');
+    sp.classList.add('show');
+    if (currentTab === 'register') {
+      document.getElementById('successTitle').textContent = 'Account created!';
+      document.getElementById('successSub').textContent   = 'Welcome to WildGuard. Redirecting to the dashboard…';
+    } else {
+      document.getElementById('successTitle').textContent = 'Signed in!';
+      document.getElementById('successSub').textContent   = 'Redirecting you to the dashboard…';
+    }
+    showToast(currentTab === 'register' ? 'Account created — welcome aboard!' : 'Signed in successfully');
+    btn.disabled = false;
+    // Auto-redirect after 1.5s
+    setTimeout(() => { location.href = 'index.html'; }, 1500);
+  }, 1200);
+}
+
+/* ── INSTITUTION SSO ───────────────────────────────── */
+function handleInstitution() {
+  showToast('Redirecting to institution SSO portal…');
+}
+
+/* ── TOGGLE PASSWORD ───────────────────────────────── */
+function togglePassword() {
+  const inp  = document.getElementById('passwordInput');
+  const icon = document.getElementById('eyeIcon');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  icon.innerHTML = show
+    ? '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+}
+
+/* ── FORGOT PASSWORD ───────────────────────────────── */
+function openForgot(e) {
+  e && e.preventDefault();
+  const email = document.getElementById('emailInput').value.trim();
+  if (email) document.getElementById('resetEmail').value = email;
+  document.getElementById('forgotModal').classList.add('show');
+}
+function closeForgot() {
+  document.getElementById('forgotModal').classList.remove('show');
+}
+function sendReset() {
+  const email = document.getElementById('resetEmail').value.trim();
+  if (!validateEmail(email)) { showToast('Enter a valid email first'); return; }
+  closeForgot();
+  showToast(`Reset link sent to ${email}`);
+}
+// close modal on backdrop click
+document.getElementById('forgotModal').addEventListener('click', function(e) {
+  if (e.target === this) closeForgot();
+});
+
+/* ── TOAST ─────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+/* ── ENTER KEY ─────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('authForm').style.display !== 'none') handleSubmit();
+  if (e.key === 'Escape') closeForgot();
+});
+</script>
+</body>
+</html>

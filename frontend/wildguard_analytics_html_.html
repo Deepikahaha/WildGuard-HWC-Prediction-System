@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WildGuard – Analytics Dashboard</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --forest:        #2D4A2D;
+  --forest-dark:   #1E331E;
+  --forest-light:  #3A5C3A;
+  --sage:          #6B8F6B;
+  --sage-light:    #A8C5A0;
+  --sage-pale:     #EBF2E8;
+  --sage-mid:      #C8DFBF;
+  --cream:         #F0F4EE;
+  --white:         #FFFFFF;
+  --text-pri:      #1A2E1A;
+  --text-sec:      #3D5C3D;
+  --text-muted:    #7A9478;
+  --border:        #D0E0CB;
+  --border-light:  #E4EEE1;
+  --high:          #C0392B;
+  --high-bg:       #FDECEA;
+  --medium:        #C07A10;
+  --medium-bg:     #FEF6E6;
+  --low:           #1E7A40;
+  --low-bg:        #E8FAF0;
+  --shadow:        0 1px 3px rgba(45,74,45,0.08), 0 1px 2px rgba(45,74,45,0.04);
+  --shadow-md:     0 4px 14px rgba(45,74,45,0.10);
+  --radius:        10px;
+}
+
+html, body {
+  min-height: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text-pri);
+  background: var(--cream);
+  line-height: 1.5;
+}
+
+/* ─── NAV ─────────────────────────────────────────────── */
+nav {
+  background: var(--forest);
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+}
+.nav-brand {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+  margin-right: 28px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.nav-brand span { color: var(--sage-light); }
+.nav-links { display: flex; align-items: center; gap: 2px; list-style: none; flex: 1; }
+.nav-links a {
+  color: rgba(255,255,255,0.68);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.nav-links a:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.nav-links a.active { color: #fff; border-bottom: 2px solid var(--sage-light); border-radius: 0; padding-bottom: 4px; }
+.nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.nav-icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.70); padding: 6px; border-radius: 6px;
+  display: flex; align-items: center; transition: all 0.15s; position: relative;
+}
+.nav-icon-btn:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.nav-icon-btn svg { width: 18px; height: 18px; }
+.notif-dot { position: absolute; top: 5px; right: 6px; width: 7px; height: 7px; background: #E74C3C; border-radius: 50%; border: 1.5px solid var(--forest); }
+.nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--sage-light); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--forest); border: 2px solid rgba(255,255,255,0.25); cursor: pointer; }
+
+/* ─── PAGE ─────────────────────────────────────────────── */
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 24px 32px;
+}
+
+/* ─── STAT CARDS ───────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px 16px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s;
+  cursor: default;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); }
+.stat-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--text-pri);
+  letter-spacing: -1.2px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.stat-badge.up    { background: var(--low-bg);    color: var(--low);    }
+.stat-badge.stable{ background: var(--sage-pale); color: var(--sage);   }
+.stat-badge.gain  { background: var(--high-bg);   color: var(--high);   }
+.stat-badge svg   { width: 11px; height: 11px; }
+
+/* ─── FILTER BAR ───────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.filter-sep { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+.filter-select-wrap {
+  display: flex; align-items: center; gap: 7px;
+  position: relative;
+}
+.filter-select-wrap svg { width: 14px; height: 14px; color: var(--text-muted); flex-shrink: 0; }
+.filter-select {
+  appearance: none; -webkit-appearance: none;
+  background: none; border: none; outline: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  color: var(--text-pri); cursor: pointer;
+  padding-right: 20px;
+}
+.filter-select-wrap::after {
+  content: '';
+  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-muted);
+  pointer-events: none;
+}
+.region-tabs {
+  display: flex; gap: 4px; margin-left: auto;
+}
+.region-tab {
+  background: none; border: 1px solid var(--border);
+  border-radius: 20px; cursor: pointer;
+  padding: 4px 14px; font-size: 12.5px; font-weight: 600;
+  color: var(--text-sec); font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.region-tab:hover { border-color: var(--sage); background: var(--sage-pale); }
+.region-tab.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+
+/* ─── CHARTS GRID ──────────────────────────────────────── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.chart-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+}
+.chart-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text-pri);
+  margin-bottom: 3px;
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.chart-title .high-label { color: var(--high); font-weight: 700; }
+.chart-legend-row {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-muted); font-weight: 500; cursor: pointer;
+}
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.legend-line { width: 22px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+
+/* Canvas charts */
+canvas { display: block; width: 100%; }
+
+/* ─── DONUT ─────────────────────────────────────────────── */
+.donut-section {
+  display: flex; align-items: center; gap: 24px;
+  margin: 4px 0 16px;
+}
+.donut-wrap { position: relative; flex-shrink: 0; width: 110px; height: 110px; }
+.donut-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700; color: var(--text-pri); letter-spacing: -0.5px;
+}
+.donut-center span { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.3px; text-transform: uppercase; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.donut-legend-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-sec); font-weight: 500; }
+.donut-legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* Species bars */
+.species-bars { display: flex; flex-direction: column; gap: 10px; }
+.species-bar-row { display: flex; flex-direction: column; gap: 4px; }
+.species-bar-label { display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 600; color: var(--text-sec); }
+.species-bar-label span:last-child { color: var(--text-muted); font-weight: 500; font-family: 'DM Mono', monospace; }
+.species-bar-track { height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.species-bar-fill { height: 100%; border-radius: 4px; transition: width 1s cubic-bezier(.4,0,.2,1); width: 0; }
+
+/* ─── HEATMAP ───────────────────────────────────────────── */
+.heatmap-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+.heatmap-table th {
+  padding: 8px 12px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text-muted);
+  text-align: center; border-bottom: 1px solid var(--border-light);
+}
+.heatmap-table th:first-child { text-align: left; }
+.heatmap-table td {
+  padding: 9px 12px; font-size: 13px;
+  text-align: center; border-bottom: 1px solid var(--border-light);
+}
+.heatmap-table td:first-child { text-align: left; font-weight: 500; color: var(--text-sec); font-style: italic; }
+.heatmap-table tbody tr:last-child td { border-bottom: none; }
+.heatmap-table tbody tr { transition: background 0.12s; cursor: pointer; }
+.heatmap-table tbody tr:hover { background: var(--sage-pale); }
+.heat-cell {
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: 700;
+  font-family: 'DM Mono', monospace;
+  font-size: 12.5px;
+  display: inline-block;
+  min-width: 52px;
+  transition: transform 0.12s;
+}
+.heat-cell:hover { transform: scale(1.06); }
+.heat-h { background: #FBD0CC; color: #8B1E17; }
+.heat-h2 { background: #F9B8B2; color: #7A180F; }
+.heat-h3 { background: #F2918A; color: #6B100A; }
+.heat-m { background: #FEF0CC; color: #8B5500; }
+.heat-m2 { background: #FCDEA0; color: #7A4800; }
+.heat-l { background: #D4F0DE; color: #155A2E; }
+.heat-l2 { background: #A8E4BC; color: #0E4522; }
+.heatmap-footer { font-size: 11.5px; color: var(--text-muted); text-align: center; margin-top: 10px; font-weight: 500; }
+
+/* ─── REGIONAL PERFORMANCE ─────────────────────────────── */
+.cluster-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.cluster-card {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.cluster-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cluster-name { font-size: 14px; font-weight: 700; color: var(--text-pri); display: flex; align-items: center; gap: 7px; }
+.cluster-name svg { width: 15px; height: 15px; color: var(--sage); }
+.cluster-rows { display: flex; flex-direction: column; gap: 7px; }
+.cluster-row { display: flex; justify-content: space-between; font-size: 12.5px; }
+.cluster-row .ck { color: var(--text-muted); font-weight: 500; }
+.cluster-row .cv { font-weight: 700; color: var(--text-pri); font-family: 'DM Mono', monospace; }
+.cluster-row .cv.gain { color: var(--high); }
+
+/* Seasonal bar chart */
+.seasonal-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin-bottom: 10px; }
+.seasonal-bars { display: flex; align-items: flex-end; gap: 4px; height: 70px; }
+.seasonal-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.seasonal-bar {
+  width: 100%; border-radius: 3px 3px 0 0;
+  background: var(--sage-mid);
+  transition: height 1s cubic-bezier(.4,0,.2,1), background 0.15s;
+  cursor: pointer;
+  height: 0;
+}
+.seasonal-bar:hover, .seasonal-bar.peak { background: var(--forest); }
+.seasonal-bar-lbl { font-size: 9.5px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.3px; }
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px; font-size: 12.5px; color: var(--text-muted);
+}
+.footer-links { display: flex; gap: 20px; list-style: none; }
+.footer-links a { color: var(--text-muted); text-decoration: none; }
+.footer-links a:hover { color: var(--forest); }
+
+/* ─── TOOLTIP ─────────────────────────────────────────────── */
+.tooltip {
+  position: fixed; pointer-events: none; z-index: 999;
+  background: var(--forest-dark);
+  color: #fff; font-size: 12px; font-weight: 500;
+  padding: 6px 11px; border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  display: none; white-space: nowrap;
+}
+.tooltip.show { display: block; }
+
+/* ─── TOAST ─────────────────────────────────────────────── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--forest); color: #fff;
+  padding: 11px 18px; border-radius: 9px;
+  font-size: 13.5px; font-weight: 500;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+  display: none; align-items: center; gap: 9px;
+  z-index: 9999; max-width: 320px;
+}
+.toast.show { display: flex; animation: slideUp 0.25s ease; }
+@keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.toast svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .cluster-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .stats-row { grid-template-columns: 1fr; }
+  nav .nav-links { display: none; }
+}
+
+/* ── WILDGUARD NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+</style>
+<style>
+/* ── IFRAME CHART EMBEDS ── */
+.heatmap-unavailable {
+  font-size: 12px;
+  color: var(--text-muted, #6b7280);
+  background: #f4f7f2;
+  border: 1px dashed #b8c9b0;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.iframe-chart-wrap {
+  width: 100%; height: 380px; border-radius: 8px;
+  overflow: hidden; background: #f8faf8; margin-top: 10px;
+  border: 1px solid var(--border);
+}
+.iframe-chart-wrap iframe {
+  width: 100%; height: 100%; border: none;
+}
+.charts-grid.stack {
+  grid-template-columns: 1fr;
+}
+.iframe-chart-wrap.split {
+  display: flex; gap: 8px; padding: 0;
+  height: 460px;
+}
+.split-pane {
+  flex: 1; display: flex; flex-direction: column;
+  min-width: 0; border-right: 1px solid var(--border);
+}
+.split-pane:last-child { border-right: none; }
+.split-pane-label {
+  font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted);
+  padding: 6px 10px; background: var(--sage-pale);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.split-pane iframe { flex: 1; width: 100%; border: none; }
+.priority-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12.5px; }
+.priority-table th {
+  padding: 7px 10px; font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted); text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+.priority-table td { padding: 7px 10px; border-bottom: 1px solid var(--border-light); }
+.priority-table tr:last-child td { border-bottom: none; }
+.priority-table tbody tr:hover { background: var(--sage-pale); }
+.priority-badge {
+  font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 0.4px; display: inline-block;
+}
+.priority-badge.critical { background: var(--high-bg); color: var(--high); }
+.priority-badge.active   { background: var(--low-bg);  color: var(--low); }
+/* Region subtitle */
+.region-subtitle {
+  font-size: 12px; color: var(--text-muted);
+  font-weight: 500; margin-bottom: 12px;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html" class="wg-active">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+  </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="wg-nav-badge">3</span>
+    </button>
+    <div class="wg-nav-avatar wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">PK</div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">RF Model Accuracy</div>
+      <div class="stat-value" id="sv1">88%</div>
+      <div class="stat-badge up" id="sv1d">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3M3 6l3-3 3 3"/></svg>
+        1.2%
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">DBSCAN Silhouette</div>
+      <div class="stat-value" id="sv2">0.766</div>
+      <div class="stat-badge stable" id="sv2d">Stable</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">SARIMAX RMSE Improv.</div>
+      <div class="stat-value" id="sv3">54.3%</div>
+      <div class="stat-badge gain" id="sv3d">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 11L11 1M7 1h4v4"/></svg>
+        High Gain
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Incidents</div>
+      <div class="stat-value" id="sv4">87,244</div>
+      <div class="stat-badge stable" style="background:var(--sage-pale);color:var(--sage)">All Time</div>
+    </div>
+  </div>
+
+  <!-- Region subtitle -->
+  <div class="region-subtitle" id="regionSubtitle">🌍 Canada + Chitwan — Cross-Regional Comparison</div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-select-wrap">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 8h14M8 3v5"/></svg>
+      <select class="filter-select" id="timeFilter" onchange="handleFilter()">
+        <option value="13">Last 13 Years</option>
+        <option value="10">Last 10 Years</option>
+        <option value="5">Last 5 Years</option>
+        <option value="3">Last 3 Years</option>
+        <option value="1">Last 1 Year</option>
+      </select>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-select-wrap">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
+      <select class="filter-select" id="speciesFilter" onchange="handleFilter()">
+        <option value="all">All Species</option>
+        <option value="bear">Black Bear / Grizzly</option>
+        <option value="elk">Elk / Moose</option>
+        <option value="elephant">African Elephant</option>
+        <option value="tiger">Bengal Tiger</option>
+        <option value="wolf">Grey Wolf</option>
+      </select>
+    </div>
+    <div class="filter-sep"></div>
+    <div class="filter-select-wrap">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L18 17H2L10 3z"/><path d="M10 9v4"/><circle cx="10" cy="15" r="0.5" fill="currentColor"/></svg>
+      <select class="filter-select" id="riskFilter" onchange="handleFilter()">
+        <option value="high">Risk: High</option>
+        <option value="medium">Risk: Medium</option>
+        <option value="low">Risk: Low</option>
+        <option value="all">Risk: All</option>
+      </select>
+    </div>
+    <div class="region-tabs">
+      <button class="region-tab" id="tab-canada"  onclick="setRegion('canada')">Canada</button>
+      <button class="region-tab" id="tab-chitwan" onclick="setRegion('chitwan')">Chitwan</button>
+      <button class="region-tab active" id="tab-both" onclick="setRegion('both')">Both</button>
+    </div>
+  </div>
+
+  <!-- TOP CHARTS ROW -->
+  <div class="charts-grid" id="topChartsGrid">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Incident Trend (2010–2023)</div>
+      <div class="chart-legend-row" style="margin-top:6px">
+        <div class="legend-item">
+          <div class="legend-line" style="background:var(--forest)"></div>Historical
+        </div>
+        <div class="legend-item">
+          <div class="legend-line" style="background:#C0392B;border-top:2px dashed #C0392B;height:0;width:22px"></div>Forecast
+        </div>
+      </div>
+      <div class="iframe-chart-wrap" id="trendChartWrap">
+        <iframe id="trendFrame" src="viz5_monthly_trend.html" title="Monthly Trend"></iframe>
+      </div>
+    </div>
+
+    <!-- DONUT CHART -->
+    <div class="chart-card">
+      <div class="chart-title">
+        Species Distribution: <span class="high-label">HIGH</span>&nbsp;Risk
+      </div>
+      <div class="iframe-chart-wrap" id="donutChartWrap">
+        <iframe id="donutFrame" src="canada_viz10_species_donut.html" title="Species Donut"></iframe>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM CHARTS ROW -->
+  <div class="charts-grid" id="bottomChartsGrid">
+    <div class="chart-card">
+      <div class="chart-title" style="margin-bottom:4px" id="heatmapTitle">Species × Monthly Incident Intensity Heatmap</div>
+      <div class="iframe-chart-wrap" id="heatmapChartWrap">
+        <iframe id="heatmapFrame" src="canada_viz_8_species_risk_heatmap.html" title="Species Risk Heatmap"></iframe>
+      </div>
+      <div class="heatmap-footer" id="heatmapFooter">Real data — Parks Canada (2010–2023)</div>
+    </div>
+
+    <!-- REGIONAL PERFORMANCE -->
+    <div class="chart-card">
+      <div class="chart-title" style="margin-bottom:14px">Regional Model Performance</div>
+      <div class="cluster-grid">
+        <div class="cluster-card" id="clusterLeft">
+          <div class="cluster-header">
+            <div class="cluster-name" id="clusterLeftName">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h10a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M8 4v12M12 4v12"/></svg>
+              Canada Cluster
+            </div>
+          </div>
+          <div class="cluster-rows">
+            <div class="cluster-row"><span class="ck">RF Accuracy:</span><span class="cv" id="cl-rf">0.912</span></div>
+            <div class="cluster-row"><span class="ck">Cohen's Kappa:</span><span class="cv" id="cl-kappa">0.844</span></div>
+            <div class="cluster-row"><span class="ck">Silhouette:</span><span class="cv" id="cl-sil">0.721</span></div>
+            <div class="cluster-row"><span class="ck">RMSE Improv:</span><span class="cv" id="cl-rmse">42.1%</span></div>
+            <div class="cluster-row"><span class="ck">Exogenous:</span><span class="cv" id="cl-exog">Temp/Snow</span></div>
+          </div>
+        </div>
+        <div class="cluster-card" id="clusterRight">
+          <div class="cluster-header">
+            <div class="cluster-name" id="clusterRightName">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
+              Chitwan Cluster
+            </div>
+          </div>
+          <div class="cluster-rows">
+            <div class="cluster-row"><span class="ck">RF Accuracy:</span><span class="cv" id="cr-rf">0.864</span></div>
+            <div class="cluster-row"><span class="ck">Cohen's Kappa:</span><span class="cv" id="cr-kappa">0.791</span></div>
+            <div class="cluster-row"><span class="ck">Silhouette:</span><span class="cv" id="cr-sil">0.802</span></div>
+            <div class="cluster-row"><span class="ck">RMSE Improv:</span><span class="cv gain" id="cr-rmse">61.5%</span></div>
+            <div class="cluster-row"><span class="ck">Exogenous:</span><span class="cv" id="cr-exog">Rain/Humid</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="seasonal-label">Seasonal Incident Variance</div>
+      <div class="seasonal-bars" id="seasonalBars"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:10.5px;color:var(--text-muted);font-weight:600;letter-spacing:0.3px">
+        <span>JAN</span><span></span><span></span><span>APR</span><span></span><span></span><span>JUL</span><span></span><span></span><span>OCT</span><span></span><span>DEC</span>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /page -->
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toastEl" role="status" aria-live="polite">
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg"></span>
+</div>
+
+<!-- FOOTER -->
+<div class="wg-footer">
+  <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div class="wg-footer-links">
+    <a href="wildguard_privacy_policy.html">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html">Terms of Service</a>
+    <a href="wildguard_field_protocol.html">Field Protocol</a>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   REGION DATA
+═══════════════════════════════════════════════════ */
+const REGION_DATA = {
+  canada: {
+    sv1:'91.2%', sv1d:'↑ 0.9%',
+    sv2:'0.721', sv2d:'Stable',
+    sv3:'42.1%', sv3d:'High Gain',
+    sv4:'49,244',
+    subtitle:'🍁 Parks Canada — 2010 to 2023',
+    seasonalPeaks:[4,5],
+    heatmap:[
+      ['Black Bear',   'heat-h3','14.2k','heat-m2','5.1k', 'heat-l', '1.2k'],
+      ['Elk',          'heat-h2','8.9k', 'heat-m', '4.4k', 'heat-l', '0.9k'],
+      ['Grizzly Bear', 'heat-h', '2.1k', 'heat-m', '9.3k', 'heat-l2','15.4k'],
+      ['Grey Wolf',    'heat-h', '0.4k', 'heat-m', '1.8k', 'heat-l2','8.2k']
+    ],
+    leftCluster:  { name:'Canada Cluster',  rf:'0.912',kappa:'0.844',sil:'0.721',rmse:'42.1%',exog:'Temp/Snow' },
+    rightCluster: { name:'Chitwan Cluster', rf:'0.864',kappa:'0.791',sil:'0.802',rmse:'61.5%',exog:'Rain/Humid' },
+    trend:'viz5_monthly_trend.html',
+    donut:'canada_viz10_species_donut.html',
+    seasonal:[28,32,44,60,72,80,100,95,85,70,52,42]
+  },
+  chitwan: {
+    sv1:'86.4%', sv1d:'↑ 1.5%',
+    sv2:'0.802', sv2d:'Improving',
+    sv3:'61.5%', sv3d:'High Gain',
+    sv4:'756',
+    subtitle:'🇳🇵 Chitwan National Park, Nepal — 1998 to 2017',
+    seasonalPeaks:[9,10],
+    heatmap:[
+      ['African Elephant','heat-h3','16.8k','heat-m2','6.2k','heat-l','1.5k'],
+      ['Bengal Tiger',    'heat-h2','9.4k', 'heat-m', '3.8k','heat-l','0.7k'],
+      ['Sloth Bear',      'heat-h', '3.0k', 'heat-m', '7.1k','heat-l2','11.2k'],
+      ['Wild Boar',       'heat-h', '1.1k', 'heat-m', '2.9k','heat-l2','9.6k']
+    ],
+    leftCluster:  { name:'Chitwan Cluster', rf:'0.864',kappa:'0.791',sil:'0.802',rmse:'61.5%',exog:'Rain/Humid (Lunar)' },
+    rightCluster: { name:'Canada Cluster',  rf:'0.912',kappa:'0.844',sil:'0.721',rmse:'42.1%',exog:'Temp/Snow' },
+    trend:'chitwan_viz6_monthly_trend.html',
+    donut:'chitwan_viz5_species_donut.html',
+    seasonal:[55,65,75,85,70,60,50,45,60,80,90,70]
+  },
+  both: {
+    sv1:'88%',   sv1d:'↑ 1.2%',
+    sv2:'0.766', sv2d:'Stable',
+    sv3:'54.3%', sv3d:'High Gain',
+    sv4:'87,244',
+    subtitle:'🌍 Canada + Chitwan — Cross-Regional Comparison',
+    seasonalPeaks:[4,5],
+    heatmap:[
+      ['Black Bear / Elephant','heat-h3','14.2k','heat-m2','5.1k','heat-l','1.2k'],
+      ['Elk / Bengal Tiger',   'heat-h2','8.9k', 'heat-m', '4.4k','heat-l','0.9k'],
+      ['Grizzly / Sloth Bear', 'heat-h', '2.1k', 'heat-m', '9.3k','heat-l2','15.4k'],
+      ['Grey Wolf / Wild Boar','heat-h', '0.4k', 'heat-m', '1.8k','heat-l2','8.2k']
+    ],
+    leftCluster:  { name:'Canada Cluster',  rf:'0.912',kappa:'0.844',sil:'0.721',rmse:'42.1%',exog:'Temp/Snow' },
+    rightCluster: { name:'Chitwan Cluster', rf:'0.864',kappa:'0.791',sil:'0.802',rmse:'61.5%',exog:'Rain/Humid' },
+    trend:'viz5_monthly_trend.html',
+    donut:'canada_viz10_species_donut.html',
+    seasonal:[40,48,58,72,71,70,75,70,72,75,71,56]
+  }
+};
+
+const monthLabels = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+
+/* Real DBSCAN priority cluster results — Chitwan National Park (kept for reference/reuse) */
+const CHITWAN_PRIORITY_CLUSTERS = [
+  { cluster: 4, species: 'Elephant', type: 'Livestock Depredation', incidents: 167, priority: 'CRITICAL' },
+  { cluster: 0, species: 'Rhino',    type: 'Attacks to Human',      incidents: 182, priority: 'CRITICAL' },
+  { cluster: 1, species: 'Tiger',    type: 'Attacks to Human',      incidents: 150, priority: 'ACTIVE' },
+  { cluster: 3, species: 'Leopard',  type: 'Livestock Depredation', incidents: 143, priority: 'ACTIVE' },
+  { cluster: 5, species: 'Tiger',    type: 'Livestock Depredation', incidents: 65,  priority: 'ACTIVE' },
+  { cluster: 2, species: 'Elephant', type: 'Attacks to Human',      incidents: 39,  priority: 'ACTIVE' },
+  { cluster: 6, species: 'Elephant', type: 'Attacks to Human',      incidents: 10,  priority: 'ACTIVE' }
+].sort((a, b) => b.incidents - a.incidents);
+
+function renderPriorityTable() {
+  const rows = CHITWAN_PRIORITY_CLUSTERS.map(c => `
+    <tr>
+      <td>#${c.cluster}</td>
+      <td>${c.species}</td>
+      <td>${c.type}</td>
+      <td>${c.incidents}</td>
+      <td><span class="priority-badge ${c.priority === 'CRITICAL' ? 'critical' : 'active'}">${c.priority}</span></td>
+    </tr>`).join('');
+  return `
+    <table class="priority-table">
+      <thead>
+        <tr><th>Cluster</th><th>Species</th><th>Conflict Type</th><th>Incidents</th><th>Priority</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   CHART PANE RENDERER — single region or side-by-side split
+═══════════════════════════════════════════════════ */
+function renderChartPane(wrapId, frameId, canadaSrc, chitwanSrc, region, canadaLabel, chitwanLabel) {
+  const wrap = document.getElementById(wrapId);
+  if (region === 'both') {
+    wrap.classList.add('split');
+    wrap.innerHTML = `
+      <div class="split-pane">
+        <div class="split-pane-label">${canadaLabel}</div>
+        <iframe src="${canadaSrc}" title="${canadaLabel}"></iframe>
+      </div>
+      <div class="split-pane">
+        <div class="split-pane-label">${chitwanLabel}</div>
+        <iframe src="${chitwanSrc}" title="${chitwanLabel}"></iframe>
+      </div>`;
+  } else {
+    wrap.classList.remove('split');
+    const src = region === 'chitwan' ? chitwanSrc : canadaSrc;
+    wrap.innerHTML = `<iframe id="${frameId}" src="${src}" title="Chart"></iframe>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   SET REGION
+═══════════════════════════════════════════════════ */
+function setRegion(r) {
+  ['canada','chitwan','both'].forEach(id => {
+    document.getElementById('tab-'+id).classList.toggle('active', id === r);
+  });
+
+  document.getElementById('topChartsGrid').classList.toggle('stack', r === 'both');
+  document.getElementById('bottomChartsGrid').classList.toggle('stack', r === 'both');
+
+  const d = REGION_DATA[r];
+
+  document.getElementById('sv1').textContent = d.sv1;
+  document.getElementById('sv1d').innerHTML  = d.sv1d;
+  document.getElementById('sv2').textContent = d.sv2;
+  document.getElementById('sv2d').textContent = d.sv2d;
+  document.getElementById('sv3').textContent = d.sv3;
+  document.getElementById('sv3d').innerHTML  = d.sv3d;
+  document.getElementById('sv4').textContent = d.sv4;
+
+  document.getElementById('regionSubtitle').textContent = d.subtitle;
+
+  const heatmapWrap = document.getElementById('heatmapChartWrap');
+  const heatmapFooter = document.getElementById('heatmapFooter');
+  const heatmapTitle = document.getElementById('heatmapTitle');
+  if (r === 'both') {
+    heatmapWrap.classList.add('split');
+    heatmapWrap.innerHTML = `
+      <div class="split-pane">
+        <div class="split-pane-label">🍁 Canada</div>
+        <iframe src="canada_viz_8_species_risk_heatmap.html" title="Canada Heatmap"></iframe>
+      </div>
+      <div class="split-pane">
+        <div class="split-pane-label">🇳🇵 Chitwan</div>
+        <iframe src="chitwan_viz11_species_month_heatmap.html" title="Chitwan Heatmap"></iframe>
+      </div>`;
+    heatmapTitle.textContent = 'Species × Monthly Incident Intensity Heatmap';
+    heatmapFooter.textContent = 'Real data — both panels';
+  } else if (r === 'chitwan') {
+    heatmapWrap.classList.remove('split');
+    heatmapWrap.innerHTML = '<iframe src="chitwan_viz11_species_month_heatmap.html" title="Chitwan Heatmap"></iframe>';
+    heatmapTitle.textContent = 'Species × Monthly Incident Intensity Heatmap';
+    heatmapFooter.textContent = 'Real data — Chitwan National Park (2001–2017)';
+  } else {
+    heatmapWrap.classList.remove('split');
+    heatmapWrap.innerHTML = '<iframe id="heatmapFrame" src="canada_viz_8_species_risk_heatmap.html" title="Species Risk Heatmap"></iframe>';
+    heatmapTitle.textContent = 'Species × Monthly Incident Intensity Heatmap';
+    heatmapFooter.textContent = 'Real data — Parks Canada (2010–2023)';
+  }
+
+  const lc = d.leftCluster, rc = d.rightCluster;
+  document.getElementById('clusterLeftName').innerHTML  = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h10a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M8 4v12M12 4v12"/></svg>${lc.name}`;
+  document.getElementById('clusterRightName').innerHTML = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>${rc.name}`;
+  document.getElementById('cl-rf').textContent   = lc.rf;
+  document.getElementById('cl-kappa').textContent = lc.kappa;
+  document.getElementById('cl-sil').textContent   = lc.sil;
+  document.getElementById('cl-rmse').textContent  = lc.rmse;
+  document.getElementById('cl-exog').textContent  = lc.exog;
+  document.getElementById('cr-rf').textContent    = rc.rf;
+  document.getElementById('cr-kappa').textContent = rc.kappa;
+  document.getElementById('cr-sil').textContent   = rc.sil;
+  document.getElementById('cr-rmse').textContent  = rc.rmse;
+  document.getElementById('cr-exog').textContent  = rc.exog;
+
+  renderChartPane('trendChartWrap', 'trendFrame', REGION_DATA.canada.trend, REGION_DATA.chitwan.trend, r, '🍁 Canada', '🇳🇵 Chitwan');
+  renderChartPane('donutChartWrap', 'donutFrame', REGION_DATA.canada.donut, REGION_DATA.chitwan.donut, r, '🍁 Canada', '🇳🇵 Chitwan');
+
+  drawSeasonal(d.seasonal, d.seasonalPeaks);
+
+  showToast(`Switched to ${r === 'both' ? 'Canada + Chitwan combined' : r.charAt(0).toUpperCase()+r.slice(1)} data`);
+}
+
+/* ═══════════════════════════════════════════════════
+   SEASONAL BARS
+═══════════════════════════════════════════════════ */
+function drawSeasonal(data, peakIndices) {
+  const container = document.getElementById('seasonalBars');
+  container.innerHTML = '';
+  const maxVal = Math.max(...data);
+  const tooltip = document.getElementById('tooltip');
+  data.forEach((val, i) => {
+    const heightPct = (val / maxVal) * 100;
+    const wrap = document.createElement('div');
+    wrap.className = 'seasonal-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'seasonal-bar' + (peakIndices.includes(i) ? ' peak' : '');
+    bar.style.height = '0px';
+    bar.title = monthLabels[i] + ': ' + val + ' incidents';
+    bar.addEventListener('mouseenter', e => {
+      tooltip.textContent = monthLabels[i] + ': ' + val + ' incidents';
+      tooltip.style.left = (e.clientX+12)+'px';
+      tooltip.style.top  = (e.clientY-10)+'px';
+      tooltip.classList.add('show');
+    });
+    bar.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+    wrap.appendChild(bar);
+    container.appendChild(wrap);
+    setTimeout(() => { bar.style.height = (heightPct * 0.7) + 'px'; }, 200 + i*40);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   FILTERS
+═══════════════════════════════════════════════════ */
+function handleFilter() {
+  const time    = document.getElementById('timeFilter').value;
+  const species = document.getElementById('speciesFilter').value;
+  const risk    = document.getElementById('riskFilter').value;
+  showToast('Filtered: ' + time + 'yr · ' + species + ' · ' + risk);
+  document.querySelectorAll('.iframe-chart-wrap iframe').forEach(f => {
+    f.style.opacity = '0.4';
+    setTimeout(() => { f.style.opacity = '1'; }, 400);
+  });
+}
+
+/* ═══════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════ */
+function showToast(msg) {
+  const el = document.getElementById('toastEl');
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ═══════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  setRegion('both');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WildGuard – Risk Map</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --nav:         #2D4A2D;
+  --nav-hover:   #3a5e3a;
+  --forest:      #1e3320;
+  --sage:        #6b8f6b;
+  --sage-lt:     #a8c4a8;
+  --sage-bg:     #eef4ee;
+  --cream:       #f8faf8;
+  --white:       #ffffff;
+  --critical:    #c0392b;
+  --critical-bg: #fdf0ee;
+  --active:      #2e7d5e;
+  --active-bg:   #eaf5f0;
+  --text:        #1a2a1a;
+  --text-mid:    #4a604a;
+  --text-soft:   #7a967a;
+  --border:      #dae8da;
+  --shadow:      0 2px 12px rgba(45,74,45,.12);
+  --shadow-lg:   0 4px 24px rgba(45,74,45,.18);
+  --radius:      8px;
+  --font:        'Inter', sans-serif;
+  --mono:        'JetBrains Mono', monospace;
+}
+
+html, body {
+  height: 100%; overflow: hidden;
+  font-family: var(--font);
+  background: var(--cream);
+  color: var(--text);
+}
+
+/* NAVBAR  */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; height: 56px;
+  background: var(--nav); display: flex; align-items: center;
+  padding: 0 20px; z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.nav-brand {
+  font-size: 18px; font-weight: 700; color: #fff;
+  margin-right: 32px; white-space: nowrap;
+}
+.nav-brand span { color: var(--sage-lt); }
+.nav-links { display: flex; gap: 2px; flex: 1; }
+.nav-links a {
+  color: rgba(255,255,255,.75); text-decoration: none;
+  font-size: 13.5px; font-weight: 500;
+  padding: 6px 14px; border-radius: 6px;
+  transition: background .15s, color .15s;
+}
+.nav-links a:hover { background: var(--nav-hover); color: #fff; }
+.nav-links a.active { background: rgba(255,255,255,.15); color: #fff; }
+.nav-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.nav-icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,.75); padding: 6px; border-radius: 6px;
+  font-size: 18px; position: relative;
+}
+.nav-icon-btn:hover { background: var(--nav-hover); color: #fff; }
+.notif-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 7px; height: 7px; background: #e74c3c;
+  border-radius: 50%; border: 1.5px solid var(--nav);
+}
+.nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--sage); display: flex; align-items: center;
+  justify-content: center; font-size: 13px; font-weight: 700;
+  color: #fff; cursor: pointer;
+  border: 2px solid rgba(255,255,255,.3);
+}
+.nav-auth { display: flex; gap: 8px; }
+.btn-auth {
+  font-size: 13px; font-weight: 500; padding: 5px 14px;
+  border-radius: 6px; cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; transition: all .15s;
+}
+.btn-login {
+  background: none; border: 1.5px solid rgba(255,255,255,.4);
+  color: rgba(255,255,255,.85);
+}
+.btn-login:hover { background: rgba(255,255,255,.1); color: #fff; }
+.btn-register {
+  background: var(--sage-lt); border: 1.5px solid var(--sage-lt);
+  color: var(--forest); font-weight: 600;
+}
+.btn-register:hover { background: #fff; border-color: #fff; }
+
+/*  LAYOUT  */
+.app { display: flex; height: 100vh; padding-top: 56px; }
+
+/*  SIDEBAR */
+.sidebar {
+  width: 230px; flex-shrink: 0; background: var(--white);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; display: flex; flex-direction: column;
+  box-shadow: 2px 0 8px rgba(45,74,45,.06);
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.sidebar-section {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-section:last-child { border-bottom: none; }
+.sidebar-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text-soft); margin-bottom: 10px;
+}
+
+/* Layer toggles */
+.layer-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 0; cursor: pointer;
+}
+.layer-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.layer-name { font-size: 13px; color: var(--text-mid); flex: 1; font-weight: 500; }
+.toggle {
+  width: 32px; height: 18px; border-radius: 9px;
+  position: relative; cursor: pointer;
+  transition: background .2s; flex-shrink: 0;
+  border: none; background: var(--border);
+}
+.toggle.on { background: var(--nav); }
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px; border-radius: 50%; background: #fff;
+  transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.toggle.on::after { transform: translateX(14px); }
+
+/* Filters */
+.filter-group { margin-bottom: 10px; }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-label {
+  font-size: 11px; font-weight: 600; color: var(--text-soft);
+  margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px;
+}
+.filter-select {
+  width: 100%; padding: 7px 10px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  font-size: 13px; font-family: var(--font);
+  color: var(--text); background: var(--white); cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234a604a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.filter-select:focus { outline: none; border-color: var(--sage); }
+
+/* Hotspot cards */
+.hotspot-card {
+  background: var(--cream); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px;
+  margin-bottom: 8px; cursor: pointer; transition: all .2s;
+}
+.hotspot-card:last-child { margin-bottom: 0; }
+.hotspot-card:hover {
+  border-color: var(--sage); box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+.hotspot-card.selected { border-color: var(--nav); background: var(--sage-bg); }
+.hc-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 4px;
+}
+.hc-id { font-size: 11px; font-weight: 700; color: var(--text-soft); font-family: var(--mono); }
+.badge {
+  font-size: 10px; font-weight: 700; padding: 2px 7px;
+  border-radius: 20px; text-transform: uppercase; letter-spacing: .5px;
+}
+.badge-critical { background: var(--critical-bg); color: var(--critical); }
+.badge-active   { background: var(--active-bg);   color: var(--active); }
+.hc-name     { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.hc-species  { font-size: 12px; color: var(--text-mid); margin-bottom: 2px; }
+.hc-incidents { font-size: 12px; color: var(--text-soft); }
+.hc-incidents strong { color: var(--text); font-weight: 600; }
+
+/* - MAP CONTAINER - */
+.map-container {
+  flex: 1; position: relative; overflow: hidden; background: #1e3a5f;
+}
+
+/* Folium iframe layers - stacked, only one visible at a time */
+.map-iframe {
+  position: absolute;
+  top: 0; left: 0; width: 100%;
+  height: calc(100% - 44px);   /* leave space for bottom bar */
+  border: none;
+  display: none;                /* hidden by default */
+  z-index: 1;
+}
+.map-iframe.active { display: block; }
+
+/* Loading spinner */
+.map-loading {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: calc(100% - 44px);
+  background: #1a3a2a; z-index: 10;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,.6); gap: 12px;
+}
+.map-loading.visible { display: flex; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,.15);
+  border-top-color: var(--sage-lt);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* No layer selected */
+.no-layer-msg {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 2; color: rgba(255,255,255,.4);
+  text-align: center; font-size: 14px;
+  display: none; flex-direction: column;
+  align-items: center; gap: 10px;
+}
+
+/* Active layer badge */
+.active-layer-badge {
+  position: absolute;
+  top: 60px;        
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  background: rgba(45,74,45,.92);
+  color: #fff;
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+}
+
+/* Region toggle */
+.map-region-toggle {
+  position: absolute;
+  top: 14px;
+  left: 220px;      /* push it right so it doesn't overlap zoom */
+  z-index: 100;
+  display: flex;
+  background: rgba(255,255,255,.95);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  box-shadow: var(--shadow);
+}
+.region-btn {
+  padding: 6px 18px; border: none; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all .2s; font-family: var(--font);
+}
+.region-btn.active { background: var(--nav); color: #fff; }
+.region-btn:not(.active) { background: none; color: var(--text-mid); }
+.region-btn:not(.active):hover { background: var(--sage-bg); }
+
+/* Region label */
+.region-label {
+  position: absolute; top: 60px; left: 14px; z-index: 100;
+  background: rgba(255,255,255,.92); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 12px;
+  font-size: 12px; font-weight: 600; color: var(--text-mid);
+  box-shadow: var(--shadow);
+}
+
+/* Zoom controls */
+.map-controls {
+  position: absolute; top: 14px; right: 14px; z-index: 100;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.map-ctrl-btn {
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.95); border: 1.5px solid var(--border);
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; cursor: pointer;
+  font-size: 16px; font-weight: 700; color: var(--text-mid);
+  box-shadow: var(--shadow); transition: all .15s;
+}
+.map-ctrl-btn:hover { background: var(--nav); color: #fff; border-color: var(--nav); }
+
+/* Risk legend */
+.risk-legend {
+  position: absolute; bottom: 56px; right: 14px; z-index: 100;
+  background: rgba(255,255,255,.97); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 12px 14px;
+  box-shadow: var(--shadow); min-width: 140px;
+}
+.legend-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--text-soft); margin-bottom: 8px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 6px; font-size: 12px; font-weight: 500; color: var(--text-mid);
+}
+.legend-item:last-child { margin-bottom: 0; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.legend-dot.high   { background: #c0392b; }
+.legend-dot.medium { background: #e67e22; }
+.legend-dot.low    { background: #27ae60; }
+.legend-dot.live   { background: none; border: 2px dashed #3498db; }
+
+/* Zoom indicator */
+.zoom-indicator {
+  position: absolute; bottom: 56px; left: 14px; z-index: 100;
+  background: rgba(255,255,255,.9); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; font-family: var(--mono); color: var(--text-soft);
+}
+
+/* Live toast */
+.live-toast {
+  position: absolute; bottom: 56px; left: 50%;
+  transform: translateX(-50%); z-index: 300;
+  background: rgba(255,255,255,.98); border: 1.5px solid #3498db;
+  border-radius: 8px; padding: 10px 16px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: var(--shadow-lg); font-size: 13px; min-width: 280px;
+}
+.toast-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #3498db; flex-shrink: 0;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+.toast-close {
+  margin-left: auto; background: none; border: none;
+  cursor: pointer; color: var(--text-soft); font-size: 14px;
+}
+
+/* Bottom bar */
+.map-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,.97); border-top: 1px solid var(--border);
+  padding: 9px 16px; display: flex; align-items: center;
+  justify-content: space-between; font-size: 12px;
+  color: var(--text-soft); height: 44px;
+}
+.map-bottom-bar a {
+  color: var(--text-soft); text-decoration: none; margin-left: 16px;
+}
+.map-bottom-bar a:hover { color: var(--nav); }
+.map-bottom-actions { display: flex; gap: 8px; }
+.map-action-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: 1.5px solid var(--border);
+  border-radius: 6px; background: var(--white);
+  font-size: 12px; font-weight: 500; color: var(--text-mid);
+  cursor: pointer; transition: all .15s; font-family: var(--font);
+}
+.map-action-btn:hover { border-color: var(--nav); color: var(--nav); background: var(--sage-bg); }
+
+/* - DETAIL MODAL -*/
+.detail-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4);
+  z-index: 800; display: flex; align-items: center; justify-content: center;
+}
+.detail-panel {
+  background: var(--white); border-radius: 12px; padding: 24px;
+  max-width: 480px; width: 90%; box-shadow: var(--shadow-lg);
+  animation: slideIn .25s ease;
+}
+@keyframes slideIn {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.dp-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 16px;
+}
+.dp-title-group h2 { font-size: 20px; font-weight: 700; }
+.dp-title-group p  { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
+.dp-close {
+  background: none; border: 1.5px solid var(--border);
+  border-radius: 6px; width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 16px; color: var(--text-mid);
+}
+.dp-close:hover { background: var(--critical); border-color: var(--critical); color: #fff; }
+.dp-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 10px; margin-bottom: 16px;
+}
+.dp-stat {
+  background: var(--cream); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px; text-align: center;
+}
+.dp-stat-val { font-size: 24px; font-weight: 700; color: var(--nav); font-family: var(--mono); }
+.dp-stat-lbl { font-size: 11px; color: var(--text-soft); margin-top: 2px; text-transform: uppercase; }
+.dp-row {
+  display: flex; justify-content: space-between;
+  padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.dp-row-key { color: var(--text-soft); }
+.dp-row-val { font-weight: 500; color: var(--text); }
+.dp-actions { display: flex; gap: 8px; margin-top: 16px; }
+.dp-btn {
+  flex: 1; padding: 10px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: var(--font); border: 1.5px solid;
+}
+.dp-btn-primary { background: var(--nav); color: #fff; border-color: var(--nav); }
+.dp-btn-primary:hover { background: var(--forest); }
+.dp-btn-secondary { background: var(--white); color: var(--text-mid); border-color: var(--border); }
+.dp-btn-secondary:hover { border-color: var(--sage); color: var(--nav); }
+
+/* Mini bar chart */
+.mini-chart { margin-top: 12px; }
+.mini-chart-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--text-soft); margin-bottom: 8px;
+}
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.bar-month { font-size: 11px; color: var(--text-soft); width: 28px; font-family: var(--mono); }
+.bar-track { flex: 1; height: 14px; background: var(--sage-bg); border-radius: 3px; overflow: hidden; }
+.bar-fill  { height: 100%; border-radius: 3px; background: var(--nav); transition: width .6s; }
+.bar-fill.critical { background: var(--critical); }
+.bar-val   { font-size: 11px; font-weight: 600; color: var(--text-mid); width: 20px; font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-brand">Wild<span>Guard</span></div>
+  <div class="nav-links">
+    <a href="index.html">Dashboard</a>
+    <a href="wildguard_risk_map_html.html" class="active">Risk Map</a>
+    <a href="wildguard_animal_detection.html">Detection</a>
+    <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
+    <a href="wildguard_analytics_html_.html">Analytics</a>
+    <a href="wildguard_live_reports.html">Live Reports</a>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" onclick="toggleNotif()" title="Notifications">
+      🔔<span class="notif-dot" id="notifDot"></span>
+    </button>
+    <div class="nav-avatar" onclick="toggleProfile()">PK</div>
+    <div class="nav-auth">
+      <a href="wildguard_login_html_.html"    class="btn-auth btn-login">Login</a>
+      <a href="wildguard_login_html_.html" class="btn-auth btn-register">Register</a>
+    </div>
+  </div>
+</nav>
+
+<!-- APP -->
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Map Layers -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">Map Layers</div>
+
+      <div class="layer-item" onclick="toggleLayer('rf')">
+        <div class="layer-dot" style="background:#c0392b;"></div>
+        <span class="layer-name">RF Risk Heatmap</span>
+        <button class="toggle on" id="toggle-rf"></button>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('dbscan')">
+        <div class="layer-dot" style="background:#3498db;"></div>
+        <span class="layer-name">DBSCAN Hotspots</span>
+        <button class="toggle" id="toggle-dbscan"></button>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('kmeans')">
+        <div class="layer-dot" style="background:#27ae60;"></div>
+        <span class="layer-name">KMeans Regional</span>
+        <button class="toggle" id="toggle-kmeans"></button>
+      </div>
+
+      <div class="layer-item" onclick="toggleLayer('live')">
+        <div class="layer-dot" style="background:none;border:2px dashed #3498db;"></div>
+        <span class="layer-name">Live Reports</span>
+        <button class="toggle on" id="toggle-live"></button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">Filters</div>
+      <div class="filter-group">
+        <div class="filter-label">Species</div>
+        <select class="filter-select" id="filterSpecies" onchange="applyFilters()">
+          <option value="">All Species</option>
+          <option>Grizzly Bear</option>
+          <option>Grey Wolf</option>
+          <option>Cougar</option>
+          <option>Black Bear</option>
+          <option>Elk</option>
+          <option>Moose</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Month</div>
+        <select class="filter-select" id="filterMonth" onchange="applyFilters()">
+          <option value="">All Months</option>
+          <option value="jan">January</option>
+          <option value="feb">February</option>
+          <option value="mar">March</option>
+          <option value="apr">April</option>
+          <option value="may">May</option>
+          <option value="jun">June</option>
+          <option value="jul">July</option>
+          <option value="aug">August</option>
+          <option value="sep">September</option>
+          <option value="oct">October</option>
+          <option value="nov">November</option>
+          <option value="dec">December</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <div class="filter-label">Risk Level</div>
+        <select class="filter-select" id="filterRisk" onchange="applyFilters()">
+          <option value="">All Risks</option>
+          <option value="critical">Critical</option>
+          <option value="active">Active</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- DBSCAN Hotspot Cards -->
+    <div class="sidebar-section" style="flex:1;">
+      <div class="sidebar-label">DBSCAN Hotspots</div>
+
+      <div class="hotspot-card selected" id="card-hg204" onclick="selectHotspot('HG-204')">
+        <div class="hc-header">
+          <span class="hc-id">HG-204</span>
+          <span class="badge badge-critical">CRITICAL</span>
+        </div>
+        <div class="hc-name">Banff North</div>
+        <div class="hc-species">🐻 Grizzly Bear</div>
+        <div class="hc-incidents">Incidents: <strong>12</strong></div>
+      </div>
+
+      <div class="hotspot-card" id="card-hg112" onclick="selectHotspot('HG-112')">
+        <div class="hc-header">
+          <span class="hc-id">HG-112</span>
+          <span class="badge badge-active">ACTIVE</span>
+        </div>
+        <div class="hc-name">Jasper Pass</div>
+        <div class="hc-species">🐺 Grey Wolf</div>
+        <div class="hc-incidents">Incidents: <strong>07</strong></div>
+      </div>
+
+      <div class="hotspot-card" id="card-hg098" onclick="selectHotspot('HG-098')">
+        <div class="hc-header">
+          <span class="hc-id">HG-098</span>
+          <span class="badge badge-active">ACTIVE</span>
+        </div>
+        <div class="hc-name">Yoho Basin</div>
+        <div class="hc-species">🐱 Cougar</div>
+        <div class="hc-incidents">Incidents: <strong>04</strong></div>
+      </div>
+
+      <div class="hotspot-card" id="card-hg051" onclick="selectHotspot('HG-051')">
+        <div class="hc-header">
+          <span class="hc-id">HG-051</span>
+          <span class="badge badge-active">ACTIVE</span>
+        </div>
+        <div class="hc-name">Kootenay Valley</div>
+        <div class="hc-species">🐻 Black Bear</div>
+        <div class="hc-incidents">Incidents: <strong>03</strong></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAP AREA -->
+  <div class="map-container" id="mapContainer">
+
+    <!-- ── 3 FOLIUM MAP IFRAMES ── -->
+    <!-- RF Risk Heatmap — visible by default -->
+    <iframe id="layer-rf"
+            class="map-iframe active"
+            src="maps/canada_viz6_rf_risk_heatmap.html"
+            onload="mapLoaded('rf')"
+            allowfullscreen>
+    </iframe>
+
+    <!-- DBSCAN Hotspot Map -->
+    <iframe id="layer-dbscan"
+            class="map-iframe"
+            src="maps/canada_viz3_dbscan_hotspot_map.html"
+            onload="mapLoaded('dbscan')"
+            allowfullscreen>
+    </iframe>
+
+    <!-- KMeans Zones Map -->
+    <iframe id="layer-kmeans"
+            class="map-iframe"
+            src="maps/canada_viz7_kmeans_zones.html"
+            onload="mapLoaded('kmeans')"
+            allowfullscreen>
+    </iframe>
+
+    <!-- Loading spinner -->
+    <div class="map-loading" id="mapLoading">
+      <div class="spinner"></div>
+      <span id="loadingText">Loading map…</span>
+    </div>
+
+    <!-- No layer selected -->
+    <div class="no-layer-msg" id="noLayerMsg">
+      <div style="font-size:40px">🗺️</div>
+      <div>Select a layer from the sidebar</div>
+    </div>
+
+    <!-- Active layer badge -->
+    <div class="active-layer-badge" id="activeLayerBadge">
+      🔴 RF Risk Heatmap
+    </div>
+
+    <!-- Region toggle -->
+    <div class="map-region-toggle">
+      <button class="region-btn active" id="btn-canada"  onclick="switchRegion('canada')">Canada</button>
+      <button class="region-btn"        id="btn-chitwan" onclick="switchRegion('chitwan')">Chitwan</button>
+    </div>
+
+    <!-- Region label -->
+    <div class="region-label" id="regionLabel">🍁 Parks Canada</div>
+
+    <!-- Zoom controls -->
+    <div class="map-controls">
+      <button class="map-ctrl-btn" onclick="zoomIn()">+</button>
+      <button class="map-ctrl-btn" onclick="zoomOut()">−</button>
+    </div>
+
+
+    <!-- Zoom indicator -->
+    <div class="zoom-indicator" id="zoomIndicator">Zoom: 4×</div>
+
+    <!-- Live toast -->
+    <div class="live-toast" id="liveToast">
+      <div class="toast-dot"></div>
+      <div class="toast-text">
+        <strong>LIVE REPORT</strong> — Grizzly sighting near Banff (2 min ago)
+      </div>
+      <button class="toast-close" onclick="dismissToast()">✕</button>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="map-bottom-bar">
+      <div>
+        <span>WildGuard</span>
+        <span style="color:var(--border);margin:0 6px">|</span>
+        <span>© 2024 WildGuard — Stewardship through Data</span>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Field Protocol</a>
+      </div>
+      <div class="map-bottom-actions">
+        <button class="map-action-btn" onclick="locateUser()">📍 My Location</button>
+        <button class="map-action-btn" onclick="exportMap()">⬇ Export Map</button>
+      </div>
+    </div>
+
+  </div><!-- /map-container -->
+
+</div><!-- /app -->
+
+
+<!-- DETAIL MODAL -->
+<div class="detail-overlay" id="detailOverlay"
+     style="display:none;" onclick="closeDetailOutside(event)">
+  <div class="detail-panel">
+    <div class="dp-header">
+      <div class="dp-title-group">
+        <h2 id="dpTitle">HG-204 — Banff North</h2>
+        <p  id="dpSubtitle">Grizzly Bear · Critical · Banff National Park</p>
+      </div>
+      <button class="dp-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="dp-grid">
+      <div class="dp-stat">
+        <div class="dp-stat-val" id="dpIncidents">12</div>
+        <div class="dp-stat-lbl">Total Incidents</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dp-stat-val" id="dpRisk" style="color:var(--critical)">HIGH</div>
+        <div class="dp-stat-lbl">Risk Score</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dp-stat-val" id="dpPeak">Jul</div>
+        <div class="dp-stat-lbl">Peak Month</div>
+      </div>
+      <div class="dp-stat">
+        <div class="dp-stat-val" id="dpRadius">4.2km</div>
+        <div class="dp-stat-lbl">Cluster Radius</div>
+      </div>
+    </div>
+    <div class="dp-row"><span class="dp-row-key">Region</span>      <span class="dp-row-val" id="dpRegion">Banff National Park, AB</span></div>
+    <div class="dp-row"><span class="dp-row-key">Coordinates</span> <span class="dp-row-val" id="dpCoords">51.4968° N, 115.9281° W</span></div>
+    <div class="dp-row"><span class="dp-row-key">Last Incident</span><span class="dp-row-val" id="dpLast">July 6, 2024</span></div>
+    <div class="dp-row"><span class="dp-row-key">ML Confidence</span><span class="dp-row-val" id="dpConf">94.2%</span></div>
+    <div class="dp-row">
+      <span class="dp-row-key">Status</span>
+      <span class="dp-row-val">
+        <span class="badge badge-critical" id="dpStatus">CRITICAL</span>
+      </span>
+    </div>
+    <div class="mini-chart">
+      <div class="mini-chart-title">Monthly Incident Trend</div>
+      <div id="barChartRows"></div>
+    </div>
+    <div class="dp-actions">
+      <button class="dp-btn dp-btn-primary">Generate Report</button>
+      <button class="dp-btn dp-btn-secondary" onclick="closeDetail()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const HOTSPOTS = {
+  canada: {
+    'HG-204': {
+      name:'Banff North', species:'Grizzly Bear', icon:'🐻',
+      incidents:12, status:'critical', peak:'July',
+      region:'Banff National Park, AB',
+      coords:'51.4968° N, 115.9281° W',
+      last:'July 6, 2024', conf:'94.2%', radius:'4.2km',
+      monthly:[1,0,2,1,3,5,12,8,4,2,1,0], cardEl:'card-hg204'
+    },
+    'HG-112': {
+      name:'Jasper Pass', species:'Grey Wolf', icon:'🐺',
+      incidents:7, status:'active', peak:'August',
+      region:'Jasper National Park, AB',
+      coords:'52.8734° N, 118.0814° W',
+      last:'July 3, 2024', conf:'87.1%', radius:'3.1km',
+      monthly:[0,0,1,1,2,3,7,9,5,2,0,0], cardEl:'card-hg112'
+    },
+    'HG-098': {
+      name:'Yoho Basin', species:'Cougar', icon:'🐱',
+      incidents:4, status:'active', peak:'June',
+      region:'Yoho National Park, BC',
+      coords:'51.4500° N, 116.4900° W',
+      last:'July 1, 2024', conf:'79.4%', radius:'2.8km',
+      monthly:[0,0,0,1,2,4,3,2,1,1,0,0], cardEl:'card-hg098'
+    },
+    'HG-051': {
+      name:'Kootenay Valley', species:'Black Bear', icon:'🐻',
+      incidents:3, status:'active', peak:'September',
+      region:'Kootenay National Park, BC',
+      coords:'50.8921° N, 115.9742° W',
+      last:'June 28, 2024', conf:'72.8%', radius:'2.2km',
+      monthly:[0,0,0,0,1,2,3,4,3,1,0,0], cardEl:'card-hg051'
+    }
+  },
+  chitwan: {
+    'CT-301': {
+      name:'Chitwan Core', species:'Bengal Tiger', icon:'🐅',
+      incidents:9, status:'critical', peak:'March',
+      region:'Chitwan National Park Core, Nepal',
+      coords:'27.5025° N, 84.3544° E',
+      last:'March 15, 2017', conf:'89.3%', radius:'3.8km',
+      monthly:[3,4,9,7,5,4,2,1,2,3,4,5], cardEl:'card-ct301'
+    },
+    'CT-188': {
+      name:'Rapti Buffer Zone', species:'One-Horned Rhino', icon:'🦏',
+      incidents:5, status:'active', peak:'April',
+      region:'Rapti Buffer Zone, Chitwan',
+      coords:'27.5711° N, 84.2967° E',
+      last:'April 2, 2017', conf:'81.7%', radius:'2.9km',
+      monthly:[1,2,4,5,4,3,2,1,2,3,3,2], cardEl:'card-ct188'
+    },
+    'CT-092': {
+      name:'Narayani East', species:'Sloth Bear', icon:'🐻',
+      incidents:3, status:'active', peak:'May',
+      region:'Narayani East Corridor, Chitwan',
+      coords:'27.4889° N, 84.4123° E',
+      last:'May 10, 2017', conf:'74.2%', radius:'2.1km',
+      monthly:[0,1,2,3,3,2,1,1,1,2,2,1], cardEl:'card-ct092'
+    }
+  }
+};
+
+/* Folium map src paths per region per layer */
+const MAP_SOURCES = {
+  canada: {
+    rf:     'maps/canada_viz6_rf_risk_heatmap.html',
+    dbscan: 'maps/canada_viz3_dbscan_hotspot_map.html',
+    kmeans: 'maps/canada_viz7_kmeans_zones.html'
+  },
+  chitwan: {
+    rf:     'maps/chitwan_viz1_conflict_heatmap.html',
+    dbscan: 'maps/chitwan_viz3_dbscan_hotspot.html',
+    kmeans: 'maps/chitwan_viz2_kmeans_zones_map.html'
+  }
+};
+
+const LAYER_LABELS = {
+  rf:     '🔴 RF Risk Heatmap',
+  dbscan: '🔵 DBSCAN Hotspots',
+  kmeans: '🟢 KMeans Regional Zones'
+};
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun',
+                'Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* ── STATE ── */
+let currentRegion  = 'canada';
+let activeLayer    = 'rf';
+let toggleState    = { rf:true, dbscan:false, kmeans:false, live:true };
+let iframeLoaded   = { rf:false, dbscan:false, kmeans:false };
+let currentHotspot = 'HG-204';
+let zoomLevel      = 4;
+let toastTimer     = null;
+
+/* 
+   LAYER TOGGLE
+ */
+function toggleLayer(name) {
+  /* Live Reports - just shows/hides toast */
+  if (name === 'live') {
+    toggleState.live = !toggleState.live;
+    document.getElementById('toggle-live')
+            .classList.toggle('on', toggleState.live);
+    document.getElementById('liveToast').style.display =
+      toggleState.live ? 'flex' : 'none';
+    return;
+  }
+
+  /* Clicking already-active layer - turn off */
+  if (activeLayer === name && toggleState[name]) {
+    toggleState[name] = false;
+    document.getElementById('toggle-'+name).classList.remove('on');
+    document.getElementById('layer-'+name).classList.remove('active');
+    activeLayer = null;
+    document.getElementById('activeLayerBadge').style.display = 'none';
+    document.getElementById('noLayerMsg').style.display = 'flex';
+    return;
+  }
+
+  /* Turn off all map layers */
+  ['rf','dbscan','kmeans'].forEach(n => {
+    toggleState[n] = false;
+    document.getElementById('toggle-'+n).classList.remove('on');
+    document.getElementById('layer-'+n).classList.remove('active');
+  });
+
+  /* Turn on selected */
+  toggleState[name] = true;
+  activeLayer = name;
+  document.getElementById('toggle-'+name).classList.add('on');
+  document.getElementById('noLayerMsg').style.display = 'none';
+
+  if (!iframeLoaded[name]) {
+    document.getElementById('mapLoading').classList.add('visible');
+    document.getElementById('loadingText').textContent =
+      'Loading ' + LAYER_LABELS[name].replace(/^.{2}/,'') + '…';
+  }
+
+  document.getElementById('layer-'+name).classList.add('active');
+
+  const badge = document.getElementById('activeLayerBadge');
+  badge.textContent = LAYER_LABELS[name];
+  badge.style.display = 'block';
+
+  showToast('Switched to ' + LAYER_LABELS[name].replace(/^.{2}/,'').trim());
+}
+
+function mapLoaded(name) {
+  iframeLoaded[name] = true;
+  document.getElementById('mapLoading').classList.remove('visible');
+}
+
+/* 
+   REGION SWITCH — Canada ↔ Chitwan
+   Swaps map iframe sources + sidebar cards
+*/
+function switchRegion(r) {
+  currentRegion = r;
+
+  document.getElementById('btn-canada')
+          .classList.toggle('active', r === 'canada');
+  document.getElementById('btn-chitwan')
+          .classList.toggle('active', r === 'chitwan');
+
+  /* Update region label */
+  document.getElementById('regionLabel').textContent =
+    r === 'chitwan' ? '🇳🇵 Chitwan National Park' : '🍁 Parks Canada';
+
+  /* Swap all 3 iframe sources to correct region */
+  const sources = MAP_SOURCES[r];
+  document.getElementById('layer-rf').src     = sources.rf;
+  document.getElementById('layer-dbscan').src  = sources.dbscan;
+  document.getElementById('layer-kmeans').src  = sources.kmeans;
+
+  /* Reset loaded state so spinner shows when switching */
+  iframeLoaded = { rf:false, dbscan:false, kmeans:false };
+  if (activeLayer) {
+    document.getElementById('mapLoading').classList.add('visible');
+    document.getElementById('loadingText').textContent =
+      'Loading ' + LAYER_LABELS[activeLayer].replace(/^.{2}/,'') + '…';
+  }
+
+  /* Update sidebar hotspot cards */
+  updateHotspotCards(r);
+
+  showToast(r === 'chitwan'
+    ? '🇳🇵 Switched to Chitwan National Park, Nepal'
+    : '🍁 Switched to Parks Canada, Canada');
+}
+
+/*  Rebuild sidebar hotspot cards for selected region */
+function updateHotspotCards(r) {
+  const container = document.querySelector('.sidebar-section:last-child');
+  if (!container) return;
+
+  const hotspots = HOTSPOTS[r];
+  const firstId  = Object.keys(hotspots)[0];
+  currentHotspot = firstId;
+
+  let html = '<div class="sidebar-label">DBSCAN Hotspots</div>';
+  Object.entries(hotspots).forEach(([id, hs], idx) => {
+    html += `
+      <div class="hotspot-card ${idx === 0 ? 'selected' : ''}"
+           id="${hs.cardEl}" onclick="selectHotspot('${id}')">
+        <div class="hc-header">
+          <span class="hc-id">${id}</span>
+          <span class="badge badge-${hs.status}">${hs.status.toUpperCase()}</span>
+        </div>
+        <div class="hc-name">${hs.name}</div>
+        <div class="hc-species">${hs.icon} ${hs.species}</div>
+        <div class="hc-incidents">Incidents: <strong>${String(hs.incidents).padStart(2,'0')}</strong></div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+/* 
+   FILTERS
+*/
+function applyFilters() {
+  const species = document.getElementById('filterSpecies').value;
+  const risk    = document.getElementById('filterRisk').value;
+
+  const hotspots = HOTSPOTS[currentRegion];
+  Object.entries(hotspots).forEach(([id, hs]) => {
+    const card = document.getElementById(hs.cardEl);
+    if (!card) return;
+    let show = true;
+    if (species && hs.species !== species) show = false;
+    if (risk    && hs.status  !== risk)    show = false;
+    card.style.display = show ? '' : 'none';
+  });
+
+  const month = document.getElementById('filterMonth').value;
+  let msg = 'Filters applied';
+  if (species) msg += ' · ' + species;
+  if (month)   msg += ' · ' + month.charAt(0).toUpperCase() + month.slice(1);
+  if (risk)    msg += ' · ' + risk.toUpperCase();
+  showToast(msg);
+}
+
+/* 
+   HOTSPOT CARD SELECTION
+*/
+function selectHotspot(id) {
+  currentHotspot = id;
+  const hotspots = HOTSPOTS[currentRegion];
+
+  Object.values(hotspots).forEach(hs => {
+    const card = document.getElementById(hs.cardEl);
+    if (card) card.classList.toggle('selected', hs === hotspots[id]);
+  });
+
+  /* Switch to DBSCAN layer so hotspot is visible */
+  if (activeLayer !== 'dbscan') toggleLayer('dbscan');
+
+  openDetail(id);
+}
+
+/*
+   DETAIL MODAL
+*/
+function openDetail(id) {
+  id = id || currentHotspot;
+  const hs = HOTSPOTS[currentRegion][id];
+  if (!hs) return;
+
+  document.getElementById('dpTitle').textContent =
+    id + ' — ' + hs.name;
+  document.getElementById('dpSubtitle').textContent =
+    hs.species + ' · ' +
+    hs.status.charAt(0).toUpperCase() + hs.status.slice(1) +
+    ' · ' + hs.region;
+  document.getElementById('dpIncidents').textContent = hs.incidents;
+  document.getElementById('dpRisk').textContent =
+    hs.status === 'critical' ? 'HIGH' : 'MED';
+  document.getElementById('dpRisk').style.color =
+    hs.status === 'critical' ? 'var(--critical)' : 'var(--active)';
+  document.getElementById('dpPeak').textContent   = hs.peak.slice(0,3);
+  document.getElementById('dpRadius').textContent = hs.radius;
+  document.getElementById('dpRegion').textContent = hs.region;
+  document.getElementById('dpCoords').textContent = hs.coords;
+  document.getElementById('dpLast').textContent   = hs.last;
+  document.getElementById('dpConf').textContent   = hs.conf;
+  document.getElementById('dpStatus').textContent = hs.status.toUpperCase();
+  document.getElementById('dpStatus').className =
+    'badge badge-' + (hs.status === 'critical' ? 'critical' : 'active');
+
+  const max  = Math.max(...hs.monthly, 1);
+  document.getElementById('barChartRows').innerHTML =
+    hs.monthly.map((v, i) => `
+      <div class="bar-row">
+        <span class="bar-month">${MONTHS[i]}</span>
+        <div class="bar-track">
+          <div class="bar-fill ${hs.status==='critical'?'critical':''}"
+               style="width:${Math.round(v/max*100)}%"></div>
+        </div>
+        <span class="bar-val">${v}</span>
+      </div>`).join('');
+
+  document.getElementById('detailOverlay').style.display = 'flex';
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').style.display = 'none';
+}
+
+function closeDetailOutside(e) {
+  if (e.target === document.getElementById('detailOverlay')) closeDetail();
+}
+
+/* 
+   ZOOM
+ */
+function zoomIn()  { zoomLevel = Math.min(18, zoomLevel+1); updateZoom(); }
+function zoomOut() { zoomLevel = Math.max(2,  zoomLevel-1); updateZoom(); }
+function updateZoom() {
+  document.getElementById('zoomIndicator').textContent = 'Zoom: ' + zoomLevel + '×';
+  showToast('Zoom level: ' + zoomLevel + '×');
+}
+
+/* 
+   ACTIONS
+ */
+function locateUser() {
+  showToast('📍 Requesting GPS location…');
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => showToast(
+        '📍 Located: ' +
+        pos.coords.latitude.toFixed(4) + '° N, ' +
+        Math.abs(pos.coords.longitude).toFixed(4) + (currentRegion === 'chitwan' ? '° E' : '° W')
+      ),
+      () => showToast('📍 Location access denied')
+    );
+  } else {
+    showToast('📍 Geolocation not supported');
+  }
+}
+
+function exportMap() {
+  if (!activeLayer) { showToast('No active layer to export'); return; }
+  const src = MAP_SOURCES[currentRegion][activeLayer];
+  const a   = document.createElement('a');
+  a.href     = src;
+  a.download = src.split('/').pop();
+  a.click();
+  showToast('⬇ Downloading: ' + a.download);
+}
+
+function dismissToast() {
+  toggleState.live = false;
+  document.getElementById('toggle-live').classList.remove('on');
+  document.getElementById('liveToast').style.display = 'none';
+}
+
+/* 
+   TOAST
+ */
+function showToast(msg) {
+  const toast  = document.getElementById('liveToast');
+  const textEl = toast.querySelector('.toast-text');
+  textEl.innerHTML = msg;
+  toast.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    if (toggleState.live) {
+      textEl.innerHTML =
+        '<strong>LIVE REPORT</strong> — ' +
+        (currentRegion === 'chitwan'
+          ? 'Tiger sighting near Chitwan Core (2 min ago)'
+          : 'Grizzly sighting near Banff (2 min ago)');
+    } else {
+      toast.style.display = 'none';
+    }
+  }, 3000);
+}
+
+/*
+   NAVBAR STUBS
+*/
+function toggleNotif() {
+  const dot = document.getElementById('notifDot');
+  if (dot) dot.style.display = dot.style.display === 'none' ? '' : 'none';
+  showToast('🔔 3 new wildlife alerts');
+}
+function toggleProfile() {
+  showToast('👤 Prashamsa KC · Geospatial Visualization Specialist');
+}
+
+/* 
+   INIT
+*/
+window.addEventListener('DOMContentLoaded', () => {
+  // Canada is default — cards already in HTML
+  // RF layer is default — badge already in HTML
+});
+</script>
+</body>
+</html>

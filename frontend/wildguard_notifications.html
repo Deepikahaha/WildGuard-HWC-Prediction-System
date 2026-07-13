@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WildGuard – Notifications</title>
+<style>
+  /* ── TOKENS ───────────────────────────────────────── */
+  :root {
+    --forest:       #2D4A2D;
+    --forest-dark:  #1E3320;
+    --forest-mid:   #3B5E3B;
+    --sage:         #8FAF8F;
+    --sage-light:   #C8DCC8;
+    --sage-pale:    #EEF5EE;
+    --cream:        #F2F4F2;
+    --white:        #FFFFFF;
+    --red:          #DC2626;
+    --red-bg:       #FEF2F2;
+    --red-border:   #FECACA;
+    --amber:        #D97706;
+    --amber-bg:     #FFFBEB;
+    --amber-border: #FDE68A;
+    --green-ok:     #16A34A;
+    --green-bg:     #F0FDF4;
+    --green-border: #BBF7D0;
+    --slate-bg:     #F8FAFC;
+    --slate-border: #E2E8F0;
+    --blue-dot:     #3B82F6;
+    --text-primary: #1A2B1A;
+    --text-muted:   #6B7B6B;
+    --text-light:   #9CAD9C;
+    --border:       #DDE8DD;
+    --radius:       10px;
+    --shadow-sm:    0 1px 3px rgba(0,0,0,.07);
+    --shadow-md:    0 4px 20px rgba(0,0,0,.09);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--cream);
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── NAV ──────────────────────────────────────────── */
+  nav {
+    background: var(--forest);
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.28);
+    flex-shrink: 0;
+  }
+  .nav-brand {
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--white);
+    letter-spacing: .3px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    list-style: none;
+  }
+  .nav-links a {
+    color: rgba(255,255,255,.7);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 6px 11px;
+    border-radius: 5px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .nav-links a:hover  { background: rgba(255,255,255,.12); color: #fff; }
+  .nav-links a.active {
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid var(--sage-light);
+    border-radius: 5px 5px 0 0;
+    padding-bottom: 4px;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-left: auto;
+  }
+  .nav-bell {
+    position: relative;
+    color: rgba(255,255,255,.85);
+    cursor: pointer;
+    transition: color .15s;
+    line-height: 0;
+  }
+  .nav-bell:hover { color: #fff; }
+  .nav-badge-count {
+    position: absolute;
+    top: -5px; right: -7px;
+    background: #EF4444;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+    border: 1.5px solid var(--forest);
+    line-height: 1;
+  }
+  .nav-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--sage);
+    border: 2px solid rgba(255,255,255,.35);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--forest-dark);
+    cursor: pointer;
+    transition: border-color .15s;
+    flex-shrink: 0;
+  }
+  .nav-avatar:hover { border-color: rgba(255,255,255,.7); }
+
+  /* ── PAGE ─────────────────────────────────────────── */
+  .page-wrap {
+    flex: 1;
+    padding: 40px 24px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .inner {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── HEADER ROW ───────────────────────────────────── */
+  .notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .notif-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .notif-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -.3px;
+  }
+  .notif-count-badge {
+    background: var(--forest);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 2px 9px;
+    border-radius: 100px;
+    letter-spacing: .2px;
+    min-width: 28px;
+    text-align: center;
+  }
+
+  /* Toggle: All / Unread */
+  .filter-toggle {
+    display: flex;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .filter-btn {
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .filter-btn.active {
+    background: var(--forest);
+    color: var(--white);
+    border-radius: 6px;
+  }
+
+  /* ── NOTIFICATION LIST ────────────────────────────── */
+  .notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* single card */
+  .notif-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: box-shadow .15s, transform .12s, border-color .15s;
+    position: relative;
+    overflow: hidden;
+    animation: slideIn .22s ease both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .notif-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+  }
+  .notif-card.read { opacity: .72; }
+  .notif-card.read:hover { opacity: 1; }
+
+  /* left accent bar */
+  .notif-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: var(--radius) 0 0 var(--radius);
+  }
+  .notif-card.type-high::before   { background: var(--red); }
+  .notif-card.type-medium::before { background: var(--amber); }
+  .notif-card.type-system::before { background: var(--forest); }
+  .notif-card.type-general::before{ background: var(--slate-border); }
+
+  /* icon */
+  .notif-icon-wrap {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-left: 6px;
+  }
+  .notif-icon-wrap svg { width: 17px; height: 17px; }
+
+  .icon-high   { background: var(--red-bg);    color: var(--red); }
+  .icon-medium { background: var(--amber-bg);  color: var(--amber); }
+  .icon-system { background: var(--green-bg);  color: var(--green-ok); }
+  .icon-general{ background: var(--slate-bg);  color: #64748B; }
+
+  /* body */
+  .notif-body { flex: 1; min-width: 0; }
+  .notif-top-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .notif-title-text {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.35;
+    flex: 1;
+  }
+  .notif-time-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+  }
+  .notif-time {
+    font-size: 11.5px;
+    color: var(--text-light);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .unread-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--blue-dot);
+    flex-shrink: 0;
+  }
+  .notif-desc {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* dismiss btn */
+  .notif-dismiss {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: none; border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity .15s, color .15s, background .15s;
+    line-height: 0;
+    display: none;
+  }
+  .notif-card:hover .notif-dismiss { opacity: 1; display: flex; }
+  .notif-dismiss:hover { color: var(--red); background: var(--red-bg); }
+
+  /* ── FOOTER ACTIONS ───────────────────────────────── */
+  .notif-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .btn-mark-read {
+    background: none;
+    border: none;
+    color: var(--forest-mid);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color .15s;
+    padding: 4px 8px;
+    border-radius: 5px;
+  }
+  .btn-mark-read:hover { color: var(--forest); background: var(--sage-pale); }
+
+  .btn-load-more {
+    width: 100%;
+    max-width: 280px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 24px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .1s;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-load-more:hover  { background: var(--sage-pale); border-color: var(--sage); }
+  .btn-load-more:active { transform: scale(.98); }
+  .btn-load-more:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+  /* ── EMPTY STATE ──────────────────────────────────── */
+  .empty-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 56px 24px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+  .empty-state svg { color: var(--sage); }
+  .empty-state p   { font-size: 13.5px; }
+
+  /* ── TOAST ────────────────────────────────────────── */
+  #toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--forest-dark);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,.22);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .22s, transform .22s;
+    pointer-events: none; z-index: 999;
+    display: flex; align-items: center; gap: 8px;
+    max-width: 300px;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── FOOTER ───────────────────────────────────────── */
+  footer {
+    background: var(--forest-dark);
+    color: rgba(255,255,255,.5);
+    font-size: 12px;
+    padding: 11px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  footer strong { color: rgba(255,255,255,.85); }
+  .footer-links { display: flex; gap: 18px; }
+  .footer-links a { color: rgba(255,255,255,.5); text-decoration: none; transition: color .15s; }
+  .footer-links a:hover { color: rgba(255,255,255,.9); }
+
+/* ── WILDGUARD NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+  </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="wg-nav-badge">3</span>
+    </button>
+    <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
+  </div>
+</nav>
+
+<!-- PAGE -->
+<div class="page-wrap">
+  <div class="inner">
+
+    <!-- HEADER -->
+    <div class="notif-header">
+      <div class="notif-title-row">
+        <span class="notif-title">Notifications</span>
+        <span class="notif-count-badge" id="totalBadge">12</span>
+      </div>
+      <div class="filter-toggle">
+        <button class="filter-btn active" id="btnAll"    onclick="setFilter('all')">All</button>
+        <button class="filter-btn"        id="btnUnread" onclick="setFilter('unread')">Unread</button>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div class="notif-list" id="notifList"></div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" id="emptyState">
+      <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <p>No unread notifications</p>
+    </div>
+
+    <!-- FOOTER ACTIONS -->
+    <div class="notif-footer" id="notifFooter">
+      <button class="btn-mark-read" onclick="markAllRead()">Mark all as read</button>
+      <button class="btn-load-more" id="loadMoreBtn" onclick="loadMore()">Load more</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="wg-footer">
+  <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
+  <div class="wg-footer-links">
+    <a href="wildguard_privacy_policy.html">Privacy Policy</a>
+    <a href="wildguard_terms_of_service.html">Terms of Service</a>
+    <a href="wildguard_field_protocol.html">Field Protocol</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"><span id="toastMsg"></span></div>
+
+<script>
+/* ── DATA ─────────────────────────────────────────── */
+const ALL_NOTIFICATIONS = [
+  {
+    id: 1, type: 'high', unread: true,
+    title: 'HIGH risk alert — Black Bear, Banff',
+    desc:  'Motion detected near Sector 7 trail entrance. Immediate verification required.',
+    time:  '2m ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`
+  },
+  {
+    id: 2, type: 'high', unread: true,
+    title: 'HIGH risk alert — Wildfire Detection',
+    desc:  'Thermal sensors triggered in Northern Ridge. Fire response teams notified.',
+    time:  '15m ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 22c4.418 0 8-3.582 8-8 0-3-2-6-4-8-1 2-2 3-4 3-2 0-3-2-2-4-3 2-4 5-4 9 0 4.418 3.582 8 8 8z"/></svg>`
+  },
+  {
+    id: 3, type: 'medium', unread: false,
+    title: 'MEDIUM risk — Unusual Migration Pattern',
+    desc:  'Herd movement in Zone B deviates from seasonal norms by 14%.',
+    time:  '1h ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+  },
+  {
+    id: 4, type: 'medium', unread: true,
+    title: 'MEDIUM risk — Perimeter Breach',
+    desc:  'Fence integrity compromised at Station 12. Possible local fauna activity.',
+    time:  '3h ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>`
+  },
+  {
+    id: 5, type: 'system', unread: false,
+    title: 'System — Security Patch Applied',
+    desc:  'WildGuard Core v4.2.1 successfully deployed to all regional nodes.',
+    time:  '5h ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`
+  },
+  {
+    id: 6, type: 'system', unread: false,
+    title: 'System — Station 04 Online',
+    desc:  'Solar array maintenance complete. Power levels at 100%.',
+    time:  '8h ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>`
+  },
+  {
+    id: 7, type: 'general', unread: false,
+    title: 'General — Weekly Report Ready',
+    desc:  'The ecosystem health report for July 14–21 is now available for review.',
+    time:  'Yesterday',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`
+  },
+  {
+    id: 8, type: 'general', unread: false,
+    title: 'General — New Field Protocol',
+    desc:  'Updated guidelines for drone-assisted wildlife tracking have been published.',
+    time:  '2 days ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`
+  },
+];
+
+/* Extra notifications loaded on "Load more" */
+const MORE_NOTIFICATIONS = [
+  {
+    id: 9, type: 'high', unread: false,
+    title: 'HIGH risk alert — Grizzly Bear, Jasper',
+    desc:  'Grizzly sighted within 200m of campground boundary. Ranger dispatch initiated.',
+    time:  '3 days ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`
+  },
+  {
+    id: 10, type: 'medium', unread: false,
+    title: 'MEDIUM risk — Water Source Contamination Risk',
+    desc:  'Upstream activity flagged near Zone C reservoir. Testing recommended.',
+    time:  '3 days ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+  },
+  {
+    id: 11, type: 'system', unread: false,
+    title: 'System — Sensor Array Calibrated',
+    desc:  'All 24 motion sensors in Sector 3 recalibrated. Baseline updated.',
+    time:  '4 days ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`
+  },
+  {
+    id: 12, type: 'general', unread: false,
+    title: 'General — Monthly Data Export Available',
+    desc:  'June 2024 conflict incident data is ready to download from Analytics.',
+    time:  '5 days ago',
+    icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>`
+  },
+];
+
+/* ── STATE ────────────────────────────────────────── */
+let notifications  = [...ALL_NOTIFICATIONS];
+let currentFilter  = 'all';
+let moreLoaded     = false;
+const dismissedIds = new Set();
+
+/* ── RENDER ───────────────────────────────────────── */
+function getIconClass(type) {
+  return { high: 'icon-high', medium: 'icon-medium', system: 'icon-system', general: 'icon-general' }[type] || 'icon-general';
+}
+
+function renderList() {
+  const list   = document.getElementById('notifList');
+  const empty  = document.getElementById('emptyState');
+  const footer = document.getElementById('notifFooter');
+
+  const visible = notifications.filter(n => {
+    if (dismissedIds.has(n.id)) return false;
+    if (currentFilter === 'unread') return n.unread;
+    return true;
+  });
+
+  if (visible.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'flex';
+    footer.style.display = 'none';
+    return;
+  }
+
+  empty.style.display  = 'none';
+  footer.style.display = 'flex';
+
+  list.innerHTML = visible.map((n, i) => `
+    <div class="notif-card type-${n.type} ${n.unread ? '' : 'read'}"
+         id="card-${n.id}"
+         onclick="handleCardClick(${n.id})"
+         style="animation-delay: ${i * 0.04}s">
+
+      <div class="notif-icon-wrap ${getIconClass(n.type)}">${n.icon}</div>
+
+      <div class="notif-body">
+        <div class="notif-top-row">
+          <div class="notif-title-text">${n.title}</div>
+          <div class="notif-time-row">
+            <span class="notif-time">${n.time}</span>
+            ${n.unread ? '<span class="unread-dot"></span>' : ''}
+          </div>
+        </div>
+        <div class="notif-desc">${n.desc}</div>
+      </div>
+
+      <button class="notif-dismiss" onclick="dismissCard(event, ${n.id})" title="Dismiss">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>`).join('');
+
+  updateCounts();
+}
+
+/* ── INTERACTIONS ─────────────────────────────────── */
+function handleCardClick(id) {
+  const n = notifications.find(x => x.id === id);
+  if (!n) return;
+  if (n.unread) {
+    n.unread = false;
+    renderList();
+    updateCounts();
+    showToast('Notification marked as read');
+  } else {
+    showToast(`Opening: ${n.title}`);
+  }
+}
+
+function dismissCard(e, id) {
+  e.stopPropagation();
+  const card = document.getElementById(`card-${id}`);
+  if (card) {
+    card.style.transition = 'opacity .2s, transform .2s, max-height .25s, margin .25s, padding .25s';
+    card.style.opacity    = '0';
+    card.style.transform  = 'translateX(20px)';
+    card.style.maxHeight  = card.offsetHeight + 'px';
+    requestAnimationFrame(() => {
+      card.style.maxHeight = '0';
+      card.style.marginBottom = '0';
+      card.style.padding   = '0';
+      card.style.border    = 'none';
+    });
+    setTimeout(() => {
+      dismissedIds.add(id);
+      renderList();
+    }, 260);
+  }
+  showToast('Notification dismissed');
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.getElementById('btnAll').classList.toggle('active',    f === 'all');
+  document.getElementById('btnUnread').classList.toggle('active', f === 'unread');
+  renderList();
+}
+
+function markAllRead() {
+  notifications.forEach(n => n.unread = false);
+  renderList();
+  updateCounts();
+  showToast('All notifications marked as read');
+}
+
+function loadMore() {
+  if (moreLoaded) { showToast('No more notifications to load'); return; }
+  const btn = document.getElementById('loadMoreBtn');
+  btn.disabled = true;
+  btn.textContent = 'Loading…';
+  setTimeout(() => {
+    notifications = [...notifications, ...MORE_NOTIFICATIONS];
+    moreLoaded = true;
+    renderList();
+    btn.disabled = false;
+    btn.textContent = 'Load more';
+    showToast('4 older notifications loaded');
+    // Update total badge
+    document.getElementById('totalBadge').textContent = notifications.filter(n => !dismissedIds.has(n.id)).length;
+  }, 700);
+}
+
+function updateCounts() {
+  const active = notifications.filter(n => !dismissedIds.has(n.id));
+  const unread = active.filter(n => n.unread).length;
+  document.getElementById('totalBadge').textContent = active.length;
+  document.getElementById('navBadge').textContent   = unread;
+  document.getElementById('navBadge').style.display = unread > 0 ? 'flex' : 'none';
+}
+
+/* ── TOAST ────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  const el = document.getElementById('toast');
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ── INIT ─────────────────────────────────────────── */
+renderList();
+</script>
+<script>
+// WildGuard: update avatar from localStorage session
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.style.fontSize = '12px';
+      av.style.fontWeight = '700';
+      av.title = user.name || '';
+    } else {
+      // Not logged in: show grey person silhouette
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
+</script>
+</body>
+</html>
