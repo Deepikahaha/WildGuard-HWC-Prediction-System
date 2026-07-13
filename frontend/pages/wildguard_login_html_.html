@@ -570,9 +570,9 @@
 
 <!-- NAV -->
 <nav class="wg-nav">
-  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <a class="wg-nav-brand" href="../index.html">WildGuard</a>
   <ul class="wg-nav-links">
-    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="../index.html">Dashboard</a></li>
     <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
     <li><a href="wildguard_animal_detection.html">Detection</a></li>
     <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
@@ -828,7 +828,7 @@ function handleSubmit() {
   btn.textContent = currentTab === 'register' ? 'Creating account…' : 'Signing in…';
 
   setTimeout(() => {
-    // Save user session to localStorage
+    // Save user session
     const emailVal = document.getElementById('emailInput').value.trim();
     if (currentTab === 'register') {
       const nameVal = document.getElementById('nameInput') ? document.getElementById('nameInput').value.trim() : '';
@@ -838,11 +838,9 @@ function handleSubmit() {
         : (parts[0] ? parts[0].slice(0,2).toUpperCase() : '?');
       localStorage.setItem('wg_user', JSON.stringify({ name: nameVal, email: emailVal, initials: initials, loggedIn: true }));
     } else {
-      // Sign in: try to restore saved user or use email initials
       const saved = JSON.parse(localStorage.getItem('wg_user') || '{}');
       if (!saved.initials) {
-        const emailInitial = emailVal[0] ? emailVal[0].toUpperCase() : '?';
-        localStorage.setItem('wg_user', JSON.stringify({ name: emailVal, email: emailVal, initials: emailInitial, loggedIn: true }));
+        localStorage.setItem('wg_user', JSON.stringify({ name: emailVal, email: emailVal, initials: emailVal[0].toUpperCase(), loggedIn: true }));
       } else {
         saved.loggedIn = true;
         localStorage.setItem('wg_user', JSON.stringify(saved));
@@ -861,8 +859,7 @@ function handleSubmit() {
     }
     showToast(currentTab === 'register' ? 'Account created — welcome aboard!' : 'Signed in successfully');
     btn.disabled = false;
-    // Auto-redirect after 1.5s
-    setTimeout(() => { location.href = 'index.html'; }, 1500);
+    setTimeout(() => { location.href = '../index.html'; }, 1500);
   }, 1200);
 }
 

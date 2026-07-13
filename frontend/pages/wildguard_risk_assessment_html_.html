@@ -482,9 +482,9 @@
 
 <!-- NAV -->
 <nav class="wg-nav">
-  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <a class="wg-nav-brand" href="../index.html">WildGuard</a>
   <ul class="wg-nav-links">
-    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="../index.html">Dashboard</a></li>
     <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
     <li><a href="wildguard_animal_detection.html">Detection</a></li>
     <li><a href="wildguard_risk_assessment_html_.html" class="wg-active" class="wg-active">Risk Assessment</a></li>
@@ -662,7 +662,7 @@
       </div>
       <!-- YOUR REAL PLOTLY SARIMAX FORECAST EMBEDDED HERE -->
       <div id="forecastWrap" style="width:100%;height:380px;border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-top:8px;">
-        <iframe id="forecastFrame" src="viz4_sarimax_forecast.html"
+        <iframe id="forecastFrame" src="../visualizations/combined/viz4_sarimax_forecast.html"
           style="width:100%;height:100%;border:none;"
           title="SARIMAX Conflict Forecast — Parks Canada">
         </iframe>
@@ -892,12 +892,12 @@ function switchForecast(region) {
   const btnC  = document.getElementById('btnCanada');
   const btnCh = document.getElementById('btnChitwan');
   if (region === 'canada') {
-    frame.src = 'viz4_sarimax_forecast.html';
+    frame.src = '../visualizations/combined/viz4_sarimax_forecast.html';
     btnC.classList.add('active');
     btnCh.classList.remove('active');
     showToast('Showing Canada SARIMAX forecast (2024)');
   } else {
-    frame.src = 'chitwan_viz4_sarima_forecast.html';
+    frame.src = '../visualizations/chitwan/chitwan_viz4_sarima_forecast.html';
     btnC.classList.remove('active');
     btnCh.classList.add('active');
     showToast('Showing Chitwan SARIMA forecast (lunar phase model)');

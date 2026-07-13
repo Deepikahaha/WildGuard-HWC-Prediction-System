@@ -440,7 +440,7 @@ nav {
 <nav>
   <div class="nav-brand">Wild<span>Guard</span></div>
   <div class="nav-links">
-    <a href="index.html">Dashboard</a>
+    <a href="../index.html">Dashboard</a>
     <a href="wildguard_risk_map_html.html" class="active">Risk Map</a>
     <a href="wildguard_animal_detection.html">Detection</a>
     <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
@@ -592,7 +592,7 @@ nav {
     <!-- RF Risk Heatmap — visible by default -->
     <iframe id="layer-rf"
             class="map-iframe active"
-            src="maps/canada_viz6_rf_risk_heatmap.html"
+            src="../visualizations/canada/canada_viz6_rf_risk_heatmap.html"
             onload="mapLoaded('rf')"
             allowfullscreen>
     </iframe>
@@ -600,7 +600,7 @@ nav {
     <!-- DBSCAN Hotspot Map -->
     <iframe id="layer-dbscan"
             class="map-iframe"
-            src="maps/canada_viz3_dbscan_hotspot_map.html"
+            src="../visualizations/canada/canada_viz3_dbscan_hotspot_map.html"
             onload="mapLoaded('dbscan')"
             allowfullscreen>
     </iframe>
@@ -608,7 +608,7 @@ nav {
     <!-- KMeans Zones Map -->
     <iframe id="layer-kmeans"
             class="map-iframe"
-            src="maps/canada_viz7_kmeans_zones.html"
+            src="../visualizations/canada/canada_viz7_kmeans_zones.html"
             onload="mapLoaded('kmeans')"
             allowfullscreen>
     </iframe>
@@ -797,14 +797,14 @@ const HOTSPOTS = {
 /* Folium map src paths per region per layer */
 const MAP_SOURCES = {
   canada: {
-    rf:     'maps/canada_viz6_rf_risk_heatmap.html',
-    dbscan: 'maps/canada_viz3_dbscan_hotspot_map.html',
-    kmeans: 'maps/canada_viz7_kmeans_zones.html'
+    rf:     '../visualizations/canada/canada_viz6_rf_risk_heatmap.html',
+    dbscan: '../visualizations/canada/canada_viz3_dbscan_hotspot_map.html',
+    kmeans: '../visualizations/canada/canada_viz7_kmeans_zones.html'
   },
   chitwan: {
-    rf:     'maps/chitwan_viz1_conflict_heatmap.html',
-    dbscan: 'maps/chitwan_viz3_dbscan_hotspot.html',
-    kmeans: 'maps/chitwan_viz2_kmeans_zones_map.html'
+    rf:     '../visualizations/chitwan/chitwan_viz1_conflict_heatmap.html',
+    dbscan: '../visualizations/chitwan/chitwan_viz3_dbscan_hotspot.html',
+    kmeans: '../visualizations/chitwan/chitwan_viz2_kmeans_zones_map.html'
   }
 };
 
