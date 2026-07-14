@@ -875,6 +875,34 @@ footer {
 }
 
 /* ── WILDGUARD NAV ── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+
+/* ── NAV ── */
 .wg-nav {
   background: #2D4A2D;
   padding: 0 28px;
@@ -936,19 +964,6 @@ footer {
   font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
   color: #1a2e1a; flex-shrink: 0;
 }
-.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
-
-/* ── WILDGUARD FOOTER ── */
-.wg-footer {
-  background: #ffffff; border-top: 1px solid #D0DDD0;
-  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
-  padding: 11px 28px; display: flex; align-items: center;
-  justify-content: space-between; gap: 16px; flex-shrink: 0;
-}
-.wg-footer strong { color: #1A2B1A; }
-.wg-footer-links { display: flex; gap: 16px; }
-.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
-.wg-footer-links a:hover { color: #2D4A2D; }
 
 </style>
 </head>
@@ -956,9 +971,9 @@ footer {
 
 <!-- ─── NAVBAR ─── -->
 <nav class="wg-nav">
-  <a class="wg-nav-brand" href="index.html">WildGuard</a>
+  <a class="wg-nav-brand" href="../index.html">WildGuard</a>
   <ul class="wg-nav-links">
-    <li><a href="index.html">Dashboard</a></li>
+    <li><a href="../index.html">Dashboard</a></li>
     <li><a href="wildguard_risk_map_html.html">Risk Map</a></li>
     <li><a href="wildguard_animal_detection.html" class="wg-active">Detection</a></li>
     <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
@@ -1540,22 +1555,21 @@ window.addEventListener('load', () => {
 });
 </script>
 <script>
+</script>
+<script>
 // WildGuard: update avatar from localStorage session
 (function() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"], #wg-avatar');
   avatars.forEach(function(av) {
     if (user && user.loggedIn && user.initials) {
       av.textContent = user.initials;
       av.style.background = '#8FAF8F';
       av.style.color = '#1a2e1a';
       av.style.border = '2px solid #1a2e1a';
-      av.style.fontSize = '12px';
-      av.style.fontWeight = '700';
       av.title = user.name || '';
     } else {
-      // Not logged in: show grey person silhouette
       av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
       av.style.background = '#d0d0d0';
       av.style.border = '2px solid #bbb';

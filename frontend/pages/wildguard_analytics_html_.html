@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WildGuard – Analytics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -44,15 +45,18 @@ html, body {
 
 /* ─── NAV ─────────────────────────────────────────────── */
 nav {
-  background: var(--forest);
+  background: #2D4A2D;
   height: 52px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 28px;
+  gap: 28px;
   position: sticky;
   top: 0;
-  z-index: 200;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  width: 100%;
+  box-sizing: border-box;
 }
 .nav-brand {
   font-size: 17px;
@@ -314,12 +318,14 @@ canvas { display: block; width: 100%; }
 .seasonal-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
 .seasonal-bar {
   width: 100%; border-radius: 3px 3px 0 0;
-  background: var(--sage-mid);
+  background: var(--sage, #8FAF8F);
   transition: height 1s cubic-bezier(.4,0,.2,1), background 0.15s;
   cursor: pointer;
   height: 0;
 }
-.seasonal-bar:hover, .seasonal-bar.peak { background: var(--forest); }
+.seasonal-bar:hover { background: var(--forest); }
+.seasonal-bar.peak { background: var(--sage, #8FAF8F); }
+.seasonal-bar.peak:hover { background: var(--forest); }
 .seasonal-bar-lbl { font-size: 9.5px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.3px; }
 
 /* ─── FOOTER ─────────────────────────────────────────────── */
@@ -370,6 +376,39 @@ footer {
 }
 
 /* ── WILDGUARD NAV ── */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── WILDGUARD FOOTER ── */
+.wg-footer {
+  background: #ffffff; border-top: 1px solid #D0DDD0;
+  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
+  padding: 11px 28px; display: flex; align-items: center;
+  justify-content: space-between; gap: 16px; flex-shrink: 0;
+}
+.wg-footer strong { color: #1A2B1A; }
+.wg-footer-links { display: flex; gap: 16px; }
+.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
+.wg-footer-links a:hover { color: #2D4A2D; }
+
+
+
+
+
+
+
+/* ── NAV ── */
 .wg-nav {
   background: #2D4A2D;
   padding: 0 28px;
@@ -407,8 +446,8 @@ footer {
   border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
 }
 .wg-nav-right {
-  display: flex; align-items: center; gap: 14px;
-  margin-left: auto; flex-shrink: 0;
+  display: flex !important; align-items: center !important; gap: 14px !important;
+  margin-left: auto !important; flex-shrink: 0 !important;
 }
 .wg-nav-bell {
   position: relative; color: rgba(255,255,255,.8); cursor: pointer;
@@ -416,7 +455,7 @@ footer {
   transition: color .15s; display: flex; align-items: center;
 }
 .wg-nav-bell:hover { color: #fff; }
-.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-bell svg { width: 19px !important; height: 19px !important; display: block !important; }
 .wg-nav-badge {
   position: absolute; top: 0; right: 0;
   background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
@@ -425,25 +464,12 @@ footer {
   padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
 }
 .wg-nav-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
-  color: #1a2e1a; flex-shrink: 0;
+  width: 32px !important; height: 32px !important; border-radius: 50% !important;
+  background: #8FAF8F !important; border: 2px solid #1a2e1a !important; cursor: pointer !important;
+  display: flex !important; align-items: center !important; justify-content: center !important;
+  font-size: 12px !important; font-weight: 700 !important; font-family: 'Inter', sans-serif !important;
+  color: #1a2e1a !important; flex-shrink: 0 !important;
 }
-.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
-
-/* ── WILDGUARD FOOTER ── */
-.wg-footer {
-  background: #ffffff; border-top: 1px solid #D0DDD0;
-  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
-  padding: 11px 28px; display: flex; align-items: center;
-  justify-content: space-between; gap: 16px; flex-shrink: 0;
-}
-.wg-footer strong { color: #1A2B1A; }
-.wg-footer-links { display: flex; gap: 16px; }
-.wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
-.wg-footer-links a:hover { color: #2D4A2D; }
 
 </style>
 <style>
@@ -525,12 +551,18 @@ footer {
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
       <span class="wg-nav-badge">3</span>
     </button>
-    <div class="wg-nav-avatar wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">PK</div>
+    <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
   </div>
 </nav>
 
 <div class="page">
 
+  <!-- REGION SELECTOR -->
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button id="rs-canada"  onclick="setRegion('canada')"  style="padding:7px 18px;border-radius:6px;border:1.5px solid #2D4A2D;background:#2D4A2D;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Canada</button>
+    <button id="rs-chitwan" onclick="setRegion('chitwan')" style="padding:7px 18px;border-radius:6px;border:1.5px solid #d0ddd0;background:#fff;color:#2D4A2D;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Chitwan</button>
+    <button id="rs-both"    onclick="setRegion('both')"    style="padding:7px 18px;border-radius:6px;border:1.5px solid #d0ddd0;background:#fff;color:#2D4A2D;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Both</button>
+  </div>
   <!-- STAT CARDS -->
   <div class="stats-row">
     <div class="stat-card">
@@ -558,50 +590,6 @@ footer {
       <div class="stat-label">Total Incidents</div>
       <div class="stat-value" id="sv4">87,244</div>
       <div class="stat-badge stable" style="background:var(--sage-pale);color:var(--sage)">All Time</div>
-    </div>
-  </div>
-
-  <!-- Region subtitle -->
-  <div class="region-subtitle" id="regionSubtitle">🌍 Canada + Chitwan — Cross-Regional Comparison</div>
-
-  <!-- FILTER BAR -->
-  <div class="filter-bar">
-    <div class="filter-select-wrap">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 8h14M8 3v5"/></svg>
-      <select class="filter-select" id="timeFilter" onchange="handleFilter()">
-        <option value="13">Last 13 Years</option>
-        <option value="10">Last 10 Years</option>
-        <option value="5">Last 5 Years</option>
-        <option value="3">Last 3 Years</option>
-        <option value="1">Last 1 Year</option>
-      </select>
-    </div>
-    <div class="filter-sep"></div>
-    <div class="filter-select-wrap">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
-      <select class="filter-select" id="speciesFilter" onchange="handleFilter()">
-        <option value="all">All Species</option>
-        <option value="bear">Black Bear / Grizzly</option>
-        <option value="elk">Elk / Moose</option>
-        <option value="elephant">African Elephant</option>
-        <option value="tiger">Bengal Tiger</option>
-        <option value="wolf">Grey Wolf</option>
-      </select>
-    </div>
-    <div class="filter-sep"></div>
-    <div class="filter-select-wrap">
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L18 17H2L10 3z"/><path d="M10 9v4"/><circle cx="10" cy="15" r="0.5" fill="currentColor"/></svg>
-      <select class="filter-select" id="riskFilter" onchange="handleFilter()">
-        <option value="high">Risk: High</option>
-        <option value="medium">Risk: Medium</option>
-        <option value="low">Risk: Low</option>
-        <option value="all">Risk: All</option>
-      </select>
-    </div>
-    <div class="region-tabs">
-      <button class="region-tab" id="tab-canada"  onclick="setRegion('canada')">Canada</button>
-      <button class="region-tab" id="tab-chitwan" onclick="setRegion('chitwan')">Chitwan</button>
-      <button class="region-tab active" id="tab-both" onclick="setRegion('both')">Both</button>
     </div>
   </div>
 
@@ -831,78 +819,66 @@ function renderChartPane(wrapId, frameId, canadaSrc, chitwanSrc, region, canadaL
    SET REGION
 ═══════════════════════════════════════════════════ */
 function setRegion(r) {
-  ['canada','chitwan','both'].forEach(id => {
-    document.getElementById('tab-'+id).classList.toggle('active', id === r);
+  // Style rs-* buttons above stats
+  ['canada','chitwan','both'].forEach(function(id) {
+    var btn = document.getElementById('rs-' + id);
+    if (!btn) return;
+    if (id === r) { btn.style.background='#2D4A2D'; btn.style.color='#fff'; btn.style.borderColor='#2D4A2D'; }
+    else { btn.style.background='#fff'; btn.style.color='#2D4A2D'; btn.style.borderColor='#d0ddd0'; }
   });
 
   document.getElementById('topChartsGrid').classList.toggle('stack', r === 'both');
   document.getElementById('bottomChartsGrid').classList.toggle('stack', r === 'both');
 
   const d = REGION_DATA[r];
-
-  document.getElementById('sv1').textContent = d.sv1;
-  document.getElementById('sv1d').innerHTML  = d.sv1d;
-  document.getElementById('sv2').textContent = d.sv2;
+  document.getElementById('sv1').textContent  = d.sv1;
+  document.getElementById('sv1d').innerHTML   = d.sv1d;
+  document.getElementById('sv2').textContent  = d.sv2;
   document.getElementById('sv2d').textContent = d.sv2d;
-  document.getElementById('sv3').textContent = d.sv3;
-  document.getElementById('sv3d').innerHTML  = d.sv3d;
-  document.getElementById('sv4').textContent = d.sv4;
+  document.getElementById('sv3').textContent  = d.sv3;
+  document.getElementById('sv3d').innerHTML   = d.sv3d;
+  document.getElementById('sv4').textContent  = d.sv4;
 
-  document.getElementById('regionSubtitle').textContent = d.subtitle;
+  const subtitle = document.getElementById('regionSubtitle');
+  if (subtitle) subtitle.textContent = d.subtitle;
 
-  const heatmapWrap = document.getElementById('heatmapChartWrap');
+  const heatmapWrap   = document.getElementById('heatmapChartWrap');
   const heatmapFooter = document.getElementById('heatmapFooter');
-  const heatmapTitle = document.getElementById('heatmapTitle');
+  const heatmapTitle  = document.getElementById('heatmapTitle');
   if (r === 'both') {
     heatmapWrap.classList.add('split');
-    heatmapWrap.innerHTML = `
-      <div class="split-pane">
-        <div class="split-pane-label">🍁 Canada</div>
-        <iframe src="../visualizations/canada/canada_viz_8_species_risk_heatmap.html" title="Canada Heatmap"></iframe>
-      </div>
-      <div class="split-pane">
-        <div class="split-pane-label">🇳🇵 Chitwan</div>
-        <iframe src="../visualizations/chitwan/chitwan_viz11_species_month_heatmap.html" title="Chitwan Heatmap"></iframe>
-      </div>`;
-    heatmapTitle.textContent = 'Species × Monthly Incident Intensity Heatmap';
-    heatmapFooter.textContent = 'Real data — both panels';
+    heatmapWrap.innerHTML = '<div class="split-pane"><div class="split-pane-label">Canada</div><iframe src="../visualizations/canada/canada_viz_8_species_risk_heatmap.html"></iframe></div><div class="split-pane"><div class="split-pane-label">Chitwan</div><iframe src="../visualizations/chitwan/chitwan_viz11_species_month_heatmap.html"></iframe></div>';
+    heatmapTitle.textContent = 'Species x Monthly Incident Intensity Heatmap';
+    heatmapFooter.textContent = 'Real data - both panels';
   } else if (r === 'chitwan') {
     heatmapWrap.classList.remove('split');
-    heatmapWrap.innerHTML = '<iframe src="../visualizations/chitwan/chitwan_viz11_species_month_heatmap.html" title="Chitwan Heatmap"></iframe>';
-    heatmapTitle.textContent = 'Species × Monthly Incident Intensity Heatmap';
-    heatmapFooter.textContent = 'Real data — Chitwan National Park (2001–2017)';
+    heatmapWrap.innerHTML = '<iframe src="../visualizations/chitwan/chitwan_viz11_species_month_heatmap.html"></iframe>';
+    heatmapTitle.textContent = 'Species x Monthly Incident Intensity Heatmap';
+    heatmapFooter.textContent = 'Real data - Chitwan National Park (2001-2017)';
   } else {
     heatmapWrap.classList.remove('split');
-    heatmapWrap.innerHTML = '<iframe id="heatmapFrame" src="../visualizations/canada/canada_viz_8_species_risk_heatmap.html" title="Species Risk Heatmap"></iframe>';
-    heatmapTitle.textContent = 'Species × Monthly Incident Intensity Heatmap';
-    heatmapFooter.textContent = 'Real data — Parks Canada (2010–2023)';
+    heatmapWrap.innerHTML = '<iframe src="../visualizations/canada/canada_viz_8_species_risk_heatmap.html"></iframe>';
+    heatmapTitle.textContent = 'Species x Monthly Incident Intensity Heatmap';
+    heatmapFooter.textContent = 'Real data - Parks Canada (2010-2023)';
   }
 
   const lc = d.leftCluster, rc = d.rightCluster;
-  document.getElementById('clusterLeftName').innerHTML  = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h10a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M8 4v12M12 4v12"/></svg>${lc.name}`;
-  document.getElementById('clusterRightName').innerHTML = `<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>${rc.name}`;
-  document.getElementById('cl-rf').textContent   = lc.rf;
-  document.getElementById('cl-kappa').textContent = lc.kappa;
-  document.getElementById('cl-sil').textContent   = lc.sil;
-  document.getElementById('cl-rmse').textContent  = lc.rmse;
-  document.getElementById('cl-exog').textContent  = lc.exog;
-  document.getElementById('cr-rf').textContent    = rc.rf;
-  document.getElementById('cr-kappa').textContent = rc.kappa;
-  document.getElementById('cr-sil').textContent   = rc.sil;
-  document.getElementById('cr-rmse').textContent  = rc.rmse;
-  document.getElementById('cr-exog').textContent  = rc.exog;
+  ['clusterLeftName','clusterRightName'].forEach(function(id, i) {
+    var c = i === 0 ? lc : rc;
+    document.getElementById(id).textContent = c.name;
+  });
+  ['rf','kappa','sil','rmse','exog'].forEach(function(k) {
+    document.getElementById('cl-'+k).textContent = lc[k];
+    document.getElementById('cr-'+k).textContent = rc[k];
+  });
 
-  renderChartPane('trendChartWrap', 'trendFrame', REGION_DATA.canada.trend, REGION_DATA.chitwan.trend, r, '🍁 Canada', '🇳🇵 Chitwan');
-  renderChartPane('donutChartWrap', 'donutFrame', REGION_DATA.canada.donut, REGION_DATA.chitwan.donut, r, '🍁 Canada', '🇳🇵 Chitwan');
+  renderChartPane('trendChartWrap', 'trendFrame', REGION_DATA.canada.trend, REGION_DATA.chitwan.trend, r, 'Canada', 'Chitwan');
+  renderChartPane('donutChartWrap', 'donutFrame', REGION_DATA.canada.donut, REGION_DATA.chitwan.donut, r, 'Canada', 'Chitwan');
 
   drawSeasonal(d.seasonal, d.seasonalPeaks);
-
-  showToast(`Switched to ${r === 'both' ? 'Canada + Chitwan combined' : r.charAt(0).toUpperCase()+r.slice(1)} data`);
 }
 
-/* ═══════════════════════════════════════════════════
-   SEASONAL BARS
-═══════════════════════════════════════════════════ */
+
 function drawSeasonal(data, peakIndices) {
   const container = document.getElementById('seasonalBars');
   container.innerHTML = '';
@@ -932,16 +908,7 @@ function drawSeasonal(data, peakIndices) {
 /* ═══════════════════════════════════════════════════
    FILTERS
 ═══════════════════════════════════════════════════ */
-function handleFilter() {
-  const time    = document.getElementById('timeFilter').value;
-  const species = document.getElementById('speciesFilter').value;
-  const risk    = document.getElementById('riskFilter').value;
-  showToast('Filtered: ' + time + 'yr · ' + species + ' · ' + risk);
-  document.querySelectorAll('.iframe-chart-wrap iframe').forEach(f => {
-    f.style.opacity = '0.4';
-    setTimeout(() => { f.style.opacity = '1'; }, 400);
-  });
-}
+function handleFilter() { /* dropdowns removed */ }
 
 /* ═══════════════════════════════════════════════════
    TOAST
@@ -960,6 +927,27 @@ function showToast(msg) {
 window.addEventListener('DOMContentLoaded', () => {
   setRegion('both');
 });
+</script>
+<script>
+// WildGuard: update avatar from localStorage session
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"], #wg-avatar');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.title = user.name || '';
+    } else {
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
 </script>
 </body>
 </html>

@@ -40,64 +40,27 @@ html, body {
 }
 
 /* NAVBAR  */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; height: 56px;
-  background: var(--nav); display: flex; align-items: center;
-  padding: 0 20px; z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,.3);
-}
-.nav-brand {
-  font-size: 18px; font-weight: 700; color: #fff;
-  margin-right: 32px; white-space: nowrap;
-}
-.nav-brand span { color: var(--sage-lt); }
-.nav-links { display: flex; gap: 2px; flex: 1; }
-.nav-links a {
-  color: rgba(255,255,255,.75); text-decoration: none;
-  font-size: 13.5px; font-weight: 500;
-  padding: 6px 14px; border-radius: 6px;
-  transition: background .15s, color .15s;
-}
-.nav-links a:hover { background: var(--nav-hover); color: #fff; }
-.nav-links a.active { background: rgba(255,255,255,.15); color: #fff; }
-.nav-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.nav-icon-btn {
-  background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,.75); padding: 6px; border-radius: 6px;
-  font-size: 18px; position: relative;
-}
-.nav-icon-btn:hover { background: var(--nav-hover); color: #fff; }
-.notif-dot {
-  position: absolute; top: 4px; right: 4px;
-  width: 7px; height: 7px; background: #e74c3c;
-  border-radius: 50%; border: 1.5px solid var(--nav);
-}
-.nav-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: var(--sage); display: flex; align-items: center;
-  justify-content: center; font-size: 13px; font-weight: 700;
-  color: #fff; cursor: pointer;
-  border: 2px solid rgba(255,255,255,.3);
-}
-.nav-auth { display: flex; gap: 8px; }
-.btn-auth {
-  font-size: 13px; font-weight: 500; padding: 5px 14px;
-  border-radius: 6px; cursor: pointer; text-decoration: none;
-  display: inline-flex; align-items: center; transition: all .15s;
-}
-.btn-login {
-  background: none; border: 1.5px solid rgba(255,255,255,.4);
-  color: rgba(255,255,255,.85);
-}
-.btn-login:hover { background: rgba(255,255,255,.1); color: #fff; }
-.btn-register {
-  background: var(--sage-lt); border: 1.5px solid var(--sage-lt);
-  color: var(--forest); font-weight: 600;
-}
-.btn-register:hover { background: #fff; border-color: #fff; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*  LAYOUT  */
-.app { display: flex; height: 100vh; padding-top: 56px; }
+.app { display: flex; height: 100vh;  }
 
 /*  SIDEBAR */
 .sidebar {
@@ -432,30 +395,92 @@ nav {
 .bar-fill  { height: 100%; border-radius: 3px; background: var(--nav); transition: width .6s; }
 .bar-fill.critical { background: var(--critical); }
 .bar-val   { font-size: 11px; font-weight: 600; color: var(--text-mid); width: 20px; font-family: var(--mono); }
+
+/* ── NAV ── */
+.wg-nav {
+  background: #2D4A2D;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.wg-nav-brand {
+  font-weight: 700; font-size: 17px; color: #fff;
+  letter-spacing: .4px; white-space: nowrap;
+  text-decoration: none; font-family: 'Inter', sans-serif;
+}
+.wg-nav-links {
+  display: flex; gap: 2px; flex: 1;
+  list-style: none; align-items: center; margin: 0; padding: 0;
+}
+.wg-nav-links a {
+  color: rgba(255,255,255,.7); text-decoration: none;
+  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
+  padding: 6px 11px; border-radius: 5px;
+  transition: background .15s, color .15s;
+  white-space: nowrap; display: inline-flex; align-items: center;
+}
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active {
+  color: #fff; font-weight: 600;
+  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
+}
+.wg-nav-right {
+  display: flex; align-items: center; gap: 14px;
+  margin-left: auto; flex-shrink: 0;
+}
+.wg-nav-bell {
+  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
+  line-height: 0; background: none; border: none; padding: 4px;
+  transition: color .15s; display: flex; align-items: center;
+}
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge {
+  position: absolute; top: 0; right: 0;
+  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
+  min-width: 15px; height: 15px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
+}
+.wg-nav-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
+}
+
 </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav>
-  <div class="nav-brand">Wild<span>Guard</span></div>
-  <div class="nav-links">
-    <a href="../index.html">Dashboard</a>
-    <a href="wildguard_risk_map_html.html" class="active">Risk Map</a>
-    <a href="wildguard_animal_detection.html">Detection</a>
-    <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
-    <a href="wildguard_analytics_html_.html">Analytics</a>
-    <a href="wildguard_live_reports.html">Live Reports</a>
-  </div>
-  <div class="nav-actions">
-    <button class="nav-icon-btn" onclick="toggleNotif()" title="Notifications">
-      🔔<span class="notif-dot" id="notifDot"></span>
+<nav class="wg-nav">
+  <a class="wg-nav-brand" href="../index.html">WildGuard</a>
+  <ul class="wg-nav-links">
+    <li><a href="../index.html">Dashboard</a></li>
+    <li><a href="wildguard_risk_map_html.html" class="wg-active">Risk Map</a></li>
+    <li><a href="wildguard_animal_detection.html">Detection</a></li>
+    <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
+    <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
+    <li><a href="wildguard_live_reports.html">Live Reports</a></li>
+    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+  </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+      <span class="wg-nav-badge">3</span>
     </button>
-    <div class="nav-avatar" onclick="toggleProfile()">PK</div>
-    <div class="nav-auth">
-      <a href="wildguard_login_html_.html"    class="btn-auth btn-login">Login</a>
-      <a href="wildguard_login_html_.html" class="btn-auth btn-register">Register</a>
-    </div>
+    <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
   </div>
 </nav>
 
@@ -1130,6 +1155,27 @@ window.addEventListener('DOMContentLoaded', () => {
   // Canada is default — cards already in HTML
   // RF layer is default — badge already in HTML
 });
+</script>
+<script>
+// WildGuard: update avatar from localStorage session
+(function() {
+  var user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"], #wg-avatar');
+  avatars.forEach(function(av) {
+    if (user && user.loggedIn && user.initials) {
+      av.textContent = user.initials;
+      av.style.background = '#8FAF8F';
+      av.style.color = '#1a2e1a';
+      av.style.border = '2px solid #1a2e1a';
+      av.title = user.name || '';
+    } else {
+      av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+      av.style.background = '#d0d0d0';
+      av.style.border = '2px solid #bbb';
+    }
+  });
+})();
 </script>
 </body>
 </html>

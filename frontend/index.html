@@ -692,6 +692,8 @@
     <li><a href="pages/wildguard_analytics_html_.html">Analytics</a></li>
     <li><a href="pages/wildguard_live_reports.html">Live Reports</a></li>
     <li><a href="pages/wildguard_login_html_.html">Login / Register</a></li>
+    
+
   </ul>
   <div class="wg-nav-right">
     <button class="wg-nav-bell" onclick="location.href='pages/wildguard_notifications.html'" title="Notifications">
@@ -708,10 +710,7 @@
   <div class="hero-glow"></div>
   <h1>Protecting wildlife and people through intelligent conflict prediction</h1>
   <p>Leveraging machine learning, satellite telemetry, and real-time field reports to mitigate human–wildlife interaction in critical conservation zones.</p>
-  <div class="hero-btns">
-    <button class="btn-hero-region selected" id="btnCanada" onclick="exploreRegion('Canada')">Explore Canada</button>
-    <button class="btn-hero-region" id="btnChitwan" onclick="exploreRegion('Chitwan')">Explore Chitwan</button>
-  </div>
+  
 </section>
 
 <!-- STATS ROW -->
@@ -737,100 +736,39 @@
 <!-- MAIN -->
 <div class="main-content">
 
-  <!-- MAP -->
-  <div class="map-card" id="mapCard">
-    <div class="map-legend">
-      <h4>RF Risk Zones</h4>
-      <div class="legend-item active" onclick="toggleLayer(this,'rf')" data-layer="rf">
-        <span class="legend-dot rf"></span> RF Risk Zones
+  <!-- HOW IT WORKS -->
+  <div class="map-card" id="mapCard" style="padding:28px 32px;overflow:auto;">
+    <h3 style="font-size:15px;font-weight:700;color:#1a2e1a;margin-bottom:20px;letter-spacing:.3px;">How WildGuard Works</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:#f4f7f2;border:1px solid #d8e8d0;border-radius:10px;padding:18px 20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;background:#2D4A2D;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a2e1a;">1. Upload Field Image</div><div style="font-size:12px;color:#6b7b6b;margin-top:2px;">YOLOv8 identifies the species with bounding box and confidence score</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#8a9a8a;background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #e0ead8;">&#x1F43B; Black Bear &mdash; 94.2% confidence</div>
       </div>
-      <div class="legend-item" onclick="toggleLayer(this,'dbscan')" data-layer="dbscan">
-        <span class="legend-dot dbscan"></span> DBSCAN Hotspots
+      <div style="background:#f4f7f2;border:1px solid #d8e8d0;border-radius:10px;padding:18px 20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;background:#2D4A2D;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a2e1a;">2. Query a Location</div><div style="font-size:12px;color:#6b7b6b;margin-top:2px;">Random Forest predicts conflict risk for any lat/lon and month</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#8a9a8a;background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #e0ead8;">&#x1F4CD; Banff NP, July &rarr; <span style="color:#dc2626;font-weight:700;">HIGH RISK</span> &middot; 87%</div>
       </div>
-      <div class="legend-item" onclick="toggleLayer(this,'kmeans')" data-layer="kmeans">
-        <span class="legend-dot kmeans"></span> KMeans Zones
+      <div style="background:#f4f7f2;border:1px solid #d8e8d0;border-radius:10px;padding:18px 20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;background:#2D4A2D;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a2e1a;">3. View Hotspot Map</div><div style="font-size:12px;color:#6b7b6b;margin-top:2px;">DBSCAN + KMeans cluster incidents into spatial risk zones</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#8a9a8a;background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #e0ead8;">&#x1F534; 34 active hotspots across Parks Canada</div>
       </div>
-      <div class="legend-item" onclick="toggleLayer(this,'live')" data-layer="live">
-        <span class="legend-dot live"></span> Live Reports
+      <div style="background:#f4f7f2;border:1px solid #d8e8d0;border-radius:10px;padding:18px 20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <div style="width:36px;height:36px;background:#2D4A2D;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="#fff" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a2e1a;">4. Forecast Conflicts</div><div style="font-size:12px;color:#6b7b6b;margin-top:2px;">SARIMAX predicts monthly incident frequency 12 months ahead</div></div>
+        </div>
+        <div style="font-size:11.5px;color:#8a9a8a;background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #e0ead8;">&#x1F4C8; Peak: Jun&ndash;Sep &middot; 54% RMSE improvement</div>
       </div>
     </div>
-
-    <!-- Canada SVG Map -->
-    <div class="map-svg-wrap">
-      <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" id="mapSvg">
-        <defs>
-          <radialGradient id="gBg" cx="50%" cy="50%" r="70%">
-            <stop offset="0%" stop-color="#2a422a"/>
-            <stop offset="100%" stop-color="#1a2e1a"/>
-          </radialGradient>
-        </defs>
-        <rect width="800" height="500" fill="url(#gBg)"/>
-
-        <!-- Simplified Canada outline -->
-        <path id="canadaPath"
-          d="M80,180 L100,160 L120,150 L155,145 L170,130 L195,120 L225,115 L255,110 L290,108
-             L330,105 L370,100 L400,98  L440,96  L480,95  L520,96  L560,98  L600,102
-             L635,108 L660,115 L680,125 L700,140 L715,160 L720,185 L718,210 L712,235
-             L700,258 L685,275 L670,290 L660,310 L650,335 L640,358 L630,375 L618,388
-             L600,398 L578,403 L555,405 L530,403 L510,398 L490,390 L470,382 L450,378
-             L430,380 L415,385 L400,390 L385,395 L368,398 L350,398 L332,395 L318,388
-             L305,378 L295,366 L285,352 L275,338 L265,325 L252,315 L238,308 L222,305
-             L208,308 L196,316 L185,328 L174,340 L162,350 L148,355 L132,352 L118,342
-             L105,328 L94,312 L86,295 L80,278 L76,260 L74,240 L76,218 Z"
-          fill="#3a5c38" fill-opacity=".55" stroke="#7aad70" stroke-width="1.2" stroke-opacity=".4"
-        />
-
-        <!-- Interior terrain lines -->
-        <path d="M200,200 Q310,185 420,195 Q530,205 640,190" fill="none" stroke="#7aad70" stroke-width=".5" stroke-opacity=".2"/>
-        <path d="M180,240 Q300,228 420,235 Q540,242 660,230" fill="none" stroke="#7aad70" stroke-width=".5" stroke-opacity=".2"/>
-        <path d="M160,275 Q290,265 420,270 Q550,275 670,265" fill="none" stroke="#7aad70" stroke-width=".5" stroke-opacity=".15"/>
-
-        <!-- Great Lakes simplified -->
-        <ellipse cx="540" cy="295" rx="22" ry="12" fill="#1e3a5f" fill-opacity=".6" stroke="#60a5fa" stroke-width=".8" stroke-opacity=".35"/>
-        <ellipse cx="580" cy="310" rx="14" ry="9" fill="#1e3a5f" fill-opacity=".6" stroke="#60a5fa" stroke-width=".8" stroke-opacity=".35"/>
-
-        <!-- CRITICAL pin — Banff NP area (~265, 255) -->
-        <g class="map-pin" onclick="pinClick('Grizzly Bear – Banff NP','Critical proximity detected','critical')" transform="translate(265,255)">
-          <circle class="pulse-ring" cx="0" cy="0" r="10" fill="none" stroke="#ef4444" stroke-width="2"/>
-          <circle cx="0" cy="0" r="7" fill="#ef4444"/>
-          <text x="0" y="4" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">!</text>
-        </g>
-
-        <!-- ELEVATED pin — Jasper (~245,235) -->
-        <g class="map-pin" onclick="pinClick('Grey Wolf Pack – Jasper','Routine sighting update','nominal')" transform="translate(245,235)">
-          <circle cx="0" cy="0" r="5.5" fill="#6b7280"/>
-          <circle cx="0" cy="0" r="3" fill="#9ca3af"/>
-        </g>
-
-        <!-- ELEVATED pin — Chitwan area  (~520,370) — symbolic -->
-        <g class="map-pin" onclick="pinClick('Elephant Herd – Chitwan','Moving toward Buffer Zone','elevated')" transform="translate(515,340)">
-          <circle class="pulse-ring" cx="0" cy="0" r="8" fill="none" stroke="#f59e0b" stroke-width="1.5" style="animation-delay:.8s"/>
-          <circle cx="0" cy="0" r="6" fill="#f59e0b"/>
-        </g>
-
-        <!-- KMeans zone overlay (toggled) -->
-        <g id="layer-kmeans" style="display:none">
-          <circle cx="300" cy="270" r="35" fill="#c084fc" fill-opacity=".12" stroke="#c084fc" stroke-width="1" stroke-dasharray="4 3"/>
-          <circle cx="450" cy="240" r="28" fill="#c084fc" fill-opacity=".1" stroke="#c084fc" stroke-width="1" stroke-dasharray="4 3"/>
-        </g>
-
-        <!-- DBSCAN hotspots (toggled) -->
-        <g id="layer-dbscan" style="display:none">
-          <rect x="240" y="240" width="50" height="30" rx="4" fill="#60a5fa" fill-opacity=".15" stroke="#60a5fa" stroke-width=".8"/>
-          <rect x="500" y="325" width="40" height="25" rx="4" fill="#60a5fa" fill-opacity=".15" stroke="#60a5fa" stroke-width=".8"/>
-        </g>
-      </svg>
-    </div>
-
-    <!-- Risk Index -->
-    <div class="risk-index-box">
-      <h5>Risk Index</h5>
-      <div class="risk-index-item"><span class="risk-dot critical"></span> Critical</div>
-      <div class="risk-index-item"><span class="risk-dot elevated"></span> Elevated</div>
-      <div class="risk-index-item"><span class="risk-dot nominal"></span> Nominal</div>
-    </div>
-
-    <div class="map-tooltip" id="mapTooltip"></div>
   </div>
 
   <!-- RIGHT COLUMN -->
@@ -870,7 +808,7 @@
 
     <!-- Quick Actions -->
     <div class="quick-grid">
-      <button class="quick-btn" onclick="showToast('Opening Risk Map…')">
+      <button class="quick-btn" onclick="location.href='pages/wildguard_risk_map_html.html'">
         <span class="quick-icon">🗺</span>
         <span class="quick-label">Risk Map</span>
       </button>
@@ -878,7 +816,7 @@
         <span class="quick-icon">🐾</span>
         <span class="quick-label">Report Animal</span>
       </button>
-      <button class="quick-btn" onclick="showToast('Loading Forecast…')">
+      <button class="quick-btn" onclick="location.href='pages/wildguard_analytics_html_.html'">
         <span class="quick-icon">📈</span>
         <span class="quick-label">Forecast</span>
       </button>
