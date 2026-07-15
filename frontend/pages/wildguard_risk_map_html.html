@@ -896,6 +896,10 @@ function toggleLayer(name) {
   }
 
   document.getElementById('layer-'+name).classList.add('active');
+  const activeIframe = document.getElementById('layer-'+name);
+  const currentSrc = activeIframe.src;
+  activeIframe.removeAttribute('src');
+  activeIframe.src = currentSrc;
 
   const badge = document.getElementById('activeLayerBadge');
   badge.textContent = LAYER_LABELS[name];
