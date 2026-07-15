@@ -1158,6 +1158,10 @@ function toggleProfile() {
 window.addEventListener('DOMContentLoaded', () => {
   // Canada is default — cards already in HTML
   // RF layer is default — badge already in HTML
+  const defaultIframe = document.getElementById('layer-rf');
+  const src = defaultIframe.src;
+  defaultIframe.removeAttribute('src');
+  defaultIframe.src = src;
 });
 </script>
 <script>
