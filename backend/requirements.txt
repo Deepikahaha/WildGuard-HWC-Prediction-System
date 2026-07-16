@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+libsql-client
+bcrypt
+python-jose
+python-multipart
+ultralytics
+python-dotenv
