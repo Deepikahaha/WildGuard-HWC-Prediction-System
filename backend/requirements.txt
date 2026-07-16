@@ -4,5 +4,7 @@ libsql-client
 bcrypt
 python-jose
 python-multipart
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
 ultralytics
 python-dotenv
