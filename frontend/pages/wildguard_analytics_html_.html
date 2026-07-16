@@ -464,11 +464,12 @@ footer {
   padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
 }
 .wg-nav-avatar {
-  width: 32px !important; height: 32px !important; border-radius: 50% !important;
-  background: #8FAF8F !important; border: 2px solid #1a2e1a !important; cursor: pointer !important;
-  display: flex !important; align-items: center !important; justify-content: center !important;
-  font-size: 12px !important; font-weight: 700 !important; font-family: 'Inter', sans-serif !important;
-  color: #1a2e1a !important; flex-shrink: 0 !important;
+  background: #8FAF8F !important;
+  border: 2px solid #1a2e1a !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
 }
 
 </style>
@@ -933,7 +934,7 @@ window.addEventListener('DOMContentLoaded', () => {
 (function() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"], #wg-avatar');
+  var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
     if (user && user.loggedIn && user.initials) {
       av.textContent = user.initials;

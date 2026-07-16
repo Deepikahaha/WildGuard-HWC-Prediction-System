@@ -1156,20 +1156,31 @@ function toggleProfile() {
    INIT
 */
 window.addEventListener('DOMContentLoaded', () => {
-  // Canada is default — cards already in HTML
-  // RF layer is default — badge already in HTML
   const defaultIframe = document.getElementById('layer-rf');
   const src = defaultIframe.src;
   defaultIframe.removeAttribute('src');
   defaultIframe.src = src;
+
+  const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
+  try {
+    const ws = new WebSocket(BACKEND_URL.replace('http', 'ws') + '/ws/alerts');
+    ws.onmessage = (event) => {
+      const r = JSON.parse(event.data);
+      const toast = document.getElementById('liveToast');
+      toast.querySelector('.toast-text').innerHTML =
+        `<strong>LIVE REPORT</strong> — ${r.species} reported by ${r.reported_by}`;
+      toast.style.display = 'flex';
+    };
+  } catch (e) { /* WebSocket unavailable */ }
 });
+
 </script>
 <script>
 // WildGuard: update avatar from localStorage session
 (function() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"], #wg-avatar');
+  var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
     if (user && user.loggedIn && user.initials) {
       av.textContent = user.initials;

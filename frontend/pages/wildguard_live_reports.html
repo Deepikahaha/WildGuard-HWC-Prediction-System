@@ -1318,6 +1318,40 @@ function refreshFeed() {
 }
 
 renderTable();
+
+const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
+
+function toRow(r, idx) {
+  return {
+    id: `LIVE-${idx}`, time: 'just now', rawTime: 0,
+    region: 'Live', species: r.species, icon: '🐾',
+    lat: '-', lng: '-', risk: r.confidence > 0.7 ? 'high' : r.confidence > 0.4 ? 'medium' : 'low',
+    hotspot: 'New Detection', reporter: r.reported_by,
+    notes: `Detected via YOLO with ${Math.round(r.confidence * 100)}% confidence.`
+  };
+}
+
+async function loadLiveReports() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/reports`);
+    const data = await res.json();
+    data.forEach((r, i) => ALL_REPORTS.unshift(toRow(r, i)));
+    renderTable();
+  } catch (e) { /* backend offline — keep demo data */ }
+}
+loadLiveReports();
+
+try {
+  const ws = new WebSocket(BACKEND_URL.replace('http', 'ws') + '/ws/alerts');
+  ws.onmessage = (event) => {
+    const r = JSON.parse(event.data);
+    ALL_REPORTS.unshift(toRow(r, Date.now()));
+    renderTable();
+    showToast(`New report: ${r.species} by ${r.reported_by}`);
+  };
+} catch (e) { /* WebSocket unavailable */ }
+
+</script>
 </script>
 <div class="wg-footer">
   <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
@@ -1332,7 +1366,7 @@ renderTable();
 (function() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
     if (user && user.loggedIn && user.initials) {
       av.textContent = user.initials;

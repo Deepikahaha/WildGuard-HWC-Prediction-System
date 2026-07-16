@@ -673,6 +673,16 @@
 </head>
 <body>
 
+<script>
+(function() {
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  if (!user || !user.loggedIn) {
+    location.href = 'wildguard_login_html_.html';
+  }
+})();
+</script>
+
 <!-- NAV -->
 <nav class="wg-nav">
   <a class="wg-nav-brand" href="../index.html">WildGuard</a>
@@ -916,6 +926,11 @@ function renderTable(data) {
 
 /* ── EDIT MODAL ───────────────────────────────────── */
 function openEditModal() {
+  const [first, ...rest] = document.getElementById('detailName').textContent.trim().split(' ');
+  document.getElementById('editFirst').value = first || '';
+  document.getElementById('editLast').value  = rest.join(' ') || '';
+  document.getElementById('editEmail').value = document.getElementById('detailEmail').textContent.trim();
+  document.getElementById('editDisplay').value = document.getElementById('displayName').textContent.trim();
   document.getElementById('editModal').classList.add('show');
 }
 function closeEditModal() {
@@ -984,14 +999,35 @@ function showToast(msg) {
 }
 
 /* ── INIT ─────────────────────────────────────────── */
+/* ── INIT ─────────────────────────────────────────── */
 renderTable(SUBMISSIONS);
+
+const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
+(async function loadProfile() {
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  if (!user || !user.email) return;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/profile?email=${encodeURIComponent(user.email)}`);
+    const data = await res.json();
+    if (!res.ok) return;
+
+    document.getElementById('displayName').textContent = data.name;
+    document.getElementById('detailName').textContent  = data.name;
+    document.getElementById('detailEmail').textContent = data.email;
+    const avatar = document.getElementById('avatarDisplay');
+    if (!avatar.querySelector('img')) avatar.textContent = data.initials;
+  } catch (e) { /* backend offline — keep demo data */ }
+})();
+
 </script>
 <script>
 // WildGuard: update avatar from localStorage session
 (function() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
     if (user && user.loggedIn && user.initials) {
       av.textContent = user.initials;

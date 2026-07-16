@@ -496,6 +496,16 @@
 </head>
 <body>
 
+<script>
+(function() {
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  if (!user || !user.loggedIn) {
+    location.href = 'wildguard_login_html_.html';
+  }
+})();
+</script>
+
 <!-- NAV -->
 <nav class="wg-nav">
   <a class="wg-nav-brand" href="../index.html">WildGuard</a>
@@ -811,7 +821,7 @@ renderList();
 (function() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar, [class*="nav-avatar"]');
+  var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
     if (user && user.loggedIn && user.initials) {
       av.textContent = user.initials;

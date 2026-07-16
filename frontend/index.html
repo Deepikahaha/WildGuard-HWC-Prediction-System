@@ -881,12 +881,24 @@
     <div class="modal-field">
       <label>Species</label>
       <select>
-        <option>Grizzly Bear</option>
-        <option>Grey Wolf</option>
-        <option>Cougar</option>
-        <option>Black Bear</option>
-        <option>Asian Elephant</option>
-        <option>Snow Leopard</option>
+        <optgroup label="Canada">
+          <option>Grizzly Bear</option>
+          <option>Black Bear</option>
+          <option>Grey Wolf</option>
+          <option>Cougar</option>
+          <option>Elk</option>
+          <option>Moose</option>
+        </optgroup>
+        <optgroup label="Chitwan">
+          <option>Bengal Tiger</option>
+          <option>One-Horned Rhino</option>
+          <option>Asian Elephant</option>
+          <option>Leopard</option>
+          <option>Sloth Bear</option>
+          <option>Wild Boar</option>
+          <option>Bluebull (Nilgai)</option>
+          <option>Python</option>
+        </optgroup>
       </select>
     </div>
     <div class="modal-field"><label>Location (GPS or description)</label><input type="text" placeholder="e.g. Banff NP, Trail 9, N51.496°"></div>
@@ -898,6 +910,7 @@
       </select>
     </div>
     <div class="modal-field"><label>Notes</label><input type="text" placeholder="Optional observation details"></div>
+    <div class="modal-field"><label>Photo</label><input type="file" id="detectFile" accept="image/*"></div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal('detectModal')">Cancel</button>
       <button class="btn-submit" onclick="submitDetection()">Submit Report</button>
@@ -1003,12 +1016,30 @@ function fakeLogin() {
 }
 
 // ── Submit detection ───────────────────────────────
-function submitDetection() {
-  closeModal('detectModal');
-  const hotspots = document.getElementById('statHotspots');
-  const current = parseInt(hotspots.textContent);
-  hotspots.textContent = current + 1;
-  showToast('Detection report submitted successfully');
+const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
+async function submitDetection() {
+  const fileInput = document.getElementById('detectFile');
+  if (!fileInput.files[0]) { showToast('Please attach a photo'); return; }
+
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  const reportedBy = user && user.name ? user.name : 'Anonymous';
+
+  const form = new FormData();
+  form.append('file', fileInput.files[0]);
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/detect-animal?reported_by=${encodeURIComponent(reportedBy)}`, {
+      method: 'POST', body: form
+    });
+    const data = await res.json();
+    closeModal('detectModal');
+    const hotspots = document.getElementById('statHotspots');
+    hotspots.textContent = parseInt(hotspots.textContent) + 1;
+    showToast(`Detected: ${data.species} (${Math.round(data.confidence * 100)}% confidence)`);
+  } catch (e) {
+    showToast('Could not reach backend — try again');
+  }
 }
 
 // ── Animate stats on load ──────────────────────────
