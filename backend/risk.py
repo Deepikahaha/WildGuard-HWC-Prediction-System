@@ -11,6 +11,7 @@ import numpy as np
 _canada_grid = pd.read_csv("data/parks_canada_risk_grid.csv")
 _canada_hot = pd.read_csv("data/parks_canada_dbscan_hotspot_summary.csv")
 _chitwan_hot = pd.read_csv("data/chitwan_hotspot_summary.csv")
+_chitwan_peak = pd.read_csv("data/chitwan_species_peak_month.csv").set_index("PROBLEM_ANIMAL")["Peak_Month"]
 
 _PRIORITY_TO_RISK = {"CRITICAL": "HIGH", "ACTIVE": "MEDIUM"}  # Chitwan has no LOW cluster today
 
@@ -21,13 +22,13 @@ def _haversine_km(lat1, lon1, lat2, lon2):
     a = np.sin(dp / 2) ** 2 + np.cos(p1) * np.cos(p2) * np.sin(dl / 2) ** 2
     return 2 * R * np.arcsin(np.sqrt(a))
 
-def predict_risk(lat: float, lon: float):
+def predict_risk(lat: float, lon: float, species: str = None):
     d_canada = _haversine_km(lat, lon, _canada_hot.Center_Lat, _canada_hot.Center_Lon).min()
     d_chitwan = _haversine_km(lat, lon, _chitwan_hot.Center_Lat, _chitwan_hot.Center_Lon).min()
 
     if d_canada <= d_chitwan:
         return _canada_risk(lat, lon)
-    return _chitwan_risk(lat, lon)
+    return _chitwan_risk(lat, lon, species)
 
 def _canada_risk(lat, lon):
     d_grid = _haversine_km(lat, lon, _canada_grid.Latitude, _canada_grid.Longitude)
@@ -47,9 +48,14 @@ def _canada_risk(lat, lon):
         "hotspot_peak_month": int(hot.Peak_Month),
     }
 
-def _chitwan_risk(lat, lon):
+def _chitwan_risk(lat, lon, species=None):
     d_hot = _haversine_km(lat, lon, _chitwan_hot.Center_Lat, _chitwan_hot.Center_Lon)
     hot = _chitwan_hot.iloc[d_hot.idxmin()]
+
+    # Prefer the detected species' real peak month; fall back to the cluster's
+    # dominant species if we don't have data for whatever YOLO detected.
+    lookup_species = (species or hot.Primary_Animal).strip().title()
+    peak_month = _chitwan_peak.get(lookup_species, _chitwan_peak.get(hot.Primary_Animal))
 
     return {
         "region": "chitwan",
@@ -59,5 +65,5 @@ def _chitwan_risk(lat, lon):
         "hotspot_species": hot.Primary_Animal,
         "hotspot_distance_km": round(float(d_hot.min()), 1),
         "hotspot_priority": hot.Priority_Level,
-        "hotspot_peak_month": None,  # not tracked in this dataset
+        "hotspot_peak_month": int(peak_month) if pd.notna(peak_month) else None,
     }

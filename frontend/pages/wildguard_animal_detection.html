@@ -391,7 +391,7 @@ async function runDetection() {
     if (userCoords) {
       document.getElementById('detectingText').textContent = 'Checking risk model…';
       try {
-        const riskRes = await fetch(`${BACKEND_URL}/api/predict-risk?lat=${userCoords.lat}&lon=${userCoords.lon}`);
+        const riskRes = await fetch(`${BACKEND_URL}/api/predict-risk?lat=${userCoords.lat}&lon=${userCoords.lon}&species=${encodeURIComponent(data.species)}`);
         if (riskRes.ok) renderRisk(await riskRes.json());
       } catch (e) { /* risk lookup best-effort, detection result still stands */ }
     } else {

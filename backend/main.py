@@ -46,3 +46,7 @@ async def ws_alerts(ws: WebSocket):
 @app.get("/api/predict-risk")
 def risk(lat: float, lon: float):
     return predict_risk(lat, lon)
+
+@app.get("/api/predict-risk")
+def risk(lat: float, lon: float, species: str = None):
+    return predict_risk(lat, lon, species)
