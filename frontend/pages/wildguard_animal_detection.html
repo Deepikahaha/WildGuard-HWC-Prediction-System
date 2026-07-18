@@ -379,9 +379,9 @@ async function runDetection() {
   try {
     const form = new FormData();
     form.append('file', selectedFile);
-    form.append('reported_by', (user && user.email) || 'anonymous');
+    const reportedBy = encodeURIComponent((user && user.email) || 'anonymous');
 
-    const res = await fetch(`${BACKEND_URL}/api/detect-animal`, { method: 'POST', body: form });
+    const res = await fetch(`${BACKEND_URL}/api/detect-animal?reported_by=${reportedBy}`, { method: 'POST', body: form });
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();   // { species, confidence }
 

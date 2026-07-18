@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 
-model = YOLO("best.pt")  # placeholder until Ina's model is ready  # Ina's trained weights, place in backend/
+model = YOLO("best.pt")  
 
 def detect(image_path: str):
     results = model(image_path)[0]
