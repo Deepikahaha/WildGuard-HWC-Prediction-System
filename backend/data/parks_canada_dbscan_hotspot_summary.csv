@@ -1,0 +1,41 @@
+DBSCAN_Cluster,Incident_Count,Primary_Species,Primary_Park,Peak_Month,Center_Lat,Center_Lon,Priority
+4,24721,Elk,Jasper Field Unit,6,52.859,-118.013,CRITICAL
+0,17517,Elk,Banff Field Unit,6,51.219,-115.739,CRITICAL
+6,2096,Black Bear,Waterton Lakes Field Unit,7,49.064,-113.927,CRITICAL
+1,875,Black Bear,Coastal British Columbia Field Unit,6,49.034,-125.689,CRITICAL
+9,692,Black Bear,Coastal British Columbia Field Unit,8,48.698,-124.942,CRITICAL
+18,541,Grizzly Bear,Mount Revelstoke And Glacier Field Unit,6,51.293,-117.52,CRITICAL
+8,400,Black Bear,Northern Prairies Field Unit,7,53.931,-106.092,CRITICAL
+17,279,Plains Bison,Northern Prairies Field Unit,7,53.636,-112.85,CRITICAL
+25,246,Black Bear,Mount Revelstoke And Glacier Field Unit,8,51.027,-118.171,CRITICAL
+20,244,Black Bear,Eastern And Central Ontario Field Unit,7,44.875,-79.854,CRITICAL
+11,190,Black Bear,Riding Mountain Field Unit,7,50.662,-99.956,ACTIVE
+15,146,Black Bear,Gaspesie Field Unit,6,48.803,-64.224,ACTIVE
+2,119,Coyote,Cape Breton Field Unit,7,46.709,-60.905,ACTIVE
+12,112,Black Bear,Eastern And Central Ontario Field Unit,7,45.233,-81.564,ACTIVE
+16,68,Black Bear,Mount Revelstoke And Glacier Field Unit,8,51.088,-117.918,ACTIVE
+3,65,Coyote,Cape Breton Field Unit,8,46.726,-60.363,ACTIVE
+7,58,Black Bear,La Mauricie And Western Quebec Field Unit,7,46.717,-73.035,ACTIVE
+14,56,Black Bear,Newfoundland East Field Unit,6,48.559,-53.982,ACTIVE
+27,49,Black Bear,La Mauricie And Western Quebec Field Unit,7,46.75,-72.808,ACTIVE
+26,48,Black Bear,Northern Prairies Field Unit,6,54.071,-106.449,ACTIVE
+5,43,Plains Bison,Saskatchewan South Field Unit,8,49.179,-107.541,ACTIVE
+19,40,Black Bear,Northern Ontario Field Unit,8,48.349,-86.171,ACTIVE
+22,32,Black Bear,Mainland Nova Scotia Field Unit,7,43.826,-64.842,ACTIVE
+28,29,Black Bear,Mainland Nova Scotia Field Unit,6,44.404,-65.226,ACTIVE
+21,24,Grizzly Bear,Yukon Field Unit,7,60.989,-138.593,ACTIVE
+23,23,Black Bear,Riding Mountain Field Unit,7,50.885,-100.048,ACTIVE
+29,22,Black Bear,Yukon Field Unit,6,59.774,-135.079,ACTIVE
+30,19,Coyote,Western Newfoundland And Labrador Field Unit,7,49.609,-57.925,ACTIVE
+36,17,Black Bear,Yukon Field Unit,8,60.574,-137.222,ACTIVE
+13,16,Black Bear,Northern Prairies Field Unit,7,53.634,-106.063,ACTIVE
+31,15,Coyote,Cape Breton Field Unit,8,46.816,-60.683,ACTIVE
+24,14,Black Bear,Riding Mountain Field Unit,8,50.754,-100.236,ACTIVE
+38,13,Black Bear,Southwest Northwest Territories Field Unit,5,59.81,-111.985,ACTIVE
+32,13,Wolf,Coastal British Columbia Field Unit,6,48.916,-125.307,ACTIVE
+37,12,Black Bear,Northern Ontario Field Unit,7,48.597,-86.288,ACTIVE
+33,12,Black Bear,Northern New Brunswick Field Unit,5,46.807,-64.983,ACTIVE
+39,12,Black Bear,Southwest Northwest Territories Field Unit,6,59.547,-112.248,ACTIVE
+35,12,Black Bear,Southwest Northwest Territories Field Unit,5,60.026,-112.942,ACTIVE
+10,11,Black Bear,Riding Mountain Field Unit,5,50.782,-100.002,ACTIVE
+34,10,Grizzly Bear,Jasper Field Unit,8,52.395,-117.009,ACTIVE

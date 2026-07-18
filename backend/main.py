@@ -5,6 +5,7 @@ from database import client, init_db
 from auth import router as auth_router
 from yolo import detect
 from ws_manager import manager
+from risk import predict_risk
 
 init_db()
 
@@ -41,3 +42,7 @@ async def ws_alerts(ws: WebSocket):
             await ws.receive_text()  # keeps connection alive
     except WebSocketDisconnect:
         manager.disconnect(ws)
+
+@app.get("/api/predict-risk")
+def risk(lat: float, lon: float):
+    return predict_risk(lat, lon)

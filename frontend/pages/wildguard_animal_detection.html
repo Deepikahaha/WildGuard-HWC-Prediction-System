@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WildGuard — Animal Detection</title>
@@ -13,7 +12,6 @@
   --forest:        #2D4A2D;
   --forest-dark:   #1E331E;
   --forest-light:  #3A5C3A;
-  --forest-hover:  #4A7A4A;
   --sage:          #6B8F6B;
   --sage-light:    #A8C5A0;
   --sage-pale:     #EBF2E8;
@@ -34,7 +32,6 @@
   --low-bg:        #EDFAF3;
   --shadow-sm:     0 1px 3px rgba(45,74,45,0.07), 0 1px 2px rgba(45,74,45,0.04);
   --shadow-md:     0 4px 14px rgba(45,74,45,0.10);
-  --shadow-lg:     0 8px 28px rgba(45,74,45,0.13);
   --radius:        10px;
 }
 
@@ -47,929 +44,134 @@ html, body {
   line-height: 1.5;
 }
 
-/* ─── NAV ───────────────────────────────────────────────── */
-nav {
-  background: var(--forest);
-  height: 52px;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  position: sticky;
-  top: 0;
-  z-index: 300;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
-  gap: 0;
+/* ── NAV (wg standard) ── */
+.wg-nav {
+  background: #2D4A2D; padding: 0 28px; display: flex; align-items: center; gap: 28px;
+  height: 52px; position: sticky; top: 0; z-index: 9999;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28); flex-shrink: 0; width: 100%; box-sizing: border-box;
 }
+.wg-nav-brand { font-weight: 700; font-size: 17px; color: #fff; letter-spacing: .4px; white-space: nowrap; text-decoration: none; font-family: 'Inter', sans-serif; }
+.wg-nav-links { display: flex; gap: 2px; flex: 1; list-style: none; align-items: center; margin: 0; padding: 0; }
+.wg-nav-links a { color: rgba(255,255,255,.7); text-decoration: none; font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif; padding: 6px 11px; border-radius: 5px; transition: background .15s, color .15s; white-space: nowrap; display: inline-flex; align-items: center; }
+.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
+.wg-nav-links a.wg-active { color: #fff; font-weight: 600; border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px; }
+.wg-nav-right { display: flex; align-items: center; gap: 14px; margin-left: auto; flex-shrink: 0; }
+.wg-nav-bell { position: relative; color: rgba(255,255,255,.8); cursor: pointer; line-height: 0; background: none; border: none; padding: 4px; transition: color .15s; display: flex; align-items: center; }
+.wg-nav-bell:hover { color: #fff; }
+.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
+.wg-nav-badge { position: absolute; top: 0; right: 0; background: #EF4444; color: #fff; font-size: 9px; font-weight: 800; min-width: 15px; height: 15px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1; }
+.wg-nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; color: #1a2e1a; flex-shrink: 0; }
 
-.nav-brand {
-  font-size: 17px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-  margin-right: 28px;
-  white-space: nowrap;
-  text-decoration: none;
-}
-.nav-brand span { color: var(--sage-light); }
+/* ── PAGE LAYOUT ── */
+.page-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 1280px; margin: 0 auto; padding: 28px 24px; min-height: calc(100vh - 52px - 56px); align-items: start; }
+.card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+.left-col, .right-col { display: flex; flex-direction: column; gap: 16px; }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  list-style: none;
-  flex: 1;
-}
-.nav-links a {
-  color: rgba(255,255,255,0.68);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.15s;
-  white-space: nowrap;
-}
-.nav-links a:hover { background: rgba(255,255,255,0.10); color: #fff; }
-.nav-links a.active {
-  color: #fff;
-  border-bottom: 2px solid var(--sage-light);
-  border-radius: 0;
-  padding-bottom: 4px;
-}
+.section-title { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+.section-sub { font-size: 13.5px; color: var(--text-muted); margin-top: 3px; line-height: 1.55; }
 
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto;
-}
-.nav-icon-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: rgba(255,255,255,0.70);
-  padding: 6px;
-  border-radius: 6px;
-  display: flex; align-items: center;
-  position: relative;
-  transition: all 0.15s;
-}
-.nav-icon-btn:hover { background: rgba(255,255,255,0.10); color: #fff; }
-.nav-icon-btn svg { width: 18px; height: 18px; }
-.notif-dot {
-  position: absolute;
-  top: 5px; right: 6px;
-  width: 7px; height: 7px;
-  background: #E74C3C;
-  border-radius: 50%;
-  border: 1.5px solid var(--forest);
-}
-.nav-avatar {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: var(--sage-light);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: var(--forest);
-  border: 2px solid rgba(255,255,255,0.25);
-  cursor: pointer;
-}
-
-/* ─── PAGE LAYOUT ───────────────────────────────────────── */
-.page-wrap {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 28px 24px;
-  gap: 24px;
-  min-height: calc(100vh - 52px - 56px);
-  align-items: start;
-}
-
-/* ─── SHARED CARD ───────────────────────────────────────── */
-.card {
-  background: var(--white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-}
-
-/* ─── LEFT COLUMN ───────────────────────────────────────── */
-.left-col {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.3px;
-}
-.section-sub {
-  font-size: 13.5px;
-  color: var(--text-muted);
-  margin-top: 3px;
-  line-height: 1.55;
-}
-
-/* ─── DROPZONE ───────────────────────────────────────────── */
-.dropzone-card {
-  border: 2px dashed var(--sage-mid);
-  border-radius: var(--radius);
-  background: var(--sage-pale);
-  padding: 40px 24px 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  position: relative;
-}
-.dropzone-card:hover, .dropzone-card.dragover {
-  border-color: var(--forest);
-  background: #E2EFD8;
-}
-.dropzone-card input[type="file"] {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-
-.dz-icon {
-  width: 52px; height: 52px;
-  background: #D4E8CC;
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 14px;
-}
+/* ── DROPZONE ── */
+.dropzone-card { border: 2px dashed var(--sage-mid); border-radius: var(--radius); background: var(--sage-pale); padding: 40px 24px 32px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+.dropzone-card:hover, .dropzone-card.dragover { border-color: var(--forest); background: #E2EFD8; }
+.dropzone-card input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.dz-icon { width: 52px; height: 52px; background: #D4E8CC; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
 .dz-icon svg { width: 26px; height: 26px; color: var(--forest); }
-
-.dz-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 5px;
-}
-.dz-sub {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  margin-bottom: 18px;
-}
-
-.btn-dz {
-  background: var(--forest);
-  color: #fff;
-  border: none;
-  border-radius: 7px;
-  padding: 8px 22px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  transition: background 0.18s;
-  display: inline-flex; align-items: center; gap: 7px;
-  position: relative;
-  z-index: 1;
-}
+.dz-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+.dz-sub { font-size: 12.5px; color: var(--text-muted); margin-bottom: 18px; }
+.btn-dz { background: var(--forest); color: #fff; border: none; border-radius: 7px; padding: 8px 22px; font-size: 13px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.18s; display: inline-flex; align-items: center; gap: 7px; position: relative; z-index: 1; }
 .btn-dz:hover { background: var(--forest-light); }
 .btn-dz svg { width: 14px; height: 14px; }
 
-/* ─── URL INPUT ──────────────────────────────────────────── */
-.url-row {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-.url-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  margin: 4px 0;
-}
-.url-divider::before, .url-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
+/* ── PREVIEW ── */
+.preview-card { border-radius: var(--radius); border: 1px solid var(--border); background: var(--white); overflow: hidden; box-shadow: var(--shadow-sm); display: none; }
+.preview-card.show { display: block; }
+.preview-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid var(--border-light); }
+.preview-label { font-size: 12.5px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 7px; }
+.preview-img-wrap { position: relative; width: 100%; background: #101a10; line-height: 0; max-height: 320px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.preview-img-wrap img { width: 100%; max-height: 320px; object-fit: contain; display: block; }
+.preview-footer { display: flex; align-items: center; justify-content: space-between; padding: 9px 14px; border-top: 1px solid var(--border-light); }
+.preview-meta { font-size: 12px; color: var(--text-muted); }
 
-.url-input {
-  flex: 1;
-  padding: 9px 13px;
-  border: 1.5px solid var(--border);
-  border-right: none;
-  border-radius: 8px 0 0 8px;
-  font-size: 13px;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-primary);
-  background: var(--white);
-  outline: none;
-  transition: border-color 0.18s;
-}
-.url-input::placeholder { color: #AABFAA; }
-.url-input:focus { border-color: var(--forest); }
-
-.btn-detect {
-  background: var(--forest);
-  color: #fff;
-  border: none;
-  border-radius: 0 8px 8px 0;
-  padding: 9px 20px;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.18s;
-  display: flex; align-items: center; gap: 6px;
-}
-.btn-detect:hover { background: var(--forest-light); }
-.btn-detect svg { width: 14px; height: 14px; }
-
-/* ─── PREVIEW CARD ───────────────────────────────────────── */
-.preview-card {
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--white);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.preview-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-light);
-}
-.preview-label {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  display: flex; align-items: center; gap: 7px;
-}
-.session-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #B03A2E;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-.session-dot {
-  width: 6px; height: 6px;
-  background: #E74C3C;
-  border-radius: 50%;
-  animation: pulse 1.4s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
-}
-
-/* Image container with bounding box overlay */
-.preview-img-wrap {
-  position: relative;
-  width: 100%;
-  background: #1A2E1A;
-  line-height: 0;
-  overflow: hidden;
-  cursor: zoom-in;
-}
-
-/* Generated bear image using CSS art + SVG */
-.bear-scene {
-  width: 100%;
-  height: 220px;
-  position: relative;
-  background: linear-gradient(180deg, #0D1F10 0%, #152815 30%, #1E3C1E 60%, #2A5230 80%, #1C3820 100%);
-  overflow: hidden;
-}
-
-/* Forest layers behind */
-.bear-scene::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 40% at 50% 80%, #2A5C30 0%, transparent 70%),
-    radial-gradient(ellipse 40% 30% at 20% 90%, #1E4A22 0%, transparent 60%),
-    radial-gradient(ellipse 35% 25% at 80% 88%, #223C1E 0%, transparent 55%);
-}
-
-.bear-scene svg.bear-art {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Detection bounding box overlay */
-.bbox-overlay {
-  position: absolute;
-  top: 22%;
-  left: 22%;
-  width: 50%;
-  height: 62%;
-  border: 2px solid rgba(80,220,100,0.85);
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(0,0,0,0.1);
-  pointer-events: none;
-}
-
-.bbox-label {
-  position: absolute;
-  top: -24px; left: -2px;
-  background: rgba(45,100,55,0.90);
-  color: #fff;
-  font-size: 10.5px;
-  font-family: 'DM Mono', monospace;
-  font-weight: 500;
-  padding: 3px 8px;
-  border-radius: 4px 4px 0 0;
-  white-space: nowrap;
-  letter-spacing: 0.3px;
-}
-
-/* Corner accents on bbox */
-.bbox-corner {
-  position: absolute;
-  width: 10px; height: 10px;
-  border-color: #4DDD6A;
-  border-style: solid;
-}
-.bbox-corner.tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
-.bbox-corner.tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
-.bbox-corner.bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
-.bbox-corner.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
-
-.preview-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 9px 14px;
-  border-top: 1px solid var(--border-light);
-}
-.preview-meta {
-  font-size: 12px;
-  font-family: 'DM Mono', monospace;
-  color: var(--text-muted);
-  display: flex; flex-direction: column; gap: 1px;
-}
-.preview-meta strong { color: var(--text-secondary); font-size: 12.5px; font-family: 'Inter', sans-serif; font-weight: 600; }
-.preview-actions {
-  display: flex; gap: 6px;
-}
-.preview-action-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 5px 8px;
-  display: flex; align-items: center;
-  transition: all 0.15s;
-}
-.preview-action-btn:hover { border-color: var(--sage); color: var(--forest); background: var(--sage-pale); }
-.preview-action-btn svg { width: 14px; height: 14px; }
-
-/* ─── RUN DETECTION BTN ─────────────────────────────────── */
-.btn-run {
-  width: 100%;
-  background: var(--forest);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 13px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  transition: background 0.18s, transform 0.1s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(45,74,45,0.22);
-  letter-spacing: -0.1px;
-}
-.btn-run:hover {
-  background: var(--forest-light);
-  box-shadow: 0 4px 16px rgba(45,74,45,0.28);
-}
-.btn-run:active { transform: translateY(1px); }
-.btn-run svg { width: 17px; height: 17px; }
-
-.btn-run .spinner {
-  display: none;
-  width: 17px; height: 17px;
-  border: 2.5px solid rgba(255,255,255,0.35);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-.btn-run.loading .spinner  { display: block; }
-.btn-run.loading .run-text { display: none; }
-.btn-run.loading .run-icon { display: none; }
+/* ── DETECTING OVERLAY ── */
+.detecting-overlay { display: none; position: absolute; inset: 0; background: rgba(10,20,10,0.72); align-items: center; justify-content: center; flex-direction: column; gap: 12px; z-index: 10; }
+.detecting-overlay.show { display: flex; }
+.detecting-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.25); border-top-color: #80EF90; border-radius: 50%; animation: spin 0.8s linear infinite; }
+.detecting-text { color: rgba(255,255,255,0.88); font-size: 13.5px; font-weight: 500; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── RIGHT COLUMN ───────────────────────────────────────── */
-.right-col {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* ── RUN BUTTON ── */
+.btn-run { width: 100%; background: var(--forest); color: #fff; border: none; border-radius: 8px; padding: 13px 20px; font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; transition: background 0.18s; box-shadow: 0 2px 8px rgba(45,74,45,0.22); }
+.btn-run:hover:not(:disabled) { background: var(--forest-light); }
+.btn-run:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-run svg { width: 17px; height: 17px; }
+.btn-run .spinner { display: none; width: 17px; height: 17px; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+.btn-run.loading .spinner { display: block; }
+.btn-run.loading .run-text, .btn-run.loading .run-icon { display: none; }
 
-.results-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
+/* ── RESULTS ── */
+.results-header { display: flex; align-items: flex-start; justify-content: space-between; }
+.results-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.results-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+.empty-state { padding: 40px 20px; text-align: center; color: var(--text-muted); font-size: 13.5px; }
 
-.results-title {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
-.results-sub {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
+.results-body { display: none; flex-direction: column; gap: 16px; }
+.results-body.show { display: flex; }
 
-.complete-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--low-bg);
-  border: 1px solid #82CFA0;
-  color: var(--low);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-.complete-badge svg { width: 12px; height: 12px; }
+.species-card { padding: 18px 20px; }
+.species-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.species-left { display: flex; align-items: center; gap: 12px; }
+.species-icon-wrap { width: 40px; height: 40px; background: var(--sage-pale); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.species-name { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.3px; }
+.engine-badge { display: inline-block; background: var(--sage-pale); color: var(--sage); font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; margin-top: 3px; border: 1px solid var(--sage-mid); }
+.confidence-val { font-size: 34px; font-weight: 700; color: var(--text-primary); letter-spacing: -1px; line-height: 1; text-align: right; }
+.confidence-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; color: var(--text-muted); text-align: right; margin-top: 2px; }
+.conf-bar-track { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.conf-bar-fill { height: 100%; background: linear-gradient(90deg, var(--forest) 0%, var(--sage) 100%); border-radius: 4px; transition: width 1s ease; width: 0%; }
 
-/* ─── SPECIES CONFIDENCE CARD ───────────────────────────── */
-.species-card {
-  padding: 18px 20px;
-}
+.risk-card { border-radius: var(--radius); border: 1.5px solid var(--border); padding: 14px 18px; display: none; }
+.risk-card.show { display: block; }
+.risk-card.HIGH { border-color: var(--high-border); background: var(--high-bg); }
+.risk-card.MEDIUM { border-color: #F0D9A8; background: var(--medium-bg); }
+.risk-card.LOW { border-color: #A7E0BE; background: var(--low-bg); }
+.risk-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.risk-title-row { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; letter-spacing: 0.3px; }
+.risk-card.HIGH .risk-title-row { color: var(--high); }
+.risk-card.MEDIUM .risk-title-row { color: var(--medium); }
+.risk-card.LOW .risk-title-row { color: var(--low); }
+.risk-sub { font-size: 12.5px; color: var(--text-secondary); }
+.risk-note { margin-top: 10px; font-size: 11.5px; color: var(--text-muted); }
 
-.species-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.species-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.species-icon-wrap {
-  width: 40px; height: 40px;
-  background: var(--sage-pale);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-}
-.species-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -0.3px;
-}
-.engine-badge {
-  display: inline-block;
-  background: var(--sage-pale);
-  color: var(--sage);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-top: 3px;
-  border: 1px solid var(--sage-mid);
-}
-.confidence-val {
-  font-size: 34px;
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: -1px;
-  line-height: 1;
-  text-align: right;
-}
-.confidence-label {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  text-align: right;
-  margin-top: 2px;
-}
+.location-note { font-size: 12.5px; color: var(--text-muted); background: var(--sage-pale); border: 1px solid var(--sage-mid); border-radius: 8px; padding: 10px 12px; display: none; }
+.location-note.show { display: block; }
 
-/* Confidence progress bar */
-.conf-bar-track {
-  height: 6px;
-  background: var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.conf-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--forest) 0%, var(--sage) 100%);
-  border-radius: 4px;
-  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
-  width: 0%;
-}
+.meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.meta-item { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; background: var(--white); }
+.meta-item-label { font-size: 11.5px; color: var(--text-muted); font-weight: 500; }
+.meta-item-value { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-top: 1px; }
 
-/* ─── RISK CARD ──────────────────────────────────────────── */
-.risk-card {
-  border-radius: var(--radius);
-  border: 1.5px solid var(--high-border);
-  background: var(--high-bg);
-  padding: 16px 18px;
-}
-
-.risk-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.risk-title-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.risk-title-row svg { width: 16px; height: 16px; color: var(--high); }
-.risk-label {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--high);
-  letter-spacing: 0.3px;
-}
-.model-badge {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--high);
-  background: rgba(176,58,46,0.08);
-  border: 1px solid rgba(176,58,46,0.18);
-  padding: 3px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.risk-quote {
-  font-size: 13px;
-  color: #7B2D25;
-  font-style: italic;
-  line-height: 1.6;
-  border-left: 3px solid var(--high-border);
-  padding-left: 12px;
-  margin: 0;
-}
-
-/* ─── META GRID ──────────────────────────────────────────── */
-.meta-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.meta-item {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 12px 14px;
-  background: var(--white);
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-.meta-item svg {
-  width: 15px; height: 15px;
-  color: var(--sage);
-  margin-top: 1px;
-  flex-shrink: 0;
-}
-.meta-item-body {}
-.meta-item-label {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-.meta-item-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-top: 1px;
-}
-
-/* ─── OBJECTS TABLE ──────────────────────────────────────── */
-.objects-section {
-  padding: 16px 18px;
-}
-.objects-heading {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
-.object-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  margin-bottom: 6px;
-  font-size: 13.5px;
-  transition: background 0.12s;
-  cursor: pointer;
-}
-.object-row:hover { background: var(--sage-pale); border-color: var(--sage-mid); }
-.object-row:last-child { margin-bottom: 0; }
-.object-row-left {
-  display: flex; align-items: center; gap: 10px;
-}
-.object-idx {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-family: 'DM Mono', monospace;
-  width: 18px;
-}
-.object-name {
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.object-conf {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--forest);
-  font-family: 'DM Mono', monospace;
-}
-
-/* ─── ACTION BUTTONS ─────────────────────────────────────── */
-.action-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.btn-action-primary {
-  width: 100%;
-  background: var(--forest);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 18px;
-  font-size: 14px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  transition: background 0.18s, box-shadow 0.18s;
-  box-shadow: 0 2px 8px rgba(45,74,45,0.18);
-}
-.btn-action-primary:hover { background: var(--forest-light); box-shadow: 0 4px 14px rgba(45,74,45,0.24); }
-.btn-action-primary svg { width: 15px; height: 15px; }
-
-.btn-action-secondary {
-  width: 100%;
-  background: var(--white);
-  color: var(--text-secondary);
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 11px 18px;
-  font-size: 13.5px;
-  font-weight: 600;
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 9px;
-  transition: all 0.18s;
-}
-.btn-action-secondary:hover {
-  background: var(--sage-pale);
-  border-color: var(--sage);
-  color: var(--forest);
-}
+.action-stack { display: flex; flex-direction: column; gap: 10px; }
+.btn-action-secondary { width: 100%; background: var(--white); color: var(--text-secondary); border: 1.5px solid var(--border); border-radius: 8px; padding: 11px 18px; font-size: 13.5px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 9px; transition: all 0.18s; }
+.btn-action-secondary:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--forest); }
 .btn-action-secondary svg { width: 15px; height: 15px; }
 
-/* ─── TOAST ──────────────────────────────────────────────── */
-.toast {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  background: var(--forest);
-  color: #fff;
-  padding: 11px 18px;
-  border-radius: 9px;
-  font-size: 13.5px;
-  font-weight: 500;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-  display: none;
-  align-items: center;
-  gap: 9px;
-  z-index: 9999;
-  max-width: 320px;
-}
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--forest); color: #fff; padding: 11px 18px; border-radius: 9px; font-size: 13.5px; font-weight: 500; box-shadow: 0 4px 18px rgba(0,0,0,0.18); display: none; align-items: center; gap: 9px; z-index: 9999; max-width: 320px; }
 .toast.show { display: flex; animation: slideUp 0.25s ease; }
-.toast.success { background: #1A6B3A; }
-@keyframes slideUp {
-  from { transform: translateY(10px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
+@keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .toast svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-/* ─── FOOTER ─────────────────────────────────────────────── */
-footer {
-  background: var(--white);
-  border-top: 1px solid var(--border);
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 56px;
-  font-size: 12.5px;
-  color: var(--text-muted);
-}
-.footer-links {
-  display: flex; gap: 20px; list-style: none;
-}
-.footer-links a { color: var(--text-muted); text-decoration: none; }
-.footer-links a:hover { color: var(--forest); }
-
-/* ─── FULLSCREEN MODAL ───────────────────────────────────── */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.82);
-  z-index: 500;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open { display: flex; }
-.modal-img-wrap {
-  position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
-}
-.modal-img-wrap .bear-scene {
-  width: 70vw; height: 50vh;
-  border-radius: 8px;
-}
-.modal-close-btn {
-  position: absolute;
-  top: -14px; right: -14px;
-  background: var(--white);
-  border: none;
-  border-radius: 50%;
-  width: 30px; height: 30px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  color: var(--text-primary);
-  box-shadow: var(--shadow-md);
-}
-
-/* ─── DETECTION PROGRESS OVERLAY ────────────────────────── */
-.detecting-overlay {
-  display: none;
-  position: absolute;
-  inset: 0;
-  background: rgba(10,20,10,0.72);
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 10;
-  border-radius: 0 0 var(--radius) var(--radius);
-}
-.detecting-overlay.show { display: flex; }
-.detecting-spinner {
-  width: 36px; height: 36px;
-  border: 3px solid rgba(255,255,255,0.25);
-  border-top-color: #80EF90;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-.detecting-text {
-  color: rgba(255,255,255,0.88);
-  font-size: 13.5px;
-  font-weight: 500;
-  font-family: 'DM Mono', monospace;
-}
-
-@media (max-width: 860px) {
-  .page-wrap { grid-template-columns: 1fr; }
-}
-
-/* ── WILDGUARD NAV ── */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* ── WILDGUARD FOOTER ── */
-.wg-footer {
-  background: #ffffff; border-top: 1px solid #D0DDD0;
-  color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif;
-  padding: 11px 28px; display: flex; align-items: center;
-  justify-content: space-between; gap: 16px; flex-shrink: 0;
-}
+/* ── FOOTER (wg standard) ── */
+.wg-footer { background: #ffffff; border-top: 1px solid #D0DDD0; color: #6B7B6B; font-size: 12px; font-family: 'Inter', sans-serif; padding: 11px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-shrink: 0; }
 .wg-footer strong { color: #1A2B1A; }
 .wg-footer-links { display: flex; gap: 16px; }
 .wg-footer-links a { color: #6B7B6B; text-decoration: none; transition: color .15s; }
 .wg-footer-links a:hover { color: #2D4A2D; }
 
-
-/* ── NAV ── */
-.wg-nav {
-  background: #2D4A2D;
-  padding: 0 28px;
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  height: 52px;
-  position: sticky;
-  top: 0;
-  z-index: 9999;
-  box-shadow: 0 2px 8px rgba(0,0,0,.28);
-  flex-shrink: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-.wg-nav-brand {
-  font-weight: 700; font-size: 17px; color: #fff;
-  letter-spacing: .4px; white-space: nowrap;
-  text-decoration: none; font-family: 'Inter', sans-serif;
-}
-.wg-nav-links {
-  display: flex; gap: 2px; flex: 1;
-  list-style: none; align-items: center; margin: 0; padding: 0;
-}
-.wg-nav-links a {
-  color: rgba(255,255,255,.7); text-decoration: none;
-  font-size: 13.5px; font-weight: 500; font-family: 'Inter', sans-serif;
-  padding: 6px 11px; border-radius: 5px;
-  transition: background .15s, color .15s;
-  white-space: nowrap; display: inline-flex; align-items: center;
-}
-.wg-nav-links a:hover { background: rgba(255,255,255,.12); color: #fff; }
-.wg-nav-links a.wg-active {
-  color: #fff; font-weight: 600;
-  border-bottom: 2px solid #C8DCC8; border-radius: 0; padding-bottom: 4px;
-}
-.wg-nav-right {
-  display: flex; align-items: center; gap: 14px;
-  margin-left: auto; flex-shrink: 0;
-}
-.wg-nav-bell {
-  position: relative; color: rgba(255,255,255,.8); cursor: pointer;
-  line-height: 0; background: none; border: none; padding: 4px;
-  transition: color .15s; display: flex; align-items: center;
-}
-.wg-nav-bell:hover { color: #fff; }
-.wg-nav-bell svg { width: 19px; height: 19px; display: block; }
-.wg-nav-badge {
-  position: absolute; top: 0; right: 0;
-  background: #EF4444; color: #fff; font-size: 9px; font-weight: 800;
-  min-width: 15px; height: 15px; border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
-}
-.wg-nav-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
-  color: #1a2e1a; flex-shrink: 0;
-}
-
+@media (max-width: 860px) { .page-wrap { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
-<!-- ─── NAVBAR ─── -->
 <nav class="wg-nav">
   <a class="wg-nav-brand" href="../index.html">WildGuard</a>
   <ul class="wg-nav-links">
@@ -979,7 +181,7 @@ footer {
     <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
     <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
     <li><a href="wildguard_live_reports.html">Live Reports</a></li>
-    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+    <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
@@ -990,202 +192,48 @@ footer {
   </div>
 </nav>
 
-<!-- ─── PAGE ─── -->
 <div class="page-wrap">
 
   <!-- LEFT COLUMN -->
   <div class="left-col">
     <div>
       <div class="section-title">Animal detection</div>
-      <div class="section-sub">Upload a photo or video — YOLO will identify the species and assess conflict risk.</div>
+      <div class="section-sub">Upload a photo — YOLO identifies the species and, if you allow location, checks it against the risk model.</div>
     </div>
 
-    <!-- DROP ZONE -->
-    <div class="dropzone-card" id="dropzone"
-         ondragover="handleDragOver(event)"
-         ondragleave="handleDragLeave(event)"
-         ondrop="handleDrop(event)">
-      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.mp4,.webp" onchange="handleFileSelect(event)">
+    <div class="dropzone-card" id="dropzone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp" onchange="handleFileSelect(event)">
       <div class="dz-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       </div>
       <div class="dz-title">Drag and drop your image here</div>
-      <div class="dz-sub">Supports JPG, PNG, MP4</div>
+      <div class="dz-sub">Supports JPG, PNG, WEBP</div>
       <button class="btn-dz" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M10 7v6M7 10h6"/></svg>
         Browse files
       </button>
     </div>
 
-    <!-- URL INPUT -->
-    <div>
-      <div class="url-divider">or paste image URL</div>
-      <div class="url-row">
-        <input type="url" class="url-input" id="urlInput" placeholder="https://example.com/wildlife.jpg">
-        <button class="btn-detect" onclick="detectFromUrl()">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="10" cy="10" r="3"/><path d="M2 10C4 5.5 7 3 10 3s6 2.5 8 7c-2 4.5-5 7-8 7s-6-2.5-8-7z"/></svg>
-          Detect
-        </button>
-      </div>
-    </div>
-
-    <!-- LIVE PREVIEW -->
     <div class="preview-card" id="previewCard">
       <div class="preview-header">
         <span class="preview-label">
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M7 3v14M13 3v14"/></svg>
-          Live Preview
-        </span>
-        <span class="session-badge">
-          <span class="session-dot"></span>
-          Active Session
+          Selected image
         </span>
       </div>
-
-      <div class="preview-img-wrap" onclick="openFullscreen()">
-        <!-- Illustrated bear scene -->
-        <div class="bear-scene" id="bearScene">
-          <svg class="bear-art" viewBox="0 0 390 220" xmlns="http://www.w3.org/2000/svg">
-            <!-- Background forest gradient -->
-            <defs>
-              <radialGradient id="glowGrad" cx="50%" cy="30%" r="55%">
-                <stop offset="0%" stop-color="#3A6E42" stop-opacity="0.5"/>
-                <stop offset="100%" stop-color="#0D1F10" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="bearBodyGrad" cx="45%" cy="40%" r="60%">
-                <stop offset="0%" stop-color="#3A3A3A"/>
-                <stop offset="100%" stop-color="#111111"/>
-              </radialGradient>
-              <radialGradient id="faceGrad" cx="48%" cy="42%" r="55%">
-                <stop offset="0%" stop-color="#4A4040"/>
-                <stop offset="100%" stop-color="#1A1414"/>
-              </radialGradient>
-              <filter id="blur2">
-                <feGaussianBlur stdDeviation="2"/>
-              </filter>
-            </defs>
-
-            <!-- Background glow -->
-            <ellipse cx="195" cy="80" rx="160" ry="90" fill="url(#glowGrad)"/>
-
-            <!-- Far background trees -->
-            <g opacity="0.35" fill="#1A3520">
-              <polygon points="40,220 55,90 70,220"/>
-              <polygon points="65,220 80,100 95,220"/>
-              <polygon points="90,220 105,80 120,220"/>
-              <polygon points="280,220 295,95 310,220"/>
-              <polygon points="305,220 320,85 335,220"/>
-              <polygon points="330,220 345,100 360,220"/>
-            </g>
-
-            <!-- Mid ground foliage -->
-            <g opacity="0.65">
-              <ellipse cx="60" cy="180" rx="50" ry="30" fill="#1C3C1C"/>
-              <ellipse cx="330" cy="185" rx="50" ry="28" fill="#1A3A1A"/>
-              <ellipse cx="195" cy="200" rx="80" ry="25" fill="#162E16"/>
-            </g>
-
-            <!-- Ground plane -->
-            <ellipse cx="195" cy="220" rx="200" ry="40" fill="#1E3C20" opacity="0.8"/>
-
-            <!-- Foliage in front -->
-            <g fill="#1E4020" opacity="0.9">
-              <ellipse cx="30" cy="210" rx="42" ry="22"/>
-              <ellipse cx="365" cy="210" rx="40" ry="20"/>
-              <ellipse cx="155" cy="215" rx="35" ry="16"/>
-              <ellipse cx="240" cy="218" rx="30" ry="14"/>
-            </g>
-
-            <!-- Bear body (large dark shape, centered) -->
-            <ellipse cx="195" cy="165" rx="72" ry="50" fill="url(#bearBodyGrad)"/>
-            <!-- Bear torso -->
-            <rect x="138" y="130" width="114" height="90" rx="30" fill="#1E1E1E"/>
-
-            <!-- Bear head -->
-            <ellipse cx="195" cy="118" rx="46" ry="42" fill="url(#faceGrad)"/>
-
-            <!-- Ears -->
-            <ellipse cx="158" cy="82" rx="14" ry="13" fill="#2A2020"/>
-            <ellipse cx="232" cy="82" rx="14" ry="13" fill="#2A2020"/>
-            <!-- Inner ear -->
-            <ellipse cx="158" cy="83" rx="7" ry="6" fill="#3E2828"/>
-            <ellipse cx="232" cy="83" rx="7" ry="6" fill="#3E2828"/>
-
-            <!-- Snout / muzzle -->
-            <ellipse cx="195" cy="132" rx="22" ry="16" fill="#3A3030"/>
-            <ellipse cx="195" cy="130" rx="18" ry="13" fill="#4A3C3C"/>
-
-            <!-- Nose -->
-            <ellipse cx="195" cy="122" rx="9" ry="6" fill="#111"/>
-            <!-- Nose highlight -->
-            <ellipse cx="192" cy="120" rx="3" ry="2" fill="rgba(255,255,255,0.18)"/>
-
-            <!-- Eyes -->
-            <ellipse cx="176" cy="108" rx="7" ry="6.5" fill="#0A0A0A"/>
-            <ellipse cx="214" cy="108" rx="7" ry="6.5" fill="#0A0A0A"/>
-            <!-- Eye shine -->
-            <ellipse cx="178" cy="106" rx="2.5" ry="2" fill="rgba(255,255,255,0.55)"/>
-            <ellipse cx="216" cy="106" rx="2.5" ry="2" fill="rgba(255,255,255,0.55)"/>
-            <!-- Eye ring -->
-            <ellipse cx="176" cy="108" rx="8.5" ry="8" fill="none" stroke="#2A2020" stroke-width="1.5"/>
-            <ellipse cx="214" cy="108" rx="8.5" ry="8" fill="none" stroke="#2A2020" stroke-width="1.5"/>
-
-            <!-- Fur texture suggestion -->
-            <g stroke="#2A2A2A" stroke-width="1" opacity="0.5">
-              <path d="M165 100 Q170 95 175 100"/>
-              <path d="M210 100 Q215 95 220 100"/>
-              <path d="M178 88 Q183 83 188 88"/>
-              <path d="M205 88 Q210 83 215 88"/>
-            </g>
-
-            <!-- Foreground grassy elements -->
-            <g fill="#1E4A22" opacity="0.75">
-              <path d="M0 220 Q10 185 20 190 Q30 185 40 220Z"/>
-              <path d="M20 220 Q35 175 50 182 Q60 175 70 220Z"/>
-              <path d="M320 220 Q340 178 355 185 Q365 178 380 220Z"/>
-              <path d="M345 220 Q360 182 370 188 Q378 182 390 220Z"/>
-            </g>
-
-            <!-- Dappled light effect -->
-            <circle cx="140" cy="90" r="18" fill="rgba(255,255,220,0.03)"/>
-            <circle cx="250" cy="80" r="14" fill="rgba(255,255,220,0.03)"/>
-          </svg>
-
-          <!-- Bounding box -->
-          <div class="bbox-overlay" id="bboxOverlay">
-            <div class="bbox-label">🐻 Black Bear [94.2%]</div>
-            <div class="bbox-corner tl"></div>
-            <div class="bbox-corner tr"></div>
-            <div class="bbox-corner bl"></div>
-            <div class="bbox-corner br"></div>
-          </div>
-
-          <!-- Detection running overlay -->
-          <div class="detecting-overlay" id="detectingOverlay">
-            <div class="detecting-spinner"></div>
-            <div class="detecting-text">Running YOLOv8 inference…</div>
-          </div>
+      <div class="preview-img-wrap">
+        <img id="previewImg" src="" alt="Selected animal photo">
+        <div class="detecting-overlay" id="detectingOverlay">
+          <div class="detecting-spinner"></div>
+          <div class="detecting-text" id="detectingText">Running YOLO inference…</div>
         </div>
       </div>
-
       <div class="preview-footer">
-        <div class="preview-meta">
-          <strong>1920×1080</strong>
-          <span>2.4MB &bull; 14:32:01</span>
-        </div>
-        <div class="preview-actions">
-          <button class="preview-action-btn" onclick="openFullscreen()" title="Fullscreen">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8V3h5M12 3h5v5M17 12v5h-5M8 17H3v-5"/></svg>
-          </button>
-          <button class="preview-action-btn" onclick="showToast('Preview cleared')" title="Remove">
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h8l1 14H5L6 4zM4 4h12M8 4V2h4v2"/></svg>
-          </button>
-        </div>
+        <span class="preview-meta" id="fileMeta"></span>
       </div>
     </div>
 
-    <!-- RUN DETECTION -->
-    <button class="btn-run" id="runBtn" onclick="runDetection()">
+    <button class="btn-run" id="runBtn" onclick="runDetection()" disabled>
       <div class="spinner"></div>
       <svg class="run-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="3"/><path d="M10 1v3M10 16v3M1 10h3M16 10h3M3.5 3.5l2 2M14.5 14.5l2 2M14.5 3.5l-2 2M3.5 16.5l2-2"/></svg>
       <span class="run-text">Run detection</span>
@@ -1197,169 +245,73 @@ footer {
     <div class="results-header">
       <div>
         <div class="results-title">Detection results</div>
-        <div class="results-sub">Analytical breakdown of current frame</div>
-      </div>
-      <div class="complete-badge">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 8 6.5 11.5 13 5"/></svg>
-        Complete
+        <div class="results-sub" id="resultsSub">Upload a photo to begin</div>
       </div>
     </div>
 
-    <!-- SPECIES + CONFIDENCE -->
-    <div class="card species-card">
-      <div class="species-top">
-        <div class="species-left">
-          <div class="species-icon-wrap">🐻</div>
+    <div class="card" id="emptyState">
+      <div class="empty-state">No detection run yet. Choose a photo on the left and click "Run detection."</div>
+    </div>
+
+    <div class="results-body" id="resultsBody">
+      <div class="card species-card">
+        <div class="species-top">
+          <div class="species-left">
+            <div class="species-icon-wrap" id="speciesIcon">🐾</div>
+            <div>
+              <div class="species-name" id="speciesName">—</div>
+              <div class="engine-badge">YOLO Engine</div>
+            </div>
+          </div>
           <div>
-            <div class="species-name">Black Bear</div>
-            <div class="engine-badge">YOLOv8 Engine</div>
+            <div class="confidence-val" id="confVal">—</div>
+            <div class="confidence-label">Confidence</div>
           </div>
         </div>
-        <div>
-          <div class="confidence-val" id="confVal">94.2%</div>
-          <div class="confidence-label">Confidence</div>
-        </div>
+        <div class="conf-bar-track"><div class="conf-bar-fill" id="confBar"></div></div>
       </div>
-      <div class="conf-bar-track">
-        <div class="conf-bar-fill" id="confBar"></div>
-      </div>
-    </div>
 
-    <!-- HIGH RISK ALERT -->
-    <div class="risk-card" id="riskCard">
-      <div class="risk-header">
-        <div class="risk-title-row">
-          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L18 17H2L10 3z"/><path d="M10 9v4"/><circle cx="10" cy="15" r="0.5" fill="currentColor"/></svg>
-          <span class="risk-label">HIGH RISK</span>
-        </div>
-        <span class="model-badge">Random Forest Model: 0.89</span>
-      </div>
-      <blockquote class="risk-quote">
-        "Species proximity to Banff North residential sector is critical. Historical incident data suggests a 78% probability of habitat encroachment within 24 hours."
-      </blockquote>
-    </div>
+      <div class="location-note" id="locationNote">Allow location access to check this detection against the risk model.</div>
 
-    <!-- META GRID -->
-    <div class="meta-grid">
-      <div class="meta-item">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 1C6.5 1 3 4.5 3 8c0 5 7 11 7 11s7-6 7-11c0-3.5-3.5-7-7-7z"/><circle cx="10" cy="8" r="2.5"/></svg>
-        <div class="meta-item-body">
-          <div class="meta-item-label">Nearest Hotspot</div>
-          <div class="meta-item-value">Banff North</div>
+      <div class="risk-card" id="riskCard">
+        <div class="risk-header">
+          <div class="risk-title-row">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10 3L18 17H2L10 3z"/><path d="M10 9v4"/><circle cx="10" cy="15" r="0.5" fill="currentColor"/></svg>
+            <span id="riskLabel">—</span>
+          </div>
+          <span id="riskProb" style="font-size:12px;font-weight:600;"></span>
         </div>
+        <div class="risk-sub" id="riskSub"></div>
+        <div class="risk-note">Based on the precomputed Parks Canada risk grid — Canada region only for now.</div>
       </div>
-      <div class="meta-item">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10h14M10 3l7 7-7 7"/></svg>
-        <div class="meta-item-body">
-          <div class="meta-item-label">Distance</div>
-          <div class="meta-item-value">1.2km</div>
-        </div>
-      </div>
-      <div class="meta-item">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M3 8h14M8 3v5"/></svg>
-        <div class="meta-item-body">
-          <div class="meta-item-label">Season</div>
-          <div class="meta-item-value">Peak (July)</div>
-        </div>
-      </div>
-      <div class="meta-item">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l3 2"/></svg>
-        <div class="meta-item-body">
-          <div class="meta-item-label">Hist. Incidents</div>
-          <div class="meta-item-value">12 Reports</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- OBJECTS IN FRAME -->
-    <div class="card objects-section">
-      <div class="objects-heading">Objects in frame</div>
-      <div class="object-row" onclick="showToast('Black Bear — primary detection (94.2%)')">
-        <div class="object-row-left">
-          <span class="object-idx">1.</span>
-          <span style="font-size:16px">🐻</span>
-          <span class="object-name">Black Bear</span>
-        </div>
-        <span class="object-conf">(94.2%)</span>
+      <div class="meta-grid" id="hotspotGrid" style="display:none">
+        <div class="meta-item"><div class="meta-item-label">Nearest Hotspot</div><div class="meta-item-value" id="hotspotName">—</div></div>
+        <div class="meta-item"><div class="meta-item-label">Distance</div><div class="meta-item-value" id="hotspotDist">—</div></div>
+        <div class="meta-item"><div class="meta-item-label">Peak Month</div><div class="meta-item-value" id="hotspotMonth">—</div></div>
+        <div class="meta-item"><div class="meta-item-label">Priority</div><div class="meta-item-value" id="hotspotPriority">—</div></div>
       </div>
-      <div class="object-row" onclick="showToast('Dense Vegetation — environmental context (61.5%)')">
-        <div class="object-row-left">
-          <span class="object-idx">2.</span>
-          <span style="font-size:16px">🌿</span>
-          <span class="object-name">Dense Vegetation</span>
-        </div>
-        <span class="object-conf" style="color:var(--sage)">(61.5%)</span>
-      </div>
-    </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="action-stack">
-      <button class="btn-action-primary" onclick="saveToDatabase()">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17V5a2 2 0 012-2h8l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 3 14 9 6 9 6 3"/></svg>
-        Save to database and report
-      </button>
-      <button class="btn-action-secondary" onclick="downloadReport()">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M4 17h12"/></svg>
-        Download detection report
-      </button>
-      <button class="btn-action-secondary" onclick="showToast('Opening risk map for Banff North…')">
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M6 3v14M14 3v14M2 10h16"/></svg>
-        View on risk map
-      </button>
+      <div class="action-stack">
+        <button class="btn-action-secondary" onclick="downloadReport()">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3v10M6 9l4 4 4-4"/><path d="M4 17h12"/></svg>
+          Download detection report
+        </button>
+        <button class="btn-action-secondary" onclick="location.href='wildguard_risk_map_html.html'">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="16" height="14" rx="2"/><path d="M6 3v14M14 3v14M2 10h16"/></svg>
+          View on risk map
+        </button>
+      </div>
     </div>
   </div>
 
 </div>
 
-<!-- FULLSCREEN MODAL -->
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeFullscreen()">
-  <div class="modal-img-wrap">
-    <div class="bear-scene">
-      <svg class="bear-art" viewBox="0 0 390 220" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bearBodyGrad2" cx="45%" cy="40%" r="60%">
-            <stop offset="0%" stop-color="#3A3A3A"/>
-            <stop offset="100%" stop-color="#111111"/>
-          </radialGradient>
-        </defs>
-        <ellipse cx="195" cy="80" rx="160" ry="90" fill="rgba(58,110,66,0.4)"/>
-        <g opacity="0.35" fill="#1A3520">
-          <polygon points="40,220 55,90 70,220"/>
-          <polygon points="65,220 80,100 95,220"/>
-          <polygon points="280,220 295,95 310,220"/>
-          <polygon points="330,220 345,100 360,220"/>
-        </g>
-        <ellipse cx="195" cy="165" rx="72" ry="50" fill="url(#bearBodyGrad2)"/>
-        <rect x="138" y="130" width="114" height="90" rx="30" fill="#1E1E1E"/>
-        <ellipse cx="195" cy="118" rx="46" ry="42" fill="#2A1E1E"/>
-        <ellipse cx="158" cy="82" rx="14" ry="13" fill="#2A2020"/>
-        <ellipse cx="232" cy="82" rx="14" ry="13" fill="#2A2020"/>
-        <ellipse cx="195" cy="132" rx="22" ry="16" fill="#3A3030"/>
-        <ellipse cx="195" cy="122" rx="9" ry="6" fill="#111"/>
-        <ellipse cx="176" cy="108" rx="7" ry="6.5" fill="#0A0A0A"/>
-        <ellipse cx="214" cy="108" rx="7" ry="6.5" fill="#0A0A0A"/>
-        <ellipse cx="178" cy="106" rx="2.5" ry="2" fill="rgba(255,255,255,0.55)"/>
-        <ellipse cx="216" cy="106" rx="2.5" ry="2" fill="rgba(255,255,255,0.55)"/>
-      </svg>
-      <div class="bbox-overlay">
-        <div class="bbox-label">🐻 Black Bear [94.2%]</div>
-        <div class="bbox-corner tl"></div>
-        <div class="bbox-corner tr"></div>
-        <div class="bbox-corner bl"></div>
-        <div class="bbox-corner br"></div>
-      </div>
-    </div>
-    <button class="modal-close-btn" onclick="closeFullscreen()">✕</button>
-  </div>
-</div>
-
-<!-- TOAST -->
 <div class="toast" id="toastEl" role="status" aria-live="polite">
   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
   <span id="toastMsg"></span>
 </div>
 
-<!-- FOOTER -->
 <div class="wg-footer">
   <span><strong>WildGuard</strong> | &copy; 2024 WildGuard Stewardship through Data. All rights reserved.</span>
   <div class="wg-footer-links">
@@ -1370,212 +322,172 @@ footer {
 </div>
 
 <script>
-/* ── DRAG & DROP ── */
-const dz = document.getElementById('dropzone');
+const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
 
-function handleDragOver(e) {
-  e.preventDefault();
-  dz.classList.add('dragover');
-}
-function handleDragLeave(e) {
-  dz.classList.remove('dragover');
-}
+// Emoji per species — extend as YOLO's class list grows.
+const SPECIES_ICONS = {
+  bear: "🐻", "black bear": "🐻", "grizzly bear": "🐻", elephant: "🐘",
+  tiger: "🐅", leopard: "🐆", rhinoceros: "🦏", rhino: "🦏",
+  "wild boar": "🐗", nilgai: "🐂", wolf: "🐺", cougar: "🐆", elk: "🦌", moose: "🫎"
+};
+
+let selectedFile = null;
+let userCoords = null;   // {lat, lon} from geolocation, if granted
+let lastResult = null;   // for the download-report button
+
+const dz = document.getElementById('dropzone');
+function handleDragOver(e) { e.preventDefault(); dz.classList.add('dragover'); }
+function handleDragLeave() { dz.classList.remove('dragover'); }
 function handleDrop(e) {
   e.preventDefault();
   dz.classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
 }
-function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (file) handleFile(file);
-}
+function handleFileSelect(e) { if (e.target.files[0]) handleFile(e.target.files[0]); }
+
 function handleFile(file) {
-  if (!file.type.match(/image\/(jpeg|png|webp)|video\/mp4/)) {
-    showToast('Unsupported format. Use JPG, PNG, or MP4.', true);
+  if (!file.type.match(/image\/(jpeg|png|webp)/)) {
+    showToast('Unsupported format. Use JPG, PNG, or WEBP.', true);
     return;
   }
-  showToast(`Loaded: ${file.name} (${(file.size/1024/1024).toFixed(1)}MB)`);
-  // Simulate: just trigger auto run
-  setTimeout(() => runDetection(), 400);
-}
+  selectedFile = file;
+  document.getElementById('previewImg').src = URL.createObjectURL(file);
+  document.getElementById('previewCard').classList.add('show');
+  document.getElementById('fileMeta').textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)}MB`;
+  document.getElementById('runBtn').disabled = false;
 
-/* ── URL DETECT ── */
-function detectFromUrl() {
-  const url = document.getElementById('urlInput').value.trim();
-  if (!url || !url.startsWith('http')) {
-    showToast('Enter a valid image URL', true);
-    return;
+  // Ask for location once per session — used later for the risk lookup.
+  if (!userCoords && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => { userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
+      () => { /* denied — risk lookup will just be skipped */ }
+    );
   }
-  showToast('Fetching image from URL…');
-  runDetection();
 }
 
-/* ── RUN DETECTION ── */
-function runDetection() {
+async function runDetection() {
+  if (!selectedFile) return;
   const btn = document.getElementById('runBtn');
   const overlay = document.getElementById('detectingOverlay');
-  const bbox = document.getElementById('bboxOverlay');
-
-  // Hide bbox, show overlay
-  bbox.style.opacity = '0';
+  btn.classList.add('loading'); btn.disabled = true;
   overlay.classList.add('show');
-  btn.classList.add('loading');
-  btn.disabled = true;
+  document.getElementById('detectingText').textContent = 'Running YOLO inference…';
 
-  // Simulate inference pipeline stages
-  const stages = ['Running YOLOv8 inference…', 'Classifying species…', 'Computing risk score…', 'Finalising report…'];
-  let i = 0;
-  const stageEl = overlay.querySelector('.detecting-text');
-  const stageInterval = setInterval(() => {
-    i++;
-    if (i < stages.length) stageEl.textContent = stages[i];
-  }, 500);
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch (e) {}
 
-  setTimeout(() => {
-    clearInterval(stageInterval);
+  try {
+    const form = new FormData();
+    form.append('file', selectedFile);
+    form.append('reported_by', (user && user.email) || 'anonymous');
+
+    const res = await fetch(`${BACKEND_URL}/api/detect-animal`, { method: 'POST', body: form });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    const data = await res.json();   // { species, confidence }
+
+    renderSpecies(data);
+
+    // Risk lookup only if we have a location.
+    if (userCoords) {
+      document.getElementById('detectingText').textContent = 'Checking risk model…';
+      try {
+        const riskRes = await fetch(`${BACKEND_URL}/api/predict-risk?lat=${userCoords.lat}&lon=${userCoords.lon}`);
+        if (riskRes.ok) renderRisk(await riskRes.json());
+      } catch (e) { /* risk lookup best-effort, detection result still stands */ }
+    } else {
+      document.getElementById('locationNote').classList.add('show');
+    }
+
+    lastResult = { ...data, coords: userCoords };
+    showToast(`Detected: ${data.species} (${(data.confidence * 100).toFixed(1)}%)`);
+  } catch (err) {
+    showToast('Detection failed — the backend may be waking up (free tier sleeps after 15 min idle, first request can take ~40s). Try again.', true);
+  } finally {
     overlay.classList.remove('show');
-    bbox.style.opacity = '1';
-    bbox.style.transition = 'opacity 0.4s ease';
-    btn.classList.remove('loading');
-    btn.disabled = false;
-
-    // Animate confidence bar
-    document.getElementById('confBar').style.width = '94.2%';
-
-    showToast('Detection complete — Black Bear at 94.2%', false, true);
-  }, 2200);
+    btn.classList.remove('loading'); btn.disabled = false;
+  }
 }
 
-/* ── FULLSCREEN ── */
-function openFullscreen() {
-  document.getElementById('modal').classList.add('open');
-}
-function closeFullscreen() {
-  document.getElementById('modal').classList.remove('open');
-}
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeFullscreen(); });
+function renderSpecies(data) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('resultsBody').classList.add('show');
+  document.getElementById('resultsSub').textContent = 'Live YOLO result';
 
-/* ── SAVE TO DB ── */
-function saveToDatabase() {
-  const btn = event.currentTarget;
-  btn.disabled = true;
-  btn.innerHTML = `
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15" style="animation:spin 0.7s linear infinite"><path d="M10 3v3M10 14v3M3 10h3M14 10h3"/></svg>
-    Saving…
-  `;
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.innerHTML = `
-      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15"><polyline points="4 10 8 14 16 6"/></svg>
-      Saved to database
-    `;
-    btn.style.background = '#1A6B3A';
-    showToast('Saved! Report WG-1203 created.', false, true);
-    setTimeout(() => {
-      btn.innerHTML = `
-        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M4 17V5a2 2 0 012-2h8l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2z"/><polyline points="14 3 14 9 6 9 6 3"/></svg>
-        Save to database and report
-      `;
-      btn.style.background = '';
-      btn.disabled = false;
-    }, 3000);
-  }, 1400);
+  const conf = (data.confidence * 100).toFixed(1);
+  document.getElementById('speciesIcon').textContent = SPECIES_ICONS[data.species.toLowerCase()] || '🐾';
+  document.getElementById('speciesName').textContent = data.species;
+  document.getElementById('confVal').textContent = conf + '%';
+  requestAnimationFrame(() => { document.getElementById('confBar').style.width = conf + '%'; });
 }
 
-/* ── DOWNLOAD REPORT ── */
+function renderRisk(risk) {
+  const card = document.getElementById('riskCard');
+  card.className = 'risk-card show ' + risk.risk_level;
+  document.getElementById('riskLabel').textContent = risk.risk_level + ' RISK';
+  document.getElementById('riskProb').textContent =
+    risk.high_risk_prob != null ? (risk.high_risk_prob * 100).toFixed(0) + '% probability' : '';
+  document.getElementById('riskSub').textContent =
+    `Nearest tracked hotspot activity: ${risk.hotspot_species} — ${risk.nearest_hotspot}.`;
+  document.querySelector('#riskCard .risk-note').textContent =
+    risk.region === 'canada'
+      ? 'Based on the precomputed Parks Canada risk grid.'
+      : 'Based on Chitwan DBSCAN conflict clusters — no probability grid for this region yet.';
+
+  document.getElementById('hotspotGrid').style.display = 'grid';
+  document.getElementById('hotspotName').textContent = risk.nearest_hotspot;
+  document.getElementById('hotspotDist').textContent = risk.hotspot_distance_km + ' km';
+  document.getElementById('hotspotMonth').textContent = risk.hotspot_peak_month != null
+    ? ['—','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][risk.hotspot_peak_month]
+    : 'N/A';
+  document.getElementById('hotspotPriority').textContent = risk.hotspot_priority;
+}
+
 function downloadReport() {
-  showToast('Generating PDF report…');
-  setTimeout(() => {
-    // Create a minimal mock text file download
-    const content = [
-      'WILDGUARD DETECTION REPORT',
-      '==========================',
-      `Report ID:    WG-1203`,
-      `Generated:    ${new Date().toLocaleString()}`,
-      `Engine:       YOLOv8 Engine`,
-      '',
-      'DETECTION',
-      '---------',
-      'Species:      Black Bear (Ursus americanus)',
-      'Confidence:   94.2%',
-      'Risk Level:   HIGH',
-      'RF Model:     0.89',
-      '',
-      'CONTEXT',
-      '-------',
-      'Nearest Hotspot: Banff North',
-      'Distance:        1.2km',
-      'Season:          Peak (July)',
-      'Hist. Incidents: 12 Reports',
-      '',
-      'RISK ASSESSMENT',
-      '---------------',
-      'Species proximity to Banff North residential sector is critical.',
-      'Historical incident data suggests a 78% probability of habitat',
-      'encroachment within 24 hours.',
-      '',
-      'Objects in frame:',
-      '  1. Black Bear (94.2%)',
-      '  2. Dense Vegetation (61.5%)',
-      '',
-      '© 2024 WildGuard Stewardship through Data',
-    ].join('\n');
-
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'WG-1203_detection_report.txt';
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('Report downloaded', false, true);
-  }, 900);
+  if (!lastResult) return;
+  const lines = [
+    'WILDGUARD DETECTION REPORT', '==========================',
+    `Generated: ${new Date().toLocaleString()}`,
+    `Species: ${lastResult.species}`,
+    `Confidence: ${(lastResult.confidence * 100).toFixed(1)}%`,
+    lastResult.coords ? `Location: ${lastResult.coords.lat.toFixed(4)}, ${lastResult.coords.lon.toFixed(4)}` : 'Location: not provided',
+  ].join('\n');
+  const blob = new Blob([lines], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'wildguard_detection_report.txt';
+  a.click();
 }
 
-/* ── TOAST ── */
 let toastTimer;
-function showToast(msg, isError = false, isSuccess = false) {
+function showToast(msg, isError = false) {
   const el = document.getElementById('toastEl');
   document.getElementById('toastMsg').textContent = msg;
-  el.className = 'toast show';
-  if (isError)   el.style.background = '#922B21';
-  else if (isSuccess) el.style.background = '#1A6B3A';
-  else           el.style.background = 'var(--forest)';
+  el.style.background = isError ? '#922B21' : 'var(--forest)';
+  el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
-  return false;
+  toastTimer = setTimeout(() => el.classList.remove('show'), 4000);
 }
 
-/* ── INIT: animate confidence bar on load ── */
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('confBar').style.width = '94.2%';
-  }, 600);
-});
-</script>
-<script>
-</script>
-<script>
-// WildGuard: update avatar from localStorage session
-(function() {
+// WildGuard nav session state
+function wgUpdateNav() {
   var user = null;
-  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
-  var avatars = document.querySelectorAll('.wg-nav-avatar');
-  avatars.forEach(function(av) {
-    if (user && user.loggedIn && user.initials) {
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch (e) {}
+  var loggedIn = !!(user && user.loggedIn);
+  document.querySelectorAll('.wg-nav-avatar').forEach(function (av) {
+    if (loggedIn && user.initials) {
       av.textContent = user.initials;
-      av.style.background = '#8FAF8F';
-      av.style.color = '#1a2e1a';
-      av.style.border = '2px solid #1a2e1a';
+      av.style.background = '#8FAF8F'; av.style.color = '#1a2e1a'; av.style.border = '2px solid #1a2e1a';
       av.title = user.name || '';
     } else {
       av.innerHTML = '<svg viewBox="0 0 24 24" fill="#aaa" width="18" height="18"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
-      av.style.background = '#d0d0d0';
-      av.style.border = '2px solid #bbb';
+      av.style.background = '#d0d0d0'; av.style.border = '2px solid #bbb';
     }
   });
-})();
+  var loginLink = document.querySelector('.wg-login-link');
+  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+}
+wgUpdateNav();
+window.addEventListener('pageshow', wgUpdateNav);
 </script>
 </body>
 </html>

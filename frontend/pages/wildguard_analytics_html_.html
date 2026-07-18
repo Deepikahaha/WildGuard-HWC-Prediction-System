@@ -464,13 +464,14 @@ footer {
   padding: 0 3px; border: 1.5px solid #2D4A2D; line-height: 1;
 }
 .wg-nav-avatar {
-  background: #8FAF8F !important;
-  border: 2px solid #1a2e1a !important;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  opacity: 1 !important;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #8FAF8F; border: 2px solid #1a2e1a; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  color: #1a2e1a; flex-shrink: 0;
 }
+.wg-nav-avatar.wg-white-border { border-color: rgba(255,255,255,.85); }
+
 
 </style>
 <style>
@@ -545,7 +546,7 @@ footer {
     <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
     <li><a href="wildguard_analytics_html_.html" class="wg-active">Analytics</a></li>
     <li><a href="wildguard_live_reports.html">Live Reports</a></li>
-    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+    <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
@@ -931,12 +932,14 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>
 // WildGuard: update avatar from localStorage session
-(function() {
+function wgUpdateNav() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var loggedIn = !!(user && user.loggedIn);
+
   var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
-    if (user && user.loggedIn && user.initials) {
+    if (loggedIn && user.initials) {
       av.textContent = user.initials;
       av.style.background = '#8FAF8F';
       av.style.color = '#1a2e1a';
@@ -948,7 +951,13 @@ window.addEventListener('DOMContentLoaded', () => {
       av.style.border = '2px solid #bbb';
     }
   });
-})();
+
+  var loginLink = document.querySelector('.wg-login-link');
+  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+}
+
+wgUpdateNav();
+window.addEventListener('pageshow', wgUpdateNav);
 </script>
 </body>
 </html>

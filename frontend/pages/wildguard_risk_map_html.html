@@ -473,7 +473,7 @@ html, body {
     <li><a href="wildguard_risk_assessment_html_.html">Risk Assessment</a></li>
     <li><a href="wildguard_analytics_html_.html">Analytics</a></li>
     <li><a href="wildguard_live_reports.html">Live Reports</a></li>
-    <li><a href="wildguard_login_html_.html">Login / Register</a></li>
+    <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
@@ -1177,12 +1177,14 @@ window.addEventListener('DOMContentLoaded', () => {
 </script>
 <script>
 // WildGuard: update avatar from localStorage session
-(function() {
+function wgUpdateNav() {
   var user = null;
   try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch(e) {}
+  var loggedIn = !!(user && user.loggedIn);
+
   var avatars = document.querySelectorAll('.wg-nav-avatar');
   avatars.forEach(function(av) {
-    if (user && user.loggedIn && user.initials) {
+    if (loggedIn && user.initials) {
       av.textContent = user.initials;
       av.style.background = '#8FAF8F';
       av.style.color = '#1a2e1a';
@@ -1194,7 +1196,13 @@ window.addEventListener('DOMContentLoaded', () => {
       av.style.border = '2px solid #bbb';
     }
   });
-})();
+
+  var loginLink = document.querySelector('.wg-login-link');
+  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+}
+
+wgUpdateNav();
+window.addEventListener('pageshow', wgUpdateNav);
 </script>
 </body>
 </html>
