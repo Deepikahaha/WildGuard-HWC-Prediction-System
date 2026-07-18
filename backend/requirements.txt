@@ -8,3 +8,4 @@ python-multipart
 torch
 ultralytics
 python-dotenv
+pandas
