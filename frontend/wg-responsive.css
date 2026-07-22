@@ -1,0 +1,66 @@
+/* wg-responsive.css — link this AFTER each page's own <style> block on every page.
+   Two breakpoints: 768px (tablet / narrow browser window) and 480px (phone). */
+
+/* Prevent the whole page from scrolling sideways — only elements that opt in
+   (like a table wrapped in overflow-x:auto) should ever scroll horizontally.
+   Without this, the nav bar drifts left/right along with page content when
+   the window is narrower than the content (e.g. two windows side by side). */
+html, body { overflow-x: hidden; max-width: 100vw; }
+.wg-nav { position: sticky; left: 0; }
+
+/* ============ 768px — tablets, or desktop browser snapped to half-screen ============ */
+@media (max-width: 768px) {
+  .wg-nav { padding: 0 16px !important; gap: 12px !important; }
+  .wg-nav-links { display: none !important; }           /* replaced by the hamburger panel below */
+  .wg-nav-toggle { display: flex !important; }
+
+  .page-wrap { grid-template-columns: 1fr !important; padding: 16px; gap: 16px; }
+  .meta-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .main-content { grid-template-columns: 1fr !important; padding: 20px 16px !important; }
+  .stats-row { grid-template-columns: repeat(2, 1fr) !important; }
+  .stat-card { padding: 16px !important; }
+  .stat-card:nth-child(2n) { border-right: none !important; }
+
+  .wg-footer { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px 16px; }
+  .wg-footer-links { flex-wrap: wrap; gap: 12px; }
+}
+
+/* ============ 480px — phones ============ */
+@media (max-width: 480px) {
+  .wg-nav-brand { font-size: 15px; }
+  html, body { font-size: 13px; }
+
+  .meta-grid { grid-template-columns: 1fr; }   /* stack even the 2-col meta cards */
+  .action-stack, .results-header { flex-direction: column; align-items: stretch; }
+
+  .stats-row { grid-template-columns: 1fr !important; }
+  .stat-card { border-right: none !important; border-bottom: 1px solid var(--gray-200); }
+  .quick-grid { grid-template-columns: 1fr !important; }
+
+  .card, .preview-card, .risk-card { padding-left: 14px; padding-right: 14px; }
+  .toast { left: 12px; right: 12px; bottom: 12px; max-width: none; }
+}
+
+/* ============ Hamburger menu — shared across all pages ============ */
+.wg-nav-toggle {
+  display: none;                /* only shown ≤768px, see above */
+  background: none; border: none; cursor: pointer;
+  color: #fff; padding: 6px; align-items: center; justify-content: center;
+}
+.wg-nav-toggle svg { width: 22px; height: 22px; }
+
+.wg-nav-mobile-panel {
+  display: none;
+  position: fixed; top: 52px; left: 0; right: 0;
+  background: #2D4A2D; z-index: 9998;
+  flex-direction: column; padding: 8px 16px 16px;
+  box-shadow: 0 8px 16px rgba(0,0,0,.25);
+}
+.wg-nav-mobile-panel.open { display: flex; }
+.wg-nav-mobile-panel a {
+  color: rgba(255,255,255,.85); text-decoration: none;
+  padding: 12px 4px; font-size: 15px; font-weight: 500;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.wg-nav-mobile-panel a.wg-active { color: #C8DCC8; font-weight: 700; }

@@ -149,6 +149,9 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0; /* allow this grid item to shrink below its content's natural width,
+                   so the table's own overflow-x:auto can scroll instead of the
+                   whole grid track being forced wider than the viewport */
 }
 
 /* CARD BASE */
@@ -300,6 +303,7 @@ nav {
 /* TABLE */
 .feed-table {
   width: 100%;
+  min-width: 900px; /* don't let columns squish past readability — scroll instead */
   border-collapse: collapse;
 }
 
@@ -938,6 +942,8 @@ nav {
 .wg-footer-links a:hover { color: #2D4A2D; }
 
 </style>
+<link rel="stylesheet" href="../wg-responsive.css">
+<script src="../wg-notifications.js"></script>
 </head>
 <body>
 
@@ -954,6 +960,10 @@ nav {
     <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
+    <button class="wg-nav-toggle" onclick="document.getElementById('wgMobilePanel').classList.toggle('open')" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
       <span class="wg-nav-badge">3</span>
@@ -961,6 +971,16 @@ nav {
     <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
   </div>
 </nav>
+
+<div class="wg-nav-mobile-panel" id="wgMobilePanel">
+  <a href="../index.html">Dashboard</a>
+  <a href="wildguard_risk_map_html.html">Risk Map</a>
+  <a href="wildguard_animal_detection.html">Detection</a>
+  <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
+  <a href="wildguard_analytics_html_.html">Analytics</a>
+  <a href="wildguard_live_reports.html" class="wg-active">Live Reports</a>
+  <a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a>
+</div>
 
 <!-- PAGE -->
 <div class="page">
@@ -1164,7 +1184,7 @@ nav {
     </div>
     <div class="modal-body" id="modalBody"></div>
     <div class="modal-actions">
-      <button class="btn-primary" onclick="showToast('Escalation sent');closeModal()">Escalate Alert</button>
+      <button class="btn-primary" onclick="escalateRisk()">Escalate Alert</button>
       <button class="btn-secondary" onclick="showToast('Report exported');closeModal()">Export PDF</button>
       <button class="btn-secondary" onclick="closeModal()">Dismiss</button>
     </div>
@@ -1262,7 +1282,10 @@ function sortTable(key) {
   renderTable();
 }
 
+let currentModalId = null;
+
 function openModal(id) {
+  currentModalId = id;
   const r = ALL_REPORTS.find(x => x.id === id);
   if (!r) return;
   document.getElementById('modalTitle').textContent = `${r.species} — ${r.hotspot}`;
@@ -1286,6 +1309,26 @@ function openModal(id) {
     </div>
   `;
   document.getElementById('modal').classList.add('open');
+}
+
+const RISK_ESCALATION = { low: 'medium', medium: 'high', high: 'high' }; // caps at high
+
+function escalateRisk() {
+  const r = ALL_REPORTS.find(x => x.id === currentModalId);
+  if (!r) return;
+  if (r.risk === 'high') {
+    showToast('Already at HIGH risk — nothing higher to escalate to.');
+    return;
+  }
+  const before = r.risk;
+  r.risk = RISK_ESCALATION[r.risk] || 'high';
+  renderTable();
+  openModal(currentModalId); // refresh modal to show the new level
+  wgAddNotification(
+    `Risk escalated: ${r.species}`,
+    `${r.hotspot} — escalated from ${before.toUpperCase()} to ${r.risk.toUpperCase()} by ${JSON.parse(localStorage.getItem('wg_user') || '{}').name || 'a reviewer'}.`
+  );
+  showToast(`Escalated to ${r.risk.toUpperCase()}`);
 }
 
 function closeModal() {
@@ -1321,12 +1364,34 @@ renderTable();
 
 const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
 
+function relativeTime(isoString) {
+  if (!isoString) return 'just now';
+  const then = new Date(isoString.includes('T') ? isoString : isoString.replace(' ', 'T') + 'Z');
+  if (isNaN(then.getTime())) return 'recently';
+  const mins = Math.max(0, Math.round((Date.now() - then.getTime()) / 60000));
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1440) return `${Math.round(mins / 60)}h ago`;
+  return `${Math.round(mins / 1440)}d ago`;
+}
+
+function minutesAgo(isoString) {
+  if (!isoString) return 0;
+  const then = new Date(isoString.includes('T') ? isoString : isoString.replace(' ', 'T') + 'Z');
+  return isNaN(then.getTime()) ? 0 : Math.max(0, Math.round((Date.now() - then.getTime()) / 60000));
+}
+
 function toRow(r, idx) {
   return {
-    id: `LIVE-${idx}`, time: 'just now', rawTime: 0,
-    region: 'Live', species: r.species, icon: '🐾',
-    lat: '-', lng: '-', risk: r.confidence > 0.7 ? 'high' : r.confidence > 0.4 ? 'medium' : 'low',
-    hotspot: 'New Detection', reporter: r.reported_by,
+    id: `LIVE-${idx}`, time: relativeTime(r.created_at), rawTime: minutesAgo(r.created_at),
+    region: r.region ? (r.region === 'canada' ? 'Canada' : 'Chitwan') : 'Live',
+    species: r.species, icon: '🐾',
+    lat: r.lat != null ? Number(r.lat).toFixed(3) : '-',
+    lng: r.lon != null ? Number(r.lon).toFixed(3) : '-',
+    // Use the real risk level if the backend sent one; only fall back to a
+    // confidence guess when it genuinely doesn't have one yet.
+    risk: r.risk_level ? r.risk_level.toLowerCase() : (r.confidence > 0.7 ? 'high' : r.confidence > 0.4 ? 'medium' : 'low'),
+    hotspot: r.nearest_hotspot || 'New Detection', reporter: r.reported_by,
     notes: `Detected via YOLO with ${Math.round(r.confidence * 100)}% confidence.`
   };
 }
@@ -1348,6 +1413,7 @@ try {
     ALL_REPORTS.unshift(toRow(r, Date.now()));
     renderTable();
     showToast(`New report: ${r.species} by ${r.reported_by}`);
+    wgUpdateBadge(); // backend already created the notification itself
   };
 } catch (e) { /* WebSocket unavailable */ }
 
@@ -1383,8 +1449,11 @@ function wgUpdateNav() {
     }
   });
 
-  var loginLink = document.querySelector('.wg-login-link');
-  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+  document.querySelectorAll('.wg-login-link').forEach(function (link) {
+    link.style.display = loggedIn ? 'none' : '';
+  });
+
+  wgUpdateBadge();
 }
 
 wgUpdateNav();

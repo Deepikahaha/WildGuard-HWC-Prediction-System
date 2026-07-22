@@ -493,6 +493,8 @@
 .wg-footer-links a:hover { color: #2D4A2D; }
 
 </style>
+<link rel="stylesheet" href="../wg-responsive.css">
+<script src="../wg-notifications.js"></script>
 </head>
 <body>
 
@@ -521,6 +523,10 @@ window.addEventListener('pageshow', wgRequireLogin);
     <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
+    <button class="wg-nav-toggle" onclick="document.getElementById('wgMobilePanel').classList.toggle('open')" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
       <span class="wg-nav-badge">3</span>
@@ -528,6 +534,16 @@ window.addEventListener('pageshow', wgRequireLogin);
     <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
   </div>
 </nav>
+
+<div class="wg-nav-mobile-panel" id="wgMobilePanel">
+  <a href="../index.html">Dashboard</a>
+  <a href="wildguard_risk_map_html.html">Risk Map</a>
+  <a href="wildguard_animal_detection.html">Detection</a>
+  <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
+  <a href="wildguard_analytics_html_.html">Analytics</a>
+  <a href="wildguard_live_reports.html">Live Reports</a>
+  <a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a>
+</div>
 
 <!-- PAGE -->
 <div class="page-wrap">
@@ -670,10 +686,39 @@ const MORE_NOTIFICATIONS = [
 ];
 
 /* ── STATE ────────────────────────────────────────── */
-let notifications  = [...ALL_NOTIFICATIONS];
+
+/* Real notifications (new detections, escalations, etc.) come from the
+   backend now. Map them into this page's existing card shape and show
+   them first, above the demo data. */
+async function realNotificationsAsCards() {
+  const iconHigh = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`;
+  const iconGeneral = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>`;
+
+  const real = await wgGetNotifications();
+  return real.map(n => {
+    const text = (n.title + ' ' + n.body).toUpperCase();
+    const type = text.includes('HIGH') ? 'high' : text.includes('MEDIUM') ? 'medium' : 'general';
+    const then = new Date(n.created_at.includes('T') ? n.created_at : n.created_at.replace(' ', 'T') + 'Z');
+    const mins = isNaN(then.getTime()) ? 0 : Math.max(0, Math.round((Date.now() - then.getTime()) / 60000));
+    const time = mins < 1 ? 'just now' : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.round(mins / 60)}h ago` : `${Math.round(mins / 1440)}d ago`;
+    return {
+      id: 'real-' + n.id, type, unread: !n.read,
+      title: n.title, desc: n.body, time,
+      icon: type === 'general' ? iconGeneral : iconHigh,
+    };
+  });
+}
+
+let notifications  = [...ALL_NOTIFICATIONS]; // demo data renders immediately; real data merges in once fetched
 let currentFilter  = 'all';
 let moreLoaded     = false;
 const dismissedIds = new Set();
+
+async function loadRealNotifications() {
+  const real = await realNotificationsAsCards();
+  notifications = [...real, ...ALL_NOTIFICATIONS];
+  renderList();
+}
 
 /* ── RENDER ───────────────────────────────────────── */
 function getIconClass(type) {
@@ -686,7 +731,7 @@ function renderList() {
   const footer = document.getElementById('notifFooter');
 
   const visible = notifications.filter(n => {
-    if (dismissedIds.has(n.id)) return false;
+    if (dismissedIds.has(String(n.id))) return false;
     if (currentFilter === 'unread') return n.unread;
     return true;
   });
@@ -704,7 +749,7 @@ function renderList() {
   list.innerHTML = visible.map((n, i) => `
     <div class="notif-card type-${n.type} ${n.unread ? '' : 'read'}"
          id="card-${n.id}"
-         onclick="handleCardClick(${n.id})"
+         onclick="handleCardClick('${n.id}')"
          style="animation-delay: ${i * 0.04}s">
 
       <div class="notif-icon-wrap ${getIconClass(n.type)}">${n.icon}</div>
@@ -720,7 +765,7 @@ function renderList() {
         <div class="notif-desc">${n.desc}</div>
       </div>
 
-      <button class="notif-dismiss" onclick="dismissCard(event, ${n.id})" title="Dismiss">
+      <button class="notif-dismiss" onclick="dismissCard(event, '${n.id}')" title="Dismiss">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
@@ -732,10 +777,13 @@ function renderList() {
 
 /* ── INTERACTIONS ─────────────────────────────────── */
 function handleCardClick(id) {
-  const n = notifications.find(x => x.id === id);
+  const n = notifications.find(x => x.id == id);
   if (!n) return;
   if (n.unread) {
     n.unread = false;
+    if (typeof id === 'string' && id.startsWith('real-')) {
+      wgMarkNotificationRead(Number(id.slice(5)));
+    }
     renderList();
     updateCounts();
     showToast('Notification marked as read');
@@ -759,7 +807,7 @@ function dismissCard(e, id) {
       card.style.border    = 'none';
     });
     setTimeout(() => {
-      dismissedIds.add(id);
+      dismissedIds.add(String(id));
       renderList();
     }, 260);
   }
@@ -775,6 +823,7 @@ function setFilter(f) {
 
 function markAllRead() {
   notifications.forEach(n => n.unread = false);
+  wgMarkAllNotificationsRead();
   renderList();
   updateCounts();
   showToast('All notifications marked as read');
@@ -793,12 +842,12 @@ function loadMore() {
     btn.textContent = 'Load more';
     showToast('4 older notifications loaded');
     // Update total badge
-    document.getElementById('totalBadge').textContent = notifications.filter(n => !dismissedIds.has(n.id)).length;
+    document.getElementById('totalBadge').textContent = notifications.filter(n => !dismissedIds.has(String(n.id))).length;
   }, 700);
 }
 
 function updateCounts() {
-  const active = notifications.filter(n => !dismissedIds.has(n.id));
+  const active = notifications.filter(n => !dismissedIds.has(String(n.id)));
   const unread = active.filter(n => n.unread).length;
   document.getElementById('totalBadge').textContent = active.length;
   document.getElementById('navBadge').textContent   = unread;
@@ -817,6 +866,7 @@ function showToast(msg) {
 
 /* ── INIT ─────────────────────────────────────────── */
 renderList();
+loadRealNotifications();
 </script>
 <script>
 // WildGuard: update avatar from localStorage session
@@ -840,8 +890,11 @@ function wgUpdateNav() {
     }
   });
 
-  var loginLink = document.querySelector('.wg-login-link');
-  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+  document.querySelectorAll('.wg-login-link').forEach(function (link) {
+    link.style.display = loggedIn ? 'none' : '';
+  });
+
+  wgUpdateBadge();
 }
 
 wgUpdateNav();

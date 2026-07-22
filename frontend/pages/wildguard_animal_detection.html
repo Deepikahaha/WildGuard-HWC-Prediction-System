@@ -169,6 +169,8 @@ html, body {
 
 @media (max-width: 860px) { .page-wrap { grid-template-columns: 1fr; } }
 </style>
+<link rel="stylesheet" href="../wg-responsive.css">
+<script src="../wg-notifications.js"></script>
 </head>
 <body>
 
@@ -184,6 +186,9 @@ html, body {
     <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
+    <button class="wg-nav-toggle" onclick="document.getElementById('wgMobilePanel').classList.toggle('open')" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
       <span class="wg-nav-badge">3</span>
@@ -191,6 +196,16 @@ html, body {
     <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
   </div>
 </nav>
+
+<div class="wg-nav-mobile-panel" id="wgMobilePanel">
+  <a href="../index.html">Dashboard</a>
+  <a href="wildguard_risk_map_html.html">Risk Map</a>
+  <a href="wildguard_animal_detection.html" class="wg-active">Detection</a>
+  <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
+  <a href="wildguard_analytics_html_.html">Analytics</a>
+  <a href="wildguard_live_reports.html">Live Reports</a>
+  <a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a>
+</div>
 
 <div class="page-wrap">
 
@@ -230,6 +245,19 @@ html, body {
       </div>
       <div class="preview-footer">
         <span class="preview-meta" id="fileMeta"></span>
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px;">
+      <div>
+        <label style="font-size:12.5px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Reporter name</label>
+        <input type="text" id="reporterName" placeholder="Your name" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-size:13.5px;font-family:'Inter',sans-serif;color:var(--text-primary);outline:none;">
+      </div>
+      <div>
+        <label style="font-size:12.5px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Location</label>
+        <div id="locationDisplay" style="font-size:13px;color:var(--text-muted);padding:9px 12px;background:var(--sage-pale);border-radius:7px;border:1px solid var(--sage-mid);">
+          Waiting for browser location…
+        </div>
       </div>
     </div>
 
@@ -335,6 +363,27 @@ let selectedFile = null;
 let userCoords = null;   // {lat, lon} from geolocation, if granted
 let lastResult = null;   // for the download-report button
 
+// Prefill reporter name and request location as soon as the page loads,
+// rather than waiting for a file to be picked.
+(function initReporterAndLocation() {
+  let user = null;
+  try { user = JSON.parse(localStorage.getItem('wg_user') || 'null'); } catch (e) {}
+  if (user && user.name) document.getElementById('reporterName').value = user.name;
+
+  const locEl = document.getElementById('locationDisplay');
+  if (!navigator.geolocation) {
+    locEl.textContent = 'Location not supported by this browser.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      locEl.textContent = `${userCoords.lat.toFixed(4)}, ${userCoords.lon.toFixed(4)} (auto-detected)`;
+    },
+    () => { locEl.textContent = 'Location access denied — risk lookup will be skipped.'; }
+  );
+})();
+
 const dz = document.getElementById('dropzone');
 function handleDragOver(e) { e.preventDefault(); dz.classList.add('dragover'); }
 function handleDragLeave() { dz.classList.remove('dragover'); }
@@ -355,14 +404,6 @@ function handleFile(file) {
   document.getElementById('previewCard').classList.add('show');
   document.getElementById('fileMeta').textContent = `${file.name} · ${(file.size / 1024 / 1024).toFixed(1)}MB`;
   document.getElementById('runBtn').disabled = false;
-
-  // Ask for location once per session — used later for the risk lookup.
-  if (!userCoords && navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => { userCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
-      () => { /* denied — risk lookup will just be skipped */ }
-    );
-  }
 }
 
 async function runDetection() {
@@ -379,20 +420,25 @@ async function runDetection() {
   try {
     const form = new FormData();
     form.append('file', selectedFile);
-    const reportedBy = encodeURIComponent((user && user.email) || 'anonymous');
+    const nameInput = document.getElementById('reporterName').value.trim();
+    const reportedBy = encodeURIComponent(nameInput || (user && user.email) || 'anonymous');
+    // Location is sent along so the backend can store it with the report —
+    // requires the backend to actually read/save these two params (see risk.py notes).
+    const locParams = userCoords ? `&lat=${userCoords.lat}&lon=${userCoords.lon}` : '';
 
-    const res = await fetch(`${BACKEND_URL}/api/detect-animal?reported_by=${reportedBy}`, { method: 'POST', body: form });
+    const res = await fetch(`${BACKEND_URL}/api/detect-animal?reported_by=${reportedBy}${locParams}`, { method: 'POST', body: form });
     if (!res.ok) throw new Error(`Server returned ${res.status}`);
     const data = await res.json();   // { species, confidence }
 
     renderSpecies(data);
 
     // Risk lookup only if we have a location.
+    let riskData = null;
     if (userCoords) {
       document.getElementById('detectingText').textContent = 'Checking risk model…';
       try {
         const riskRes = await fetch(`${BACKEND_URL}/api/predict-risk?lat=${userCoords.lat}&lon=${userCoords.lon}&species=${encodeURIComponent(data.species)}`);
-        if (riskRes.ok) renderRisk(await riskRes.json());
+        if (riskRes.ok) { riskData = await riskRes.json(); renderRisk(riskData); }
       } catch (e) { /* risk lookup best-effort, detection result still stands */ }
     } else {
       document.getElementById('locationNote').classList.add('show');
@@ -400,6 +446,8 @@ async function runDetection() {
 
     lastResult = { ...data, coords: userCoords };
     showToast(`Detected: ${data.species} (${(data.confidence * 100).toFixed(1)}%)`);
+    // No need to fire a notification here — the backend creates one automatically
+    // whenever /api/detect-animal is called, so every user sees it consistently.
   } catch (err) {
     showToast('Detection failed — the backend may be waking up (free tier sleeps after 15 min idle, first request can take ~40s). Try again.', true);
   } finally {
@@ -483,8 +531,11 @@ function wgUpdateNav() {
       av.style.background = '#d0d0d0'; av.style.border = '2px solid #bbb';
     }
   });
-  var loginLink = document.querySelector('.wg-login-link');
-  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+  document.querySelectorAll('.wg-login-link').forEach(function (link) {
+    link.style.display = loggedIn ? 'none' : '';
+  });
+
+  wgUpdateBadge();
 }
 wgUpdateNav();
 window.addEventListener('pageshow', wgUpdateNav);

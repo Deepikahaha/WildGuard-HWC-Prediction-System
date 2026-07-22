@@ -558,6 +558,8 @@
 .wg-footer-links a:hover { color: #2D4A2D; }
 
 </style>
+<link rel="stylesheet" href="../wg-responsive.css">
+<script src="../wg-notifications.js"></script>
 </head>
 <body>
 
@@ -573,7 +575,22 @@
     <li><a href="wildguard_live_reports.html">Live Reports</a></li>
     <li><a href="wildguard_login_html_.html" class="wg-active wg-login-link">Login / Register</a></li>
   </ul>
+  <div class="wg-nav-right">
+    <button class="wg-nav-toggle" onclick="document.getElementById('wgMobilePanel').classList.toggle('open')" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+  </div>
 </nav>
+
+<div class="wg-nav-mobile-panel" id="wgMobilePanel">
+  <a href="../index.html">Dashboard</a>
+  <a href="wildguard_risk_map_html.html">Risk Map</a>
+  <a href="wildguard_animal_detection.html">Detection</a>
+  <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
+  <a href="wildguard_analytics_html_.html">Analytics</a>
+  <a href="wildguard_live_reports.html">Live Reports</a>
+  <a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a>
+</div>
 
 <!-- PAGE BODY -->
 <div class="page-body">

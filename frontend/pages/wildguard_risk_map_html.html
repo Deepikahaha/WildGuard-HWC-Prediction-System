@@ -460,6 +460,8 @@ html, body {
 }
 
 </style>
+<link rel="stylesheet" href="../wg-responsive.css">
+<script src="../wg-notifications.js"></script>
 </head>
 <body>
 
@@ -476,6 +478,10 @@ html, body {
     <li><a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a></li>
   </ul>
   <div class="wg-nav-right">
+    <button class="wg-nav-toggle" onclick="document.getElementById('wgMobilePanel').classList.toggle('open')" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    
     <button class="wg-nav-bell" onclick="location.href='wildguard_notifications.html'" title="Notifications">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
       <span class="wg-nav-badge">3</span>
@@ -483,6 +489,16 @@ html, body {
     <div class="wg-nav-avatar" onclick="location.href='wildguard_profile_html_.html'">SJ</div>
   </div>
 </nav>
+
+<div class="wg-nav-mobile-panel" id="wgMobilePanel">
+  <a href="../index.html">Dashboard</a>
+  <a href="wildguard_risk_map_html.html" class="wg-active">Risk Map</a>
+  <a href="wildguard_animal_detection.html">Detection</a>
+  <a href="wildguard_risk_assessment_html_.html">Risk Assessment</a>
+  <a href="wildguard_analytics_html_.html">Analytics</a>
+  <a href="wildguard_live_reports.html">Live Reports</a>
+  <a href="wildguard_login_html_.html" class="wg-login-link">Login / Register</a>
+</div>
 
 <!-- APP -->
 <div class="app">
@@ -1162,6 +1178,7 @@ window.addEventListener('DOMContentLoaded', () => {
   defaultIframe.src = src;
 
   const BACKEND_URL = "https://wildguard-hwc-prediction-system.onrender.com";
+
   try {
     const ws = new WebSocket(BACKEND_URL.replace('http', 'ws') + '/ws/alerts');
     ws.onmessage = (event) => {
@@ -1170,6 +1187,7 @@ window.addEventListener('DOMContentLoaded', () => {
       toast.querySelector('.toast-text').innerHTML =
         `<strong>LIVE REPORT</strong> — ${r.species} reported by ${r.reported_by}`;
       toast.style.display = 'flex';
+      wgUpdateBadge(); // backend already created the notification itself
     };
   } catch (e) { /* WebSocket unavailable */ }
 });
@@ -1197,8 +1215,11 @@ function wgUpdateNav() {
     }
   });
 
-  var loginLink = document.querySelector('.wg-login-link');
-  if (loginLink) loginLink.parentElement.style.display = loggedIn ? 'none' : '';
+  document.querySelectorAll('.wg-login-link').forEach(function (link) {
+    link.style.display = loggedIn ? 'none' : '';
+  });
+
+  wgUpdateBadge();
 }
 
 wgUpdateNav();
